@@ -6,14 +6,6 @@ generator client {
     provider = "mongodb"
     url      = env("DATABASE_URL")
   }
-model Users {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  email     String    @unique
-  name      String?
-  image     String?
-  address   Address?
-  password  Password?
-}
 
 model Address {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
@@ -22,13 +14,57 @@ model Address {
   street      String
   houseNumber String
   zipCode     String
-  user        Users    @relation(fields: [userId], references: [id])
-  userId      String   @unique @db.ObjectId
+  user        Users?
 }
 
+model Users {
+  id          String       @id @default(auto()) @map("_id") @db.ObjectId
+  email       String       @unique
+  name        String?
+  image       String?
+  address     Address?     @relation(fields: [addressId], references: [id])
+  addressId   String       @unique @db.ObjectId
+  password    Password?
+  employee    Employees?
+}
+
+model Employees{
+  id            String       @id @default(auto()) @map("_id") @db.ObjectId
+  user          Users        @relation(fields: [userId], references: [id])
+  userId        String       @unique @db.ObjectId
+  products      Product[]  
+  business      Business     @relation(fields: [businessId], references: [id])
+  businessId    String       @db.ObjectId
+}
+
+model Business {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  logo        String
+  phone       String
+  email       String
+  address     String
+  zipCode     String?
+  employees   Employees[]
+}
+
+
 model Password {
-  id      String   @id @default(auto()) @map("_id") @db.ObjectId
-  hash    String
-  user    Users     @relation(fields: [userId], references: [id])
-  userId  String   @unique @db.ObjectId
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  hash      String
+  user      Users     @relation(fields: [userId], references: [id])
+  userId    String    @unique @db.ObjectId
+}
+
+model Product {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  name        String
+  description String?
+  price       Float
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  amount      Int
+  sales       Int
+  employee    Employees   @relation(fields: [employeeId], references: [id])
+  employeeId  String      @db.ObjectId
 }
