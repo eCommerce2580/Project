@@ -47,7 +47,8 @@ export default function LoginForm() {
     const values = {
       email: target.email.value,
       password: target.password.value,
-      name: target.name,
+      //@ts-ignore
+      name: target.name.value,
     };
     try {
       const response = await axios.post("/api/register", values);
