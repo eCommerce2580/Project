@@ -1,11 +1,15 @@
 "use client";
 
 import React, { FormEvent, useState } from "react";
-import { signIn } from "next-auth/react";
 import { FcGoogle } from "react-icons/fc";
+import { useDispatch } from "react-redux";
+import { login } from "@/app/store/slices/userSlice";
+import axios from "axios";
+import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
+  const dispatch = useDispatch();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -16,10 +20,23 @@ export default function LoginForm() {
       password: target.password.value,
     };
     try {
-      const credential = await signIn("credentials", { ...values });
+      const credential = await signIn("credentials", {
+        ...values,
+        redirect: false,
+      });
       console.log("credential", credential);
+
+      if (credential?.ok) {
+        console.log("credential", credential);
+        const user = (await axios.get(`api/getUser/${values.email}`)).data.user;
+        console.log("user", user);
+
+        dispatch(login(user));
+      } else {
+        console.log("Login failed", credential?.error);
+      }
     } catch (error) {
-      console.log(error);
+      console.log("Error during login:", error);
     }
   }
 
@@ -34,17 +51,27 @@ export default function LoginForm() {
       name: target.name.value,
     };
     try {
-      const response = await fetch("http://localhost:3000/api/register", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-      const data = await response.json();
-      console.log(data);
+      const response = await axios.post("/api/register", values);
+
+      console.log("data", response.data);
+
+      if (response.status == 200) {
+        const credential = await signIn("credentials", {
+          email: values.email,
+          password: values.password,
+          redirect: false,
+        });
+
+        if (credential?.ok) {
+          dispatch(login(response.data));
+        } else {
+          console.log("Registration succeeded but login failed");
+        }
+      } else {
+        console.log("Registration failed");
+      }
     } catch (error) {
-      console.log(error);
+      console.log("Error during registration:", error);
     }
   }
 

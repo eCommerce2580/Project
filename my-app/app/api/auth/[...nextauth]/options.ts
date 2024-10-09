@@ -1,5 +1,5 @@
 import prisma from "@/prisma/client";
-import type { NextAuthOptions, RequestInternal, User } from "next-auth";
+import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 
@@ -30,6 +30,7 @@ export const authOptions: NextAuthOptions = {
           id: user.id,
           email: user.email,
           name: user.name,
+          image: user.image
         };
       },
     }),

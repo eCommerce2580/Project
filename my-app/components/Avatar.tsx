@@ -5,26 +5,52 @@ import { CiHeart } from "react-icons/ci";
 import { GoSignOut } from "react-icons/go";
 import Link from "next/link";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import { useSelector, useDispatch } from "react-redux";
+import { FaUserCircle } from "react-icons/fa";
+import { signOut } from "next-auth/react"; 
+import { logout } from "@/app/store/slices/userSlice"; 
 
 export default function Avatar() {
+  const dispatch = useDispatch();
+  const user = useSelector((state: any) => state.user);
+
+  async function handleSignOut(): Promise<void> {
+    try {
+      // Sign out using next-auth, this will clear session and cookies automatically
+      await signOut({ redirect: false }); // אם לא רוצים לבצע redirect אוטומטי
+
+      // Dispatch action to clear user state in Redux store
+      dispatch(logout());
+
+      // ניקוי cookies מותאם אישית אם יש (לא חובה אם next-auth כבר מטפל בזה)
+      document.cookie = "next-auth.session-token=; Max-Age=0; path=/";
+      document.cookie = "next-auth.callback-url=; Max-Age=0; path=/";
+    } catch (error) {
+      console.error("Error during sign-out", error);
+    }
+  }
   return (
     <>
       <DropdownMenu.Root>
-        <DropdownMenu.Trigger className="p-2 ">
+      <DropdownMenu.Trigger className="p-2">
           <a
-            className=" flex items-center whitespace-nowrap transition duration-150 ease-in-out motion-reduce:transition-none "
+            className="flex items-center whitespace-nowrap transition duration-150 ease-in-out motion-reduce:transition-none"
             href="#"
             id="dropdownMenuButton2"
             role="button"
             aria-expanded="false"
           >
-            <img
-              src="https://tecdn.b-cdn.net/img/new/avatars/2.jpg"
-              className="rounded-full"
-              style={{ height: "39px", width: "39px" }}
-              alt=" "
-              loading="lazy"
-            />
+            {user.image? (
+              <img
+                src={user.image}
+                className="rounded-full border-2 border-gray-600" 
+                style={{ height: "32px", width: "32px" }}
+                alt="User Avatar"
+                loading="lazy"
+              />
+            ) : (
+              <FaUserCircle size={27} className="text-lg text-gray-600" />
+            )}
           </a>
         </DropdownMenu.Trigger>
 
@@ -69,6 +95,7 @@ export default function Avatar() {
 
             <DropdownMenu.Item
               className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-slate-100"
+              onClick={() => handleSignOut()}
             >
               <GoSignOut className="text-lg text-gray-600" />
               <p className="text-slate-800 font-medium ml-3">Sign Out</p>

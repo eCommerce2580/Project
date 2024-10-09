@@ -1,16 +1,39 @@
-// "use client"
-import { useState, useEffect } from "react";
-import CommandMenu from "../ui/CommandMenu";
-import Login from "../ui/Login";
-import Menu from "../ui/Menu";
-import ThemeToggle from "../ui/ThemeToggle";
-import Avatar from "../Avatar";
-
+"use client"
+import { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import CommandMenu from '../ui/CommandMenu';
+import ThemeToggle from '../ui/ThemeToggle';
+import Avatar from '../Avatar';
+import Login from '../ui/Login';
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
-let user: string;
+import { useSession } from "next-auth/react";
+import { RootState } from '@/app/store/types'; // ייבוא הטיפוס RootState
+import { login } from '@/app/store/slices/userSlice'; // ייבוא הפעולה שמעדכנת את ה-user ב-Redux
+import axios from 'axios';
 
 export default function Nav() {
+
+  const dispatch = useDispatch();
+  const user = useSelector((state: RootState) => state.user);
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      if (session?.user && !user.isAuthenticated) {
+        try {
+          const response = await axios.get(`api/getUser/${session.user.email}`);
+          const userData = response.data.user;
+          console.log("user", userData);
+          dispatch(login(userData));
+        } catch (error) {
+          console.error("Error fetching user data:", error);
+        }
+      }
+    };
+
+    fetchUser();
+  }, [session, dispatch, user.isAuthenticated]);
 
   return (
 
@@ -107,13 +130,10 @@ export default function Nav() {
           </div>
 
           {/* profile */}
-          {user ? (
-           <div
-           className="relative"
-           data-twe-dropdown-ref
-           data-twe-dropdown-alignment="end">
-          <Avatar/> 
-          </div>
+            {user.isAuthenticated? (
+            <div className="relative" data-twe-dropdown-ref data-twe-dropdown-alignment="end">
+              <Avatar />
+            </div>
           ) : (
             <div className="flex w-full flex-row justify-between">
               <Login />
