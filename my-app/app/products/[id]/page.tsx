@@ -55,8 +55,8 @@ export default function Page({ category }: { category: string }) {
     
               {/* {product.map((produc, index) => (
                 <Product key={produc.id} product={produc} />
-              ))}
-              */}
+              ))} */}
+             
             </div>
           </div>
         </>

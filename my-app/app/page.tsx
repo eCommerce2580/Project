@@ -1,4 +1,3 @@
-import Avatar from "@/components/Avatar";
 import Store from "@/components/ui/Store";
 
 
