@@ -35,7 +35,7 @@ export default function Nav() {
     const fetchUser = async () => {
       if (session?.user && !user.isAuthenticated) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
+          const response = await axios.get(`api/getUser/${session.user.email}`);
           const userData = response.data.user;
           console.log("user", userData);
           dispatch(login(userData));
@@ -81,14 +81,13 @@ export default function Nav() {
                 loading="lazy"
               />
             </a>
-            Navbar Links
             <ul className="list-style-none me-auto flex flex-col ps-0 lg:flex-row">
               <li className="mb-4 lg:mb-0 lg:pe-2">
                 <a
                   className="text-black/60 transition duration-200 hover:text-black/80 dark:text-white/60 dark:hover:text-white/80 lg:px-2"
-                  href="#"
+                  href="/contact"
                 >
-                  Dashboard
+                  Contact us
                 </a>
               </li>
               <li className="mb-4 lg:mb-0 lg:pe-2">
