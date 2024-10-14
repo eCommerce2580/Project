@@ -44,7 +44,7 @@ const page: React.FC = () => {
 
             <div className="mt-8">
                 {/* <Link href="/store"> */}
-                    <a className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-600">Continue Shopping</a>
+                    <a href="/" className="bg-gray-500 text-white px-4 py-2 rounded-lg shadow-md hover:bg-gray-600">Continue Shopping</a>
                 {/* </Link> */}
             </div>
         </div>
