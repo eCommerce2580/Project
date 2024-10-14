@@ -28,7 +28,7 @@ export default function LoginForm() {
 
       if (credential?.ok) {
         console.log("credential", credential);
-        const user = (await axios.get(`api/getUser/${values.email}`)).data.user;
+        const user = (await axios.get(`http://localhost:3000/api/getUser/${values.email}`)).data.user;
         console.log("user", user);
 
         dispatch(login(user));

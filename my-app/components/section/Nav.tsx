@@ -34,7 +34,7 @@ export default function Nav() {
     const fetchUser = async () => {
       if (session?.user && !user.isAuthenticated) {
         try {
-          const response = await axios.get(`api/getUser/${session.user.email}`);
+          const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
           const userData = response.data.user;
           console.log("user", userData);
           dispatch(login(userData));
