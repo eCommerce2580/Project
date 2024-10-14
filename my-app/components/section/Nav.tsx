@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { RootState } from "@/app/store/types"; // ייבוא הטיפוס RootState
 import { login } from "@/app/store/slices/userSlice"; // ייבוא הפעולה שמעדכנת את ה-user ב-Redux
 import axios from "axios";
+import Link from "next/link";
 
 let user: string;
 
@@ -113,11 +114,12 @@ export default function Nav() {
 
           {/* עגלת קניות */}
           <div className="relative flex items-center">
-            <a className="me-4 text-neutral-600 dark:text-white" href="#">
+            <a href={`/cart`} className="me-4 text-neutral-600 dark:text-white">
               <span className="[&>svg]:w-5">
                 <FaShoppingCart />
               </span>
             </a>
+
 
             {/* הערות */}
             <div
