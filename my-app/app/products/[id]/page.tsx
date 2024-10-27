@@ -7,9 +7,11 @@ import prisma from "@/prisma/client";
 
 export default async function Page({ params }: { params: any }) {
   let categoryId;
+  
+  // חיפוש קטגוריה לפי שם
   const category_ = await prisma.category.findFirst({
     where: {
-      name: params.id  // Filter category by name received from frontend
+      name: params.id  // מסנן לפי שם הקטגוריה המתקבל מהפרונטאנד
     }
   });
 
@@ -18,14 +20,7 @@ export default async function Page({ params }: { params: any }) {
   }
   const filteredSubCategory = await prisma.subCategory.findMany({
     where: {
-      // price: {
-      //     gte: filter.minPrice !== null ? filter.minPrice : undefined,
-      //     lte: filter.maxPrice !== null ? filter.maxPrice : undefined
-      // },
-      // name: {
-      //     contains: filter.searchString != null ? filter.searchString : undefined
-      // },
-      categoryId: categoryId !== null ? { equals: categoryId } : undefined
+      categoryId: categoryId ? { equals: categoryId } : undefined
     }
   });
   //  (filter: {minPrice:number, maxPrice:number,category:string, color: string});
@@ -39,7 +34,7 @@ export default async function Page({ params }: { params: any }) {
 
         </div>
       </div>
-      <SubCategories />
+      <SubCategories subCategory={filteredSubCategory}/>
     </>
   )
 }
