@@ -28,7 +28,7 @@ export default function LoginForm() {
 
       if (credential?.ok) {
         console.log("credential", credential);
-        const user = (await axios.get(`api/getUser/${values.email}`)).data.user;
+        const user = (await axios.get(`http://localhost:3000/api/getUser/${values.email}`)).data.user;
         console.log("user", user);
 
         dispatch(login(user));
@@ -108,7 +108,7 @@ export default function LoginForm() {
           onClick={() => setIsLogin((prev) => !prev)}
           className="text-center text-blue-500 text-sm cursor-pointer"
         >
-           {isLogin ?  "You haven't Account? - Sign Up" :"Already have av account? - Sigh in"}
+          {isLogin ? "You haven't Account? - Sign Up" : "Already have av account? - Sigh in"}
         </p>
         <div className="w-full flex justify-center items-center">
           <button
@@ -131,7 +131,7 @@ export default function LoginForm() {
           dark:text-white hover:bg-gray-200 focus:outline-none 
           focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
         >
-          <FcGoogle  className="h-6 w-6 mr-2" />
+          <FcGoogle className="h-6 w-6 mr-2" />
           <span>Continue with Google</span>
         </button>
       </div>

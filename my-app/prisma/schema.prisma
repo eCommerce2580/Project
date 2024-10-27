@@ -20,7 +20,7 @@ model Users {
 }
 
 model Address {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  id          String  @id @default(auto()) @map("_id") @db.ObjectId
   country     String
   city        String
   street      String
