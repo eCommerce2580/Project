@@ -5,6 +5,22 @@ import Credentials from "next-auth/providers/credentials";
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+   
+async function getUserIDFromDB(user: any) {
+  // Perform a database query to fetch the user ID based on the user object
+  // This is a simplified example, you should replace it with actual Prisma query logic
+  const userData = await prisma.users.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      id: true,
+    },
+  });
+
+  return userData?.id;
+}
+
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -60,20 +76,26 @@ export const authOptions: NextAuthOptions = {
       return true;
     },
     async session({ session, token, user }) {
-      console.log({ session, token, user });
-      return {
-        ...session,
-        user:{
-          ...session.user,
-          id:token.id
-        }
-      };
+      const dbUserId=getUserIDFromDB(user);
+    
+        console.log({ session, token, user, dbUserId });
+        return {
+          ...session,
+          user: {
+            ...session.user,
+            id: dbUserId
+          }
+        };
+    
+    
     },
     async jwt({ user, token, account, profile }) {
-      if(user) return {
+     const dbUserId=getUserIDFromDB(user);
+      if(user){ 
+        return {
         ...token,
-        id:user.id
-       }
+        id:dbUserId
+       }}
       return token  
       },
 
