@@ -13,9 +13,10 @@ model Users {
   name      String?
   image     String?
   addressId String?    @db.ObjectId
-  address   Address?   @relation(fields: [addressId], references: [id]) // קשר לכתובת
+  address   Address?   @relation(fields: [addressId], references: [id])
   password  Password?
   employee  Employees?
+  orders    Orders[]
 }
 
 model Address {
@@ -25,7 +26,8 @@ model Address {
   street      String
   houseNumber String
   zipCode     String
-  users       Users[] 
+  users       Users[]
+  Orders      Orders[]
 }
 
 model Employees {
@@ -56,14 +58,73 @@ model Password {
 }
 
 model Product {
-  id          String    @id @default(auto()) @map("_id") @db.ObjectId
-  name        String
-  description String?
-  price       Float
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  amount      Int
-  sales       Int
-  employee    Employees @relation(fields: [employeeId], references: [id])
-  employeeId  String    @db.ObjectId
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  price         Float
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  image         String
+  amount        Int
+  sales         Int
+  category      Category    @relation(fields: [categoryId], references: [id])
+  categoryId    String      @db.ObjectId
+  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String      @db.ObjectId
+  employee      Employees   @relation(fields: [employeeId], references: [id])
+  employeeId    String      @db.ObjectId
+  orderItems    OrderItem[] 
+}
+
+model SubCategory {
+  id         String    @id @default(auto()) @map("_id") @db.ObjectId
+  name       String
+  category   Category  @relation(fields: [categoryId], references: [id])
+  categoryId String    @db.ObjectId
+  products   Product[]
+}
+
+model Category {
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  subCategories SubCategory[]
+  products      Product[]
+}
+
+model OrdersStatus {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  orders Orders[]
+}
+
+model PaymentMethod {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  orders Orders[]
+}
+
+model Orders {
+  id                   String        @id @default(auto()) @map("_id") @db.ObjectId
+  orderDate            DateTime      @default(now())
+  totalAmount          Float
+  paymentMethodId      String        @db.ObjectId
+  paymentMethod        PaymentMethod @relation(fields: [paymentMethodId], references: [id])
+  shippingAddressId    String        @db.ObjectId
+  shippingAddress      Address       @relation(fields: [shippingAddressId], references: [id])
+  expectedDeliveryDate DateTime?
+  userId               String        @db.ObjectId
+  user                 Users         @relation(fields: [userId], references: [id])
+  status               OrdersStatus  @relation(fields: [statusId], references: [id])
+  statusId             String        @db.ObjectId
+  orderItems           OrderItem[] 
+}
+
+model OrderItem {
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId   String  @db.ObjectId
+  productId String  @db.ObjectId
+  quantity  Int
+  price     Float
+  order     Orders  @relation(fields: [orderId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
 }
