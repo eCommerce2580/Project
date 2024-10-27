@@ -1,7 +1,55 @@
+import prisma from "@/prisma/client";
+import { Order } from "../store/types";
+import {getServerSession} from "next-auth/next"
+import { authOptions } from "../api/auth/[...nextauth]/options";
 
+async function getUserOrders(id: any) {
+    try {
+        const orders = await prisma.orders.findMany({
+            where: {  
+userId: '671e13f2db00292b29b49fb5',
+            },
+            include: {
+                paymentMethod: {
+                    select: {
+                        name: true, 
+                    },
+                },
+                status: {
+                    select: {
+                        name: true, 
+                    },
+                },
+                orderItems: {
+                    include: {
+                        product: {
+                            select: {
+                                name: true,
+                                price:true
+                            },
+                        },
+                    },
+                },
+            },
+        });
+        console.log("jfvbldkb")
+        console.log(orders);
+        return orders;
+    } catch (error) {
+        console.error("Error fetching orders:", error);
+        throw error; // רשות להשליך את השגיאה למעלה
+    }
+}
 
-
-export default function UserOrders() {
+export default async function UserOrders() {
+    // const user = useSelector((state: any) => state.user);
+    const session= await getServerSession(authOptions)
+    if(!session)
+    {
+        return <div>no orders</div>
+    }
+    //@ts-ignore
+    const orders =await getUserOrders(session?.user.id)
     return (
         <div>
             <section className="py-24 relative">
@@ -15,19 +63,21 @@ export default function UserOrders() {
                             <li className="font-medium text-lg leading-8 cursor-pointer text-black transition-all duration-500 hover:text-indigo-600">Cancelled</li>
                         </ul>
                     </div>
-                    <Order />
+                    {/* {orders.map((order:Order) => (<OrderComponent order={order} />))} */}
+                    <OrderComponent />
                 </div>
             </section>
         </div>
     );
 }
 
-function Order() {
+// function OrderComponent(order: Order) {
+    function OrderComponent() {
     return (
         <div className="mt-7 border border-gray-300 pt-9">
             <div className="flex max-md:flex-col items-center justify-between px-3 md:px-11">
                 <div className="data">
-                    <p className="font-medium text-lg leading-8 text-black whitespace-nowrap">Order : #10234987</p>
+                    <p className="font-medium text-lg leading-8 text-black whitespace-nowrap">Order : #123</p>
                     <p className="font-medium text-lg leading-8 text-black mt-3 whitespace-nowrap">Order Payment : 18th March 2021</p>
                 </div>
                 <div className="flex items-center gap-3 max-md:mt-5">
@@ -45,9 +95,9 @@ function Order() {
                             </svg>
                             Cancel Order
                         </button>
-                        <p className="font-normal text-xl leading-8 text-gray-500 sm:pl-8">Payment Is Successful</p>
+                        <p className="font-normal text-xl leading-8 text-gray-500 sm:pl-8">Payment Is Successful </p>
                     </div>
-                    <p className="font-medium text-xl leading-8 text-black max-sm:py-4"><span className="text-gray-500">Total Price: </span>&nbsp;$200.00</p>
+                    <p className="font-medium text-xl leading-8 text-black max-sm:py-4"><span className="text-gray-500"> Total Price: </span>&nbsp;$200.00</p>
                 </div>
             </div>
         </div>
