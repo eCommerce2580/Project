@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import { RootState } from "@/app/store/types"; // ייבוא הטיפוס RootState
 import { login } from "@/app/store/slices/userSlice"; // ייבוא הפעולה שמעדכנת את ה-user ב-Redux
 import axios from "axios";
+import Link from "next/link";
 
 let user: string;
 
@@ -34,7 +35,7 @@ export default function Nav() {
     const fetchUser = async () => {
       if (session?.user && !user.isAuthenticated) {
         try {
-          const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
+          const response = await axios.get(`api/getUser/${session.user.email}`);
           const userData = response.data.user;
           console.log("user", userData);
           dispatch(login(userData));
@@ -80,14 +81,13 @@ export default function Nav() {
                 loading="lazy"
               />
             </a>
-            Navbar Links
             <ul className="list-style-none me-auto flex flex-col ps-0 lg:flex-row">
               <li className="mb-4 lg:mb-0 lg:pe-2">
                 <a
                   className="text-black/60 transition duration-200 hover:text-black/80 dark:text-white/60 dark:hover:text-white/80 lg:px-2"
-                  href="#"
+                  href="/contact"
                 >
-                  Dashboard
+                  Contact us
                 </a>
               </li>
               <li className="mb-4 lg:mb-0 lg:pe-2">
@@ -113,11 +113,12 @@ export default function Nav() {
 
           {/* עגלת קניות */}
           <div className="relative flex items-center">
-            <a className="me-4 text-neutral-600 dark:text-white" href="#">
+            <a href={`/cart`} className="me-4 text-neutral-600 dark:text-white">
               <span className="[&>svg]:w-5">
                 <FaShoppingCart />
               </span>
             </a>
+
 
             {/* הערות */}
             <div
