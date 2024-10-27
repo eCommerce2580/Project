@@ -1,37 +1,39 @@
 import prisma from "@/prisma/client";
 import { Order } from "../store/types";
-import {getServerSession} from "next-auth/next"
+import { getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]/options";
 
 async function getUserOrders(id: any) {
     try {
-        const orders = await prisma.orders.findMany({
-            where: {  
-userId: '671e13f2db00292b29b49fb5',
-            },
-            include: {
-                paymentMethod: {
-                    select: {
-                        name: true, 
-                    },
+        const orders = await prisma.orders.findMany(
+            {
+                where: {
+                    userId: id,
                 },
-                status: {
-                    select: {
-                        name: true, 
+                include: {
+                    paymentMethod: {
+                        select: {
+                            name: true, 
+                        },
                     },
-                },
-                orderItems: {
-                    include: {
-                        product: {
-                            select: {
-                                name: true,
-                                price:true
+                    status: {
+                        select: {
+                            name: true, 
+                        },
+                    },
+                    orderItems: {
+                        include: {
+                            product: {
+                                select: {
+                                    name: true,
+                                    price:true
+                                },
                             },
                         },
                     },
                 },
-            },
-        });
+            }
+        );
         console.log("jfvbldkb")
         console.log(orders);
         return orders;
@@ -42,14 +44,12 @@ userId: '671e13f2db00292b29b49fb5',
 }
 
 export default async function UserOrders() {
-    // const user = useSelector((state: any) => state.user);
-    const session= await getServerSession(authOptions)
-    if(!session)
-    {
+    const session = await getServerSession(authOptions)
+    if (!session) {
         return <div>no orders</div>
     }
-    //@ts-ignore
-    const orders =await getUserOrders(session?.user.id)
+    // @ts-ignore
+    const orders = await getUserOrders(session?.user.id)
     return (
         <div>
             <section className="py-24 relative">
@@ -72,7 +72,7 @@ export default async function UserOrders() {
 }
 
 // function OrderComponent(order: Order) {
-    function OrderComponent() {
+function OrderComponent() {
     return (
         <div className="mt-7 border border-gray-300 pt-9">
             <div className="flex max-md:flex-col items-center justify-between px-3 md:px-11">
