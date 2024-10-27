@@ -1,3 +1,4 @@
+// pages/api/register.ts
 import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
@@ -6,27 +7,32 @@ export async function POST(request: Request) {
   try {
     const { email, name, password, address } = await request.json();
 
-    // Hash the password
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash the password if provided
+    const hashedPassword = password ? await bcrypt.hash(password, 10) : null;
 
-    // Create the user with all required fields
-    const user = await prisma.users.create({
-      data: {
+    // Create or update the user based on email existence
+    const user = await prisma.users.upsert({
+      where: { email },
+      update: {
+        name,
+        password: hashedPassword ? {
+          create: { hash: hashedPassword },
+        } : undefined,
+        address: address ? {
+          upsert: {
+            update: { ...address },
+            create: { ...address },
+          },
+        } : undefined,
+      },
+      create: {
         email,
         name,
-        password: {
-          create: {
-            hash: hashedPassword,
-          },
-        },
+        password: hashedPassword ? {
+          create: { hash: hashedPassword },
+        } : undefined,
         address: address ? {
-          create: {
-            country: address.country,
-            city: address.city,
-            street: address.street,
-            houseNumber: address.houseNumber,
-            zipCode: address.zipCode,
-          },
+          create: { ...address },
         } : undefined,
       },
       include: {
