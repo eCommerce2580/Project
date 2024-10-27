@@ -1,4 +1,5 @@
 // store/types.ts
+
 export interface UserState {
     id: string | null;
     name: string | null;
@@ -18,5 +19,26 @@ export interface UserState {
   export interface RootState {
     user: UserState;
     cart: CartState
+  }
+  
+
+  export interface Order {
+    id: String; 
+    orderDate: Date;
+    totalAmount: number;
+    paymentMethodName: String; 
+    shippingAddressId: String;
+    expectedDeliveryDate?: Date;
+    userId: String; 
+    statusName: String; 
+    orderItems: OrderItem[]; 
+  }
+ 
+  export interface OrderItem {
+    id: String;
+    orderId: String;
+    productId: String; 
+    quantity: number;
+    price: number;
   }
   
