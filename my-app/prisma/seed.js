@@ -2,21 +2,19 @@ const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
 
 async function main() {
-    // יצירת קטגוריה
-    const category = await prisma.category.create({
-        data: {
-            name: "Electronics",
-        }
-    })
+    // קטגוריה ותת-קטגוריה שכבר נוצרו
+    const categoryShoose = await prisma.category.create({
+        data: { name: "Shoes" }
+    });
 
-    // יצירת תת-קטגוריה וקישור לקטגוריה
-    const subCategory = await prisma.subCategory.create({
+    const subCategorySportsShoose = await prisma.subCategory.create({
         data: {
-            name: "Phones",
-            category: { connect: { id: category.id } },
+            name: "Sports Shoes",
+            category: { connect: { id: categoryShoose.id } },
         }
-    })
+    });
 
+    // יצירת עובד
     const employee = await prisma.employees.create({
         data: {
             user: {
@@ -45,35 +43,58 @@ async function main() {
 
     console.log("עובד נוצר:", employee);
 
-    // יצירת מוצר וקישור לקטגוריה ותת-קטגוריה
-    const product = await prisma.product.create({
-        data: {
-            name: "iPhone 13",
-            description: "Latest Apple iPhone with A15 Bionic chip",
-            price: 999.99,
-            amount: 10,
-            sales: 0,
-            image: "https://example.com/iphone13.jpg",
-            category: {
-                connect: {
-                    id: category.id,
-                },
-            },
-            subCategory: {
-                connect: {
-                    id: subCategory.id,
-                },
-            },
-            employee: {
-                connect: {
-                    id: employee.id // קשר לעובד שנוצר
-                }
-            }
+    // הוספת מוצרים של נעלי ספורט
+    const productsData = [
+        {
+            name: "Nike Air Max",
+            description: "Comfortable sports shoes",
+            price: 150.00,
+            amount: 20,
+            sales: 5,
+            image: "https://example.com/nike-air-max.jpg",
         },
-    });
+        {
+            name: "Adidas Ultraboost",
+            description: "Running shoes with advanced cushioning",
+            price: 180.00,
+            amount: 15,
+            sales: 3,
+            image: "https://example.com/adidas-ultraboost.jpg",
+        },
+        {
+            name: "Puma Running Shoes",
+            description: "Lightweight and durable running shoes",
+            price: 130.00,
+            amount: 25,
+            sales: 7,
+            image: "https://example.com/puma-running.jpg",
+        }
+    ];
 
-
-    console.log({ product })
+    // יצירת המוצרים וקישור לקטגוריה, תת-קטגוריה ועובד
+    for (const productData of productsData) {
+        const product = await prisma.product.create({
+            data: {
+                ...productData,
+                category: {
+                    connect: {
+                        id: categoryShoose.id,
+                    },
+                },
+                subCategory: {
+                    connect: {
+                        id: subCategorySportsShoose.id,
+                    },
+                },
+                employee: {
+                    connect: {
+                        id: employee.id,
+                    }
+                }
+            },
+        });
+        console.log("מוצר נוצר:", product);
+    }
 }
 
 main()
@@ -83,4 +104,4 @@ main()
     })
     .finally(async () => {
         await prisma.$disconnect()
-    })
+    });
