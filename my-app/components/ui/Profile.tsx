@@ -36,7 +36,7 @@ const DetailRow: React.FC<{
     </div>
   </div>
 );
-
+ 
 export default function UserDetails() {
   const user = useSelector((state: RootState) => state.user);
   const dispatch = useDispatch();
