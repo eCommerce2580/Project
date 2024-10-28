@@ -18,29 +18,29 @@ async function getUserIDFromDB(user: any) {
     },
   });
 
-  return userData?.id;
+return userData?.id;
 }
 
 
 export const authOptions: NextAuthOptions = {
-  session: {
-    strategy: "jwt",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  providers: [
-    Credentials({
-      name: "Credentials",
-      credentials: {
-        email:{ label: "Email", type: "email" },
-        password:{label:"Password",type:"password"}
-      },
-      async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        const user = await prisma.users.findUnique({
-          where: { email: credentials.email },
-        });
-        
-        if (!user) throw new Error('פרטייך שגויים!');
+session: {
+  strategy: "jwt",
+},
+secret: process.env.NEXTAUTH_SECRET,
+providers: [
+  Credentials({
+    name: "Credentials",
+    credentials: {
+      email:{ label: "Email", type: "email" },
+      password:{label:"Password",type:"password"}
+    },
+    async authorize(credentials) {
+      if (!credentials?.email || !credentials?.password) return null;
+      const user = await prisma.users.findUnique({
+        where: { email: credentials.email },
+      });
+      
+      if (!user) throw new Error('פרטייך שגויים!');
 
         return {
           id: user.id,
@@ -93,5 +93,5 @@ export const authOptions: NextAuthOptions = {
       return token  
       },
 
-  },
+},
 };
