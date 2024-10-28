@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
     try {
-        const { id, orderDate, totalAmount, paymentMethodId, shippingAddressId, userId, expectedDeliveryDate, orderItems } = await request.json();
+        const { orderDate, totalAmount, paymentMethodId, shippingAddressId, userId, expectedDeliveryDate, orderItems, statusId } = await request.json();
 
         // Check stock for each item in the order
         for (const item of orderItems) {
@@ -27,9 +27,9 @@ export async function POST(request: Request) {
                 totalAmount,
                 paymentMethod: { connect: { id: paymentMethodId } },
                 shippingAddress: { connect: { id: shippingAddressId } },
-                expectedDeliveryDate: expectedDeliveryDate ? new Date(expectedDeliveryDate) : undefined,
+                expectedDeliveryDate: new Date(expectedDeliveryDate),
                 user: { connect: { id: userId } },
-                status: { connect: { id: id } },
+                status: { connect: { id: statusId } },
 
                 // Create order items and adjust stock
                 orderItems: {

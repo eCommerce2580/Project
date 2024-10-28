@@ -22,37 +22,37 @@ export interface RootState {
 }
 
 
-interface Product {
-  name: string;
-  price: number;
-};
-interface OrderItem {
-  id: string;
-  orderId: string;
-  productId: string;
-  quantity: number;
-  price: number;
-  product: Product;
-};
+// interface Product {
+//   name: string;
+//   price: number;
+// };
+// interface OrderItem {
+//   id: string;
+//   orderId: string;
+//   productId: string;
+//   quantity: number;
+//   price: number;
+//   product: Product;
+// };
 
-interface PaymentMethod {
-  name: string;
-};
+// interface PaymentMethod {
+//   name: string;
+// };
 
-interface OrderStatus {
-  name: string;
-};
+// interface OrderStatus {
+//   name: string;
+// };
 
-export interface Order {
-  id: string;
-  orderDate: Date;
-  totalAmount: number;
-  paymentMethodId: string;
-  shippingAddressId: string;
-  expectedDeliveryDate: Date;
-  userId: string;
-  statusId: string;
-  paymentMethod: PaymentMethod;
-  status: OrderStatus;
-  orderItems: OrderItem[];
-};
+// export interface Order {
+//   id: string;
+//   orderDate: Date;
+//   totalAmount: number;
+//   paymentMethodId: string;
+//   shippingAddressId: string;
+//   expectedDeliveryDate: Date;
+//   userId: string;
+//   statusId: string;
+//   paymentMethod: PaymentMethod;
+//   status: OrderStatus;
+//   orderItems: OrderItem[];
+// };

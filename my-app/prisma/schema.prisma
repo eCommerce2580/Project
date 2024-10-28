@@ -111,7 +111,7 @@ model Orders {
   paymentMethod        PaymentMethod @relation(fields: [paymentMethodId], references: [id])
   shippingAddressId    String        @db.ObjectId
   shippingAddress      Address       @relation(fields: [shippingAddressId], references: [id])
-  expectedDeliveryDate DateTime?
+  expectedDeliveryDate DateTime
   userId               String        @db.ObjectId
   user                 Users         @relation(fields: [userId], references: [id])
   status               OrdersStatus  @relation(fields: [statusId], references: [id])
