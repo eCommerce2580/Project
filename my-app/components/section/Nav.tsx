@@ -4,7 +4,7 @@ import CommandMenu from "../ui/CommandMenu";
 import Login from "../ui/Login";
 import Menu from "../ui/Menu";
 import ThemeToggle from "../ui/ThemeToggle";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
 import SubcategoryMenu from "../ui/SubcategoryMenu";
