@@ -13,6 +13,7 @@ interface FormData {
   street: string;
   houseNumber: string;
   zipCode: string;
+  addressId: string;
 }
 
 const DetailRow: React.FC<{
@@ -115,7 +116,8 @@ export default function UserDetails() {
     city: user.city || '',
     street: user.street || '',
     houseNumber: user.houseNumber || '',
-    zipCode: user.zipCode || ''
+    zipCode: user.zipCode || '',
+    addressId: user.addressId || ''
   });
   useEffect(() => {
     if (!isEditing) {
@@ -126,7 +128,8 @@ export default function UserDetails() {
         city: user.city || '',
         street: user.street || '',
         houseNumber: user.houseNumber || '',
-        zipCode: user.zipCode || ''
+        zipCode: user.zipCode || '',
+        addressId: user.addressId || ''
       };
   
       // Only update state if formData is different

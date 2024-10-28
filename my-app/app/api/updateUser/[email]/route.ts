@@ -8,22 +8,26 @@ export async function PUT(
     try {
         const { email } = params;
         const body = await request.json();
-        const { name, country, city, street, houseNumber, zipCode } = body;
+        const { name, country, city, street, houseNumber, zipCode, addressId } = body;
 
-        // Log the input data for debugging
-        console.log(`Updating user with email: ${email}`, { name, country, city, street, houseNumber, zipCode });
+        console.log(`Updating user with email: ${email}`, { name, country, city, street, houseNumber, zipCode, addressId });
 
-        // Check if the address exists
-        const addressRecord = await prisma.address.findUnique({
-            where: { id: body.addressId }, // Assuming the address has an ID
+        // Find the user
+        const user = await prisma.users.findUnique({
+            where: { email: email },
+            include: { address: true }, // כולל את הכתובת הקיימת
         });
 
-        // Update or create address if it doesn't exist
+        if (!user) {
+            throw new Error("User not found.");
+        }
+
         let updatedAddress;
-        if (addressRecord) {
-            // Update existing address
+
+        if (addressId) {
+            // אם יש addressId, נעדכן את הכתובת הקיימת
             updatedAddress = await prisma.address.update({
-                where: { id: body.addressId },
+                where: { id: addressId },
                 data: {
                     country,
                     city,
@@ -33,7 +37,7 @@ export async function PUT(
                 },
             });
         } else {
-            // Create a new address
+            // אם אין addressId, ניצור כתובת חדשה
             updatedAddress = await prisma.address.create({
                 data: {
                     country,
@@ -45,27 +49,25 @@ export async function PUT(
             });
         }
 
-        // Update user data in the database
+        // עדכן את שם המשתמש
         const updatedUser = await prisma.users.update({
             where: { email: email },
             data: {
                 name: name,
-                addressId: updatedAddress.id, // Link to the updated/created address
+                addressId: updatedAddress.id, // אם הכתובת התעדכנה או נוצרה, עדכן את ה-ID
             },
         });
 
         return NextResponse.json({ message: "User updated successfully", success: true, updatedUser });
     } catch (error: unknown) {
         console.error("Error updating user:", error);
-    
+
         let errorMessage = "Error updating user";
-    
-        // Check if error is an instance of Error
+
         if (error instanceof Error) {
-            errorMessage = error.message; // Use the error message if available
+            errorMessage = error.message;
         }
-    
-        // Return a structured JSON response with the error message
+
         return NextResponse.json(
             { message: errorMessage, success: false },
             { status: 500 }

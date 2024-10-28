@@ -3,7 +3,7 @@ export interface UserState {
     id: string | null;
     name: string | null;
     email: string | null;
-    address: string | null;
+    addressId: string | null;
     img: string | null;
     isAuthenticated: boolean;
   }
