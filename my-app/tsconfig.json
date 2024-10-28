@@ -20,8 +20,7 @@
     "paths": {
       "@/*": ["./*"]
     },
-    "types": ["@prisma/client"] // הוסף שורה זו
-
+    "types": ["@prisma/client", "node"] // הוסף כאן את "node"
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
