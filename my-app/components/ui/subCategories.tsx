@@ -3,15 +3,13 @@ import { NextResponse } from "next/server";
 type SubCategoryType = {
     id: string;
     name: string;
-    
-
-    // imageUrl?: string; // ודא שהשדה קיים בנתונים שלך, אם לא, ניתן להסיר או להפוך לאופציונלי
+    imageUrl?: string; // ודא שהשדה קיים בנתונים שלך, אם לא, ניתן להסיר או להפוך לאופציונלי
   };
 type SubCategoriesProps = {
     subCategory: SubCategoryType[];
   };
 export default async function SubCategories({ subCategory }: SubCategoriesProps) {
-
+console.log(subCategory)
   return (
     <div className="pb-16">
       <div className="flex justify-center items-center">
@@ -26,11 +24,11 @@ export default async function SubCategories({ subCategory }: SubCategoriesProps)
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-x-4 md:gap-x-8 w-full">
               {subCategory.map((category, index) => (
                 <div key={index} className="relative group flex justify-center items-center h-full w-full">
-                  {/* <img
+                  <img
                     className="object-center object-cover h-full w-full"
                     src={category.imageUrl} // Assuming each category has an `imageUrl` property
                     alt={`${category.name}-image`}
-                  /> */}
+                  />
                   <button className="focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-400 bottom-4 z-10 absolute text-base font-medium leading-none text-gray-800 py-3 w-36 bg-white">
                     {category.name} {/* Displaying the category name */}
                   </button>
