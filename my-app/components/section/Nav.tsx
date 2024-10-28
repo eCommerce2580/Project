@@ -4,7 +4,7 @@ import CommandMenu from "../ui/CommandMenu";
 import Login from "../ui/Login";
 import Menu from "../ui/Menu";
 import ThemeToggle from "../ui/ThemeToggle";
-import Avatar from "../Avatar";
+import Avatar from "../ui/Avatar";
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
 import SubcategoryMenu from "../ui/SubcategoryMenu";
@@ -14,22 +14,31 @@ import { RootState } from "@/app/store/types"; // ייבוא הטיפוס RootSt
 import { login } from "@/app/store/slices/userSlice"; // ייבוא הפעולה שמעדכנת את ה-user ב-Redux
 import axios from "axios";
 import Link from "next/link";
+import prisma from "@/prisma/client";
+
 
 let user: string;
 
 export default function Nav() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>("");
+  const [categories, setCategories] = useState([]);
 
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const {data} = await axios.get('api/categories');
+        setCategories(data.categories);
+        console.log("categories", data);
+      } catch (error) {
+        console.error("Error fetching categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
-  const categories = [
-    { name: "נשים", subcategory: ["נעליים", "שמלות", "חצאיות"] },
-    { name: "גברים", subcategory: ["נעליים", "חולצות", "מכנסיים"] },
-    { name: "ילדים", subcategory: ["נעליים", "שמלות", "פיזמות"] },
-    { name: "תנוקות", subcategory: ["נעליים", "אוברול", "שמיכות"] },
-  ];
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -165,7 +174,7 @@ export default function Nav() {
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
           <div className="flex items-center">
             <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative">
-              {categories.map((category, index) => (
+              {categories && categories.map((category:any, index:any) => (
                 <li
                   key={index}
                   className="relative"
@@ -178,9 +187,9 @@ export default function Nav() {
                   >
                     {category.name}
                   </a>
-                  {hoveredCategory === category.name && (
-                    <SubcategoryMenu subcategories={category.subcategory} />
-                  )}
+                  {/* {hoveredCategory === category.name && (
+                    <SubcategoryMenu subcategories={category.subCategories} />
+                  )} */}
                 </li>
               ))}
             </ul>
