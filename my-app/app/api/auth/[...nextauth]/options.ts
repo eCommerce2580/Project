@@ -1,21 +1,22 @@
-import prisma from "@/prisma/client";
-import type { NextAuthOptions } from "next-auth";
-import GoogleProvider from "next-auth/providers/google";
-import Credentials from "next-auth/providers/credentials";
-
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
+   
+  import prisma from "@/prisma/client";
+  import type { NextAuthOptions } from "next-auth";
+  import GoogleProvider from "next-auth/providers/google";
+  import Credentials from "next-auth/providers/credentials";
+  
+  const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
+  const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
 
 async function getUserIDFromDB(user: any) {
-const userData = await prisma.users.findUnique({
-  where: {
-    email: user.email,
-  },
-  select: {
-    id: true,
-  },
-});
+  const userData = await prisma.users.findUnique({
+    where: {
+      email: user.email,
+    },
+    select: {
+      id: true,
+    },
+  });
 
 return userData?.id;
 }
@@ -41,56 +42,56 @@ providers: [
       
       if (!user) throw new Error('פרטייך שגויים!');
 
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          image: user.image
+        };
+      },
+    }),
+    GoogleProvider({
+      clientId: GOOGLE_CLIENT_ID!,
+      clientSecret: GOOGLE_CLIENT_SECRET!,
+    }),
+  ],
+  callbacks: {
+    async signIn({ user, account }) {
+      if(!user || !user.email) return false;
+      if(account?.provider === "google"){
+        await prisma.users.upsert({
+          where:{
+            email:user.email
+          },
+          update: {
+            name: user.name,
+          },
+          create: {
+            image:user.image,
+            email:user.email,
+            name:user.name
+          },
+        })
+      }
+      return true;
+    },
+    async session({ session, token, user }) {
+      console.log({ session, token, user });
       return {
-        id: user.id,
-        email: user.email,
-        name: user.name,
-        image: user.image
+        ...session,
+        user:{
+          ...session.user,
+          id:token.id
+        }
       };
     },
-  }),
-  GoogleProvider({
-    clientId: GOOGLE_CLIENT_ID!,
-    clientSecret: GOOGLE_CLIENT_SECRET!,
-  }),
-],
-callbacks: {
-  async signIn({ user, account }) {
-    if(!user || !user.email) return false;
-    if(account?.provider === "google"){
-      await prisma.users.upsert({
-        where:{
-          email:user.email
-        },
-        update: {
-          name: user.name,
-        },
-        create: {
-          image:user.image,
-          email:user.email,
-          name:user.name
-        },
-      })
-    }
-    return true;
-  },
-  async session({ session, token, user }) {
-    console.log({ session, token, user });
-    return {
-      ...session,
-      user:{
-        ...session.user,
-        id:token.id
-      }
-    };
-  },
-  async jwt({ user, token, account, profile }) {
-    if(user) return {
-      ...token,
-      id:await getUserIDFromDB(user)
-     }
-    return token  
-    },
+    async jwt({ user, token, account, profile }) {
+      if(user) return {
+        ...token,
+        id:await getUserIDFromDB(user)
+       }
+      return token  
+      },
 
 },
 };
