@@ -7,7 +7,7 @@ async function getUserOrders(id: any) {
     try {
         const orders = await prisma.orders.findMany({
             where: {  
-userId: '671e13f2db00292b29b49fb5',
+userId: id,
             },
             include: {
                 paymentMethod: {
@@ -32,7 +32,7 @@ userId: '671e13f2db00292b29b49fb5',
                 },
             },
         });
-        console.log("jfvbldkb")
+        console.log("jfvbldkb",id)
         console.log(orders);
         return orders;
     } catch (error) {
@@ -50,6 +50,7 @@ export default async function UserOrders() {
     }
     //@ts-ignore
     const orders =await getUserOrders(session?.user.id)
+  
     return (
         <div>
             <section className="py-24 relative">
@@ -64,11 +65,13 @@ export default async function UserOrders() {
                         </ul>
                     </div>
                     {/* {orders.map((order:Order) => (<OrderComponent order={order} />))} */}
-                    <OrderComponent />
+                    {orders.length > 0 ? <OrderComponent /> : <div>no orders</div>}  
                 </div>
             </section>
         </div>
     );
+    
+  
 }
 
 // function OrderComponent(order: Order) {
