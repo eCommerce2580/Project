@@ -8,17 +8,49 @@ export async function PUT(
     try {
         const { email } = params;
         const body = await request.json();
-        const { name, address } = body;
+        const { name, country, city, street, houseNumber, zipCode } = body;
 
         // Log the input data for debugging
-        console.log(`Updating user with email: ${email}`, { name, address });
+        console.log(`Updating user with email: ${email}`, { name, country, city, street, houseNumber, zipCode });
+
+        // Check if the address exists
+        const addressRecord = await prisma.address.findUnique({
+            where: { id: body.addressId }, // Assuming the address has an ID
+        });
+
+        // Update or create address if it doesn't exist
+        let updatedAddress;
+        if (addressRecord) {
+            // Update existing address
+            updatedAddress = await prisma.address.update({
+                where: { id: body.addressId },
+                data: {
+                    country,
+                    city,
+                    street,
+                    houseNumber,
+                    zipCode,
+                },
+            });
+        } else {
+            // Create a new address
+            updatedAddress = await prisma.address.create({
+                data: {
+                    country,
+                    city,
+                    street,
+                    houseNumber,
+                    zipCode,
+                },
+            });
+        }
 
         // Update user data in the database
         const updatedUser = await prisma.users.update({
             where: { email: email },
             data: {
                 name: name,
-                address: address,
+                addressId: updatedAddress.id, // Link to the updated/created address
             },
         });
 
@@ -39,5 +71,4 @@ export async function PUT(
             { status: 500 }
         );
     }
-    
 }
