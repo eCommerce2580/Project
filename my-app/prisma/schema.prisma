@@ -16,6 +16,8 @@ model Users {
   address   Address?   @relation(fields: [addressId], references: [id]) // קשר לכתובת
   password  Password?
   employee  Employees?
+  isVerified Boolean  @default(false)
+
 }
 
 model Address {
