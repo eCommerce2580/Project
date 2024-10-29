@@ -60,13 +60,22 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
     try {
-        const { orderId, statusId } = await request.json();
+        const { orderId, statusName } = await request.json();
 
-        if (!orderId || !statusId) {
-            return NextResponse.json({ message: "Missing orderId or statusId", success: false }, { status: 400 });
+        if (!orderId || !statusName) {
+            return NextResponse.json({ message: "Missing orderId or statusName", success: false }, { status: 400 });
         }
 
-        // Fetch the current order and its items
+        // מציאת מזהה הסטטוס לפי השם
+        const status = await prisma.ordersStatus.findFirst({
+            where: { name: statusName }
+        });
+        
+        if (!status) {
+            return NextResponse.json({ message: "Status not found", success: false }, { status: 404 });
+        }
+
+        // שליפת ההזמנה עם פרטי הפריטים שבה
         const order = await prisma.orders.findUnique({
             where: { id: orderId },
             include: { orderItems: true },
@@ -76,8 +85,8 @@ export async function PUT(request: Request) {
             return NextResponse.json({ message: "Order not found", success: false }, { status: 404 });
         }
 
-        // Check if the status is being updated to 'cancelled'
-        if (statusId === "2") {  // assuming '2' is the ID for 'cancelled'
+        // בדיקת מעבר לסטטוס 'Cancelled' ועדכון המלאי בהתאם
+        if (statusName === "Cancelled") {
             for (const item of order.orderItems) {
                 await prisma.product.update({
                     where: { id: item.productId },
@@ -86,11 +95,11 @@ export async function PUT(request: Request) {
             }
         }
 
-        // Update only the order status
+        // עדכון הסטטוס של ההזמנה למזהה המתאים
         const updatedOrder = await prisma.orders.update({
             where: { id: orderId },
             data: {
-                status: { connect: { id: statusId } },
+                status: { connect: { id: status.id } },
             },
         });
 
