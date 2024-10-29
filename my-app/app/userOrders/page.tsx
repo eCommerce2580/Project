@@ -26,13 +26,14 @@ async function getUserOrders(id: any) {
                             select: {
                                 name: true,
                                 price: true,
+                                image:true,
                             },
                         },
                     },
                 },
             },
         });
-        console.log(JSON.stringify(orders, null, 2));
+        console.log(orders[0].orderItems);
         return orders;
     } catch (error) {
         console.error("Error fetching orders:", error);
