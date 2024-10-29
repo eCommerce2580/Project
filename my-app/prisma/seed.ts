@@ -124,15 +124,13 @@ async function main() {
   console.log("שיטת תשלום נוצרה:", paymentMethod);
 
   // יצירת סטטוסי הזמנות
-  const orderStatuses = await prisma.ordersStatus.createMany({
-    data: [
-      { id: "1", name: "Order Received" },   // ההזמנה התקבלה
-      { id: "2", name: "Order Cancelled" },  // ההזמנה בוטלה
-      { id: "3", name: "Order Shipped" },    // ההזמנה נשלחה
-      { id: "4", name: "Out for Delivery" }, // ההזמנה בדרך
-      { id: "5", name: "Delivered to Customer" } // ההזמנה נמסרה ללקוח
-    ],
-  });
+  const orderStatuses = await Promise.all([
+    prisma.ordersStatus.create({ data: { name: "Order Received" } }),    // ההזמנה התקבלה
+    prisma.ordersStatus.create({ data: { name: "Order Cancelled" } }),   // ההזמנה בוטלה
+    prisma.ordersStatus.create({ data: { name: "Order Shipped" } }),     // ההזמנה נשלחה
+    prisma.ordersStatus.create({ data: { name: "Out for Delivery" } }),  // ההזמנה בדרך
+    prisma.ordersStatus.create({ data: { name: "Delivered to Customer" } }) // ההזמנה נמסרה ללקוח
+  ]);
   // const [orderStatusProcessing, orderStatusShipped] = await Promise.all([
   //   prisma.ordersStatus.create({ data: { name: "Processing" } }),
   //   prisma.ordersStatus.create({ data: { name: "Shipped" } }),
@@ -175,7 +173,7 @@ async function main() {
         shippingAddressId: address2.id,
         expectedDeliveryDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
         userId: users[1].id,
-        statusId: orderStatusShipped.id,
+        statusId: orderStatuses[2].id,
         orderItems: {
           create: [
             {
