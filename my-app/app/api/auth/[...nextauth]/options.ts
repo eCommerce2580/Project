@@ -14,6 +14,7 @@ type SessionUser = {
   email?: string | null;
   image?: string | null;
   passwordSet?: boolean;
+  isVerified?: boolean; 
 };
 
 export const authOptions: NextAuthOptions = {
@@ -30,27 +31,32 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-
+      
         const user = await prisma.users.findUnique({
           where: { email: credentials.email },
           include: { password: true },
         });
-
+      
         if (!user || !user.password) {
           throw new Error("User not found or password not set");
         }
-
+      
+        if (user.isVerified === false) {
+          throw new Error("Email not verified");
+        }
+      
         const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password.hash);
         if (!isPasswordCorrect) throw new Error("Invalid password");
-
+      
         return {
           id: user.id,
           email: user.email,
           name: user.name,
           image: user.image,
-          passwordSet: !!user.password, // הוספת passwordSet בעת הכניסה
+          passwordSet: !!user.password,
+          isVerified: user.isVerified,
         } as SessionUser;
-      },
+      },      
     }),
     GoogleProvider({
       clientId: GOOGLE_CLIENT_ID!,
@@ -67,11 +73,13 @@ export const authOptions: NextAuthOptions = {
           update: {
             name: user.name,
             image: user.image,
+            isVerified: true,  // סימון מאומת למשתמשי Google
           },
           create: {
             email: user.email,
             name: user.name,
             image: user.image,
+            isVerified: true,
           },
         });
       }
@@ -85,17 +93,26 @@ export const authOptions: NextAuthOptions = {
         });
         session.user = {
           ...session.user,
-          passwordSet: !!user?.password, // הוספת passwordSet ל-session.user
+          passwordSet: !!user?.password,
+          isVerified: user?.isVerified ?? false,
         } as SessionUser;
       }
-      return session;
+      return {
+        ...session,
+        user:{
+          ...session.user,
+          id:token.id
+        }
+      };
     },
     async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.email = user.email;
-      }
-      return token;
+
+      if(user) return {
+        ...token,
+        id:user.id
+       }
+      return token  
+      },
     },
-  },
 };
+

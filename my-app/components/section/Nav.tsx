@@ -34,7 +34,7 @@ export default function Nav() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const { data } = await axios.get("api/categories");
+        const {data} = await axios.get('http://localhost:3000/api/categories');
         setCategories(data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -47,8 +47,10 @@ export default function Nav() {
     const fetchUser = async () => {
       if (session?.user && !user.isAuthenticated) {
         try {
-          const response = await axios.get(`api/getUser/${session.user.email}`);
-          dispatch(login(response.data.user));
+          const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
+          const userData = response.data.user;
+          console.log("user", userData);
+          dispatch(login(userData));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
