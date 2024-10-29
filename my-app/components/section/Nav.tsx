@@ -206,7 +206,7 @@ export default function Nav() {
         )}
       </nav>
 {/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
-      <nav className="bg-gray-50 dark:bg-gray-700">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
           <div className="flex items-center">
             <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative">
