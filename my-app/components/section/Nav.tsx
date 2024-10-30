@@ -8,8 +8,6 @@ import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
 import SubcategoryMenu from "../ui/SubcategoryMenu";
 import { useSession } from "next-auth/react";
-import { RootState } from "@/types";
-import { login } from "@/app/store/slices/userSlice";
 import axios from "axios";
 import Link from "next/link";
 
@@ -55,7 +53,7 @@ export default function Nav() {
       }
     };
     fetchUser();
-  }, [session,]);
+  }, [session]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {

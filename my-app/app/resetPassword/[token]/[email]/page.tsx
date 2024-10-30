@@ -12,6 +12,7 @@ export default function ResetPassword({
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const resetPassword = async () => {
     if (newPassword && confirmPassword && newPassword === confirmPassword) {
@@ -21,11 +22,10 @@ export default function ResetPassword({
           { newPassword }
         );
         if (res.status === 200) {
+          setIsSuccess(true);
           setMessage("Password reset successfully! You can now log in.");
         } else {
-          setMessage(
-            "Password reset failed or the token has expired. Try again."
-          );
+          setMessage("Password reset failed or the token has expired. Try again.");
         }
       } catch (error) {
         setMessage("An error occurred while resetting your password.");
@@ -37,14 +37,13 @@ export default function ResetPassword({
 
   return (
     <div className="fixed inset-0 bg-white z-50 flex justify-center pt-16">
-    <div className="w-full max-w-md px-4">
-      {message ? (
-        <div
-          className="w-full rounded-lg p-6 text-center text-black-800 text-xl font-semibold"
-        >
-          {message}
-        </div>
-      )  : (
+      <div className="w-full max-w-md px-4">
+        {isSuccess && (
+          <div className="w-full rounded-lg p-6 text-center text-black text-xl font-semibold">
+            {message}
+          </div>
+        )}
+        {!isSuccess && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -54,7 +53,7 @@ export default function ResetPassword({
             <h1 className="text-center text-2xl font-semibold mb-8 text-gray-800">
               Reset Your Password
             </h1>
-            
+
             <div className="mb-6">
               <label
                 htmlFor="newPassword"
@@ -103,6 +102,12 @@ export default function ResetPassword({
             >
               Reset Password
             </button>
+
+            {message && !isSuccess && (
+              <div className="mt-4 text-center text-red-600 text-sm font-medium">
+                {message}
+              </div>
+            )}
           </form>
         )}
       </div>

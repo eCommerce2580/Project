@@ -6,12 +6,10 @@ import crypto from "crypto";
 export async function POST(req: Request) {
     const { email } = await req.json();
 
-    // Validate email
     if (!email) {
         return NextResponse.json({ error: 'Email is required' }, { status: 400 });
     }
 
-    // Check if the user exists
     const user = await prisma.users.findUnique({
         where: { email: email },
     });
@@ -19,11 +17,9 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Create a password reset token and set its expiration time
     const token = crypto.randomBytes(32).toString("hex");
-    const expiry = new Date(Date.now() + 3600000); // Set expiration time (1 hour from now)
+    const expiry = new Date(Date.now() + 3600000); 
 
-    // Update the user record with the reset token and expiry time
     await prisma.users.update({
         where: { email: email },
         data: {
@@ -32,7 +28,6 @@ export async function POST(req: Request) {
         },
     });
 
-    // Set up nodemailer transporter
     const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
@@ -42,7 +37,6 @@ export async function POST(req: Request) {
     });
 
     try {
-        // Send email with the reset token
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
