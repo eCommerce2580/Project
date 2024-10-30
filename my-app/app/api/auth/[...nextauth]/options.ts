@@ -3,36 +3,11 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import { SessionUser } from '@/types';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-type SessionUser = {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null| undefined;
-  passwordSet?: boolean;
-  isVerified?: boolean;
-  address?: {
-    country: string;
-    city: string;
-    street: string;
-    houseNumber: string;
-    zipCode: string;
-  } | null;
-  employee?: {
-    id: string;
-    businessId: string;
-    business: {
-      id: string;
-      name: string;
-      logo: string;
-      phone: string;
-      email: string;
-    };
-  } | null;
-};
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -107,14 +82,14 @@ export const authOptions: NextAuthOptions = {
         const dbUser = await prisma.users.findUnique({
           where: { email: user.email! },
           include: {
-            password: true, 
+            password: true,
             address: true,
             employee: {
               include: { business: true },
             },
           },
         });
-    
+
         if (dbUser) {
           token = {
             ...token,
@@ -124,32 +99,32 @@ export const authOptions: NextAuthOptions = {
             image: dbUser.image,
             address: dbUser.address // Full address details if an address exists
               ? {
-                  country: dbUser.address.country,
-                  city: dbUser.address.city,
-                  street: dbUser.address.street,
-                  houseNumber: dbUser.address.houseNumber,
-                  zipCode: dbUser.address.zipCode,
-                }
+                country: dbUser.address.country,
+                city: dbUser.address.city,
+                street: dbUser.address.street,
+                houseNumber: dbUser.address.houseNumber,
+                zipCode: dbUser.address.zipCode,
+              }
               : null,
             employee: dbUser.employee
               ? {
-                  id: dbUser.employee.id,
-                  businessId: dbUser.employee.businessId,
-                  business: {
-                    id: dbUser.employee.business.id,
-                    name: dbUser.employee.business.name,
-                    logo: dbUser.employee.business.logo,
-                    phone: dbUser.employee.business.phone,
-                    email: dbUser.employee.business.email,
-                  },
-                }
+                id: dbUser.employee.id,
+                businessId: dbUser.employee.businessId,
+                business: {
+                  id: dbUser.employee.business.id,
+                  name: dbUser.employee.business.name,
+                  logo: dbUser.employee.business.logo,
+                  phone: dbUser.employee.business.phone,
+                  email: dbUser.employee.business.email,
+                },
+              }
               : null,
           };
         }
       }
       return token;
     },
-    
+
     async session({ session, token }) {
       session.user = {
         id: token.id,
