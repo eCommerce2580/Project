@@ -2,15 +2,16 @@
 
 // User state type
 export interface UserState {
-  id: string | null;
-  name: string | null;
-  email: string | null;
-  address: string | null;
-  image: string | null;
-  isAuthenticated: boolean;
-  isVerified: boolean;  // הוספת isVerified ל-user state
-}
+    id: string | null;
+    name: string | null;
+    email: string | null;
+    addressId: string | null;
+    img: string | null;
+    isAuthenticated: boolean;
+    isVerified: boolean;  // הוספת isVerified ל-user state
+  }
 
+  
 // Cart item type
 export interface CartItem {
   productId: string;
