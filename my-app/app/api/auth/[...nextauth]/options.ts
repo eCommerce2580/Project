@@ -3,36 +3,11 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import { SessionUser } from '@/types';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-type SessionUser = {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null | undefined;
-  passwordSet?: boolean;
-  isVerified?: boolean;
-  address?: {
-    country: string;
-    city: string;
-    street: string;
-    houseNumber: string;
-    zipCode: string;
-  } | null;
-  employee?: {
-    id: string;
-    businessId: string;
-    business: {
-      id: string;
-      name: string;
-      logo: string;
-      phone: string;
-      email: string;
-    };
-  } | null;
-};
 
 export const authOptions: NextAuthOptions = {
   session: {
