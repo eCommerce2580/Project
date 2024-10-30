@@ -9,6 +9,7 @@ export default function LoginForm() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -27,11 +28,13 @@ export default function LoginForm() {
 
       if (credential?.ok) {
         console.log("Login successful");
+        setErrorMessage("");
       } else {
-        console.log("Login failed", credential?.error);
+        setErrorMessage(credential?.error as string);
       }
     } catch (error) {
       console.error("Error during login:", error);
+      setErrorMessage("An error occurred during login. Please try again.");
     }
   }
 
@@ -49,22 +52,15 @@ export default function LoginForm() {
       const response = await axios.post("/api/register", values);
 
       if (response.status === 200) {
-        const credential = await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          redirect: false,
-        });
-
-        if (credential?.ok) {
-          console.log("Registration and login successful");
-        } else {
-          console.log("Registration succeeded but login failed");
-        }
+        alert("A verification email has been sent to your email address");
+        setErrorMessage("");
+        setIsLogin(true); 
       } else {
-        console.log("Registration failed");
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
+      setErrorMessage(error as string);
     }
   }
 
@@ -77,11 +73,13 @@ export default function LoginForm() {
       if (response.status === 200) {
         alert("Password reset link sent to your email.");
         setIsForgotPassword(false);
+        setErrorMessage("");
       } else {
-        console.log("Error sending password reset email.");
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during password reset request:", error);
+      setErrorMessage(error as string);
     }
   }
 
@@ -128,7 +126,6 @@ export default function LoginForm() {
                 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
                 dark:focus:border-blue-500 transition-colors"
             />
-            {/* Forgot Password Link right-aligned */}
             {isLogin && (
               <div className="w-[80%] mx-auto text-right mt-2">
                 <button
@@ -154,11 +151,19 @@ export default function LoginForm() {
             </button>
           </div>
 
-          {/* Sign Up Link below button */}
+          {errorMessage && (
+            <div className="w-[80%] mx-auto mt-4 text-center text-sm text-red-600">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="text-center mt-4">
             <button
               type="button"
-              onClick={() => setIsLogin((prev) => !prev)}
+              onClick={() => {
+                setIsLogin((prev) => !prev);
+                setErrorMessage("");
+              }}
               className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
             >
               {isLogin

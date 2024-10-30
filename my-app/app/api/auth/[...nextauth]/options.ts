@@ -155,6 +155,7 @@ export const authOptions: NextAuthOptions = {
         id: token.id,
         email: token.email,
         name: token.name,
+        // @ts-ignore
         image: token.image,
         passwordSet: token.passwordSet,
         isVerified: token.isVerified,
