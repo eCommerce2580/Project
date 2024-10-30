@@ -8,7 +8,6 @@ import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
 import SubcategoryMenu from "../ui/SubcategoryMenu";
 import { useSession } from "next-auth/react";
-import axios from "axios";
 import { RootState } from "@/app/store/types";
 import { login } from "@/app/store/slices/userSlice";
 import axios from "axios";
@@ -28,8 +27,6 @@ export default function Nav() {
 
   const categoryRefs = useRef<CategoryRefs>({});
 
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
 
   useEffect(() => {
@@ -47,19 +44,18 @@ export default function Nav() {
 
   useEffect(() => {
     const fetchUser = async () => {
-      if (session?.user && !user.isAuthenticated) {
+      if (session?.user) {
         try {
           const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
           const userData = response.data.user;
           console.log("user", userData);
-          dispatch(login(userData));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       }
     };
     fetchUser();
-  }, [session, dispatch, user.isAuthenticated]);
+  }, [session,]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {
