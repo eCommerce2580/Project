@@ -3,7 +3,7 @@ import { BsCartPlus } from "react-icons/bs";
 import { IoHeartOutline } from "react-icons/io5";
 import { useState } from "react";
 import { useRouter } from 'next/navigation'
-import Prod from '../../app/ProductDetails/[id]/page';
+import Link from "next/link";
 
 interface ProductProps {
     product: {
@@ -12,21 +12,23 @@ interface ProductProps {
         description: string;
         price: number;
         imageUrl: string;
+        subCategoryId :string;
     };
 }
 
 export default function Product({ product }: ProductProps) {
-    const router = useRouter()   
+    // const router = useRouter()   
 
-    const handleClick = () => {
-        router.push(`/ProductDetails/${product.id}`)
-    };
+    // const handleClick = () => {
+    //     router.push(`${product.id}`)
+    // };
     
     return (
         <>
            
-                <div
-                    onClick={handleClick}
+                <Link
+                href={`${product.subCategoryId}/${product.id}`}
+                    // onClick={handleClick}
                     className="bg-gray-50 shadow-md overflow-hidden rounded-lg cursor-pointer hover:-translate-y-2 transition-all relative">
                     <div className="flex space-x-2 absolute top-3 right-3">
                         <div
@@ -49,7 +51,7 @@ export default function Product({ product }: ProductProps) {
                         <p className="text-gray-600 text-sm mt-2">{product.description}</p>
                     </div>
 
-                </div>
+                </Link>
             
         </>
     )
