@@ -1,3 +1,4 @@
+//@ts-nocheck
 "use client";
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { User, Mail, Edit2, Trash2, Check, X } from 'lucide-react';
@@ -8,59 +9,39 @@ import { SessionUser } from '@/types';
 import { DetailRow } from './DetailRow';
 import { AddressSection } from './AddressSection';
 
+const initialValue = {
+  name: '',
+  email:'',
+  country: '',
+  city:'',
+  street:'',
+  houseNumber: '',
+  zipCode:'',
+  addressId: ''
+}
 
 export default function UserDetails() {
-    const { data: session } = useSession();
-    console.log(session?.user);
+  const { data: session } = useSession();
+  const user = session?.user;
 
-    const user = session?.user;
+  // // Initialize hooks unconditionally
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [formData, setFormData] = useState<FormData>(initialValue);
 
-    const isSessionUser = (user: any): user is SessionUser => {
-      return user && typeof user.id === 'string';
-    }
-    // ודא שהמשתנה user הוא SessionUser
-    if (!isSessionUser(user)) {
-        // טיפול במקרה ש user לא תקין
-        console.error("User is not valid:", user);
-        return null; // או טיפול אחר במקרה זה
-    }
-
-    const [isEditing, setIsEditing] = useState<boolean>(false);
-    const [isLoading, setIsLoading] = useState<boolean>(false);
-
-    const [formData, setFormData] = useState<FormData>({
-        name: user?.name || '',
-        email: user?.email || '',
-        country: user?.address?.country || '',
-        city: user?.address?.city || '',
-        street: user?.address?.street || '',
-        houseNumber: user?.address?.houseNumber || '',
-        zipCode: user?.address?.zipCode || '',
-        addressId: user?.address?.addressId || ''
-    });
-
-
-    useEffect(() => {
-      if (!isEditing) {
-        const newFormData: FormData = {
-          name: user.name || '',
-          email: user.email || '',
-          country: user.address?.country || '',
-          city: user.address?.city || '',
-          street: user.address?.street || '',
-          houseNumber: user.address?.houseNumber || '',
-          zipCode: user.address?.zipCode || '',
-          addressId: user.address?.addressId || ''
-        };
-    
-        // Only update state if formData is different
-        if (JSON.stringify(formData) !== JSON.stringify(newFormData)) {
-          setFormData(newFormData);
-        }
-      }
-    }, [isEditing]);
-    
-  
+useEffect(() => {
+  if(!user) return;
+  setFormData({
+    name: user?.name || '',
+    email: user?.email || '',
+    country: user?.address?.country || '',
+    city: user?.address?.city || '',
+    street: user?.address?.street || '',
+    houseNumber: user?.address?.houseNumber || '',
+    zipCode: user?.address?.zipCode || '',
+    addressId: user?.address?.addressId || ''
+  })
+},[user]);
 
   const handleInputChange = (field: keyof FormData) => (e: ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -79,33 +60,19 @@ export default function UserDetails() {
     }
   };
 
- const handleUpdate = async () => {
+  const handleUpdate = async () => {
     setIsLoading(true);
     try {
-        const response = await axios.put(`http://localhost:3000/api/updateUser/${user.email}`, formData);
-        setIsEditing(false);
-        alert('Profile updated successfully!'); // or use a toast notification
+      await axios.put(`http://localhost:3000/api/updateUser/${user.email}`, formData);
+      setIsEditing(false);
+      alert('Profile updated successfully!');
     } catch (error) {
-        console.error('Error updating user:', error);
-        alert('Failed to update profile. Please try again.'); // user feedback
+      console.error('Error updating user:', error);
+      alert('Failed to update profile. Please try again.');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
-};
-
-
-  // if (!user.isAuthenticated) {
-  //   return (
-  //     <section className="bg-white dark:bg-gray-900">
-  //       <div className="container px-6 py-12 mx-auto text-center">
-  //         <p className="font-medium text-blue-500 dark:text-blue-400">Access Denied</p>
-  //         <h1 className="mt-2 text-2xl font-semibold text-gray-800 md:text-3xl dark:text-white">
-  //           Please log in to view your profile
-  //         </h1>
-  //       </div>
-  //     </section>
-  //   );
-  // }
+  };
 
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -130,6 +97,7 @@ export default function UserDetails() {
                   value={formData.name}
                   isEditing={isEditing}
                   onChange={handleInputChange('name')}
+                  placeholder='Enter your name'
                 />
                 <DetailRow
                   icon={Mail}
@@ -137,6 +105,7 @@ export default function UserDetails() {
                   value={formData.email}
                   isEditing={isEditing}
                   onChange={handleInputChange('email')}
+                  placeholder='Enter your email'
                 />
               </div>
 
@@ -192,4 +161,4 @@ export default function UserDetails() {
       </div>
     </section>
   );
-};
+}

@@ -3,8 +3,6 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
-// import { RootState } from '../store'; // ייבוא ה-RootState מה-store
-// import { ShoppingCartIcon } from '@heroicons/react/outline'; // אייקון לעגלה ריקה מ-heroicons
 
 const page: React.FC = () => {
     const cart = useSelector((state: any) => state.cart);
