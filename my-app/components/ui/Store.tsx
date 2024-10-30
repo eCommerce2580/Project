@@ -11,7 +11,7 @@ export type categoryAndSubId ={
     subCategoryId: string
   }
 
-  export default function Store({ categoryIdAndSubId }: { categoryIdAndSubId: categoryAndSubId }) {
+  export default function Store({ categoryIdAndSubId  }: { categoryIdAndSubId: categoryAndSubId }) {
     const [products, setProducts] = useState<any[]>([]);
 
 
@@ -27,6 +27,7 @@ export type categoryAndSubId ={
       }};
     fetchProducts();
   }, []);
+
   
   return (
     <>

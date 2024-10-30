@@ -22,12 +22,13 @@ export default function Product({ product }: ProductProps) {
     // const handleClick = () => {
     //     router.push(`${product.id}`)
     // };
-    
+
+    console.log(location.pathname)
     return (
         <>
            
                 <Link
-                href={`${product.subCategoryId}/${product.id}`}
+                href={`${location.pathname}/${product.id}`}
                     // onClick={handleClick}
                     className="bg-gray-50 shadow-md overflow-hidden rounded-lg cursor-pointer hover:-translate-y-2 transition-all relative">
                     <div className="flex space-x-2 absolute top-3 right-3">
