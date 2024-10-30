@@ -1,4 +1,4 @@
-"use client"; 
+"use client";
 
 import { useState } from 'react';
 
@@ -40,12 +40,22 @@ function ContactForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    name: formData.firstName + " " + formData.lastName,
+                    email: formData.email,
+                    message: formData.message,
+                    subject: 'Your message has been received',
+                    text: 'Thank you for contacting us! We have received your message and will get back to you shortly.',
+                    html: `
+                        <h3>Thank you for contacting us!</h3>
+                        <p>We have received your message and will get back to you shortly.</p>
+                        `,
+                }),
             });
 
             if (res.ok) {
                 setResponseMessage('Your message has been sent successfully!');
-                setFormData({ firstName: '', lastName: '', email: '', message: '' }); 
+                setFormData({ firstName: '', lastName: '', email: '', message: '' });
             } else {
                 setResponseMessage('Failed to send message. Please try again later.');
             }
@@ -67,7 +77,7 @@ function ContactForm() {
                             value={formData.firstName}
                             onChange={handleChange}
                             placeholder="John"
-                            className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"                        />
+                            className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                     </div>
 
                     <div className="flex-1 px-2 mt-4 md:mt-0">
@@ -78,7 +88,7 @@ function ContactForm() {
                             value={formData.lastName}
                             onChange={handleChange}
                             placeholder="Doe"
-                            className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"                                               />
+                            className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                     </div>
                 </div>
 
@@ -90,7 +100,7 @@ function ContactForm() {
                         value={formData.email}
                         onChange={handleChange}
                         placeholder="johndoe@example.com"
-                        className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"                        />
+                        className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" />
                 </div>
 
                 <div className="w-full mt-4">
@@ -99,7 +109,7 @@ function ContactForm() {
                         name="message"
                         value={formData.message}
                         onChange={handleChange}
-                        className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"                                             placeholder="Message"
+                        className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40" placeholder="Message"
                     ></textarea>
                 </div>
 
