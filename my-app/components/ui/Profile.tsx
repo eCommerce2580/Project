@@ -2,7 +2,7 @@
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { User, Mail, MapPin, Edit2, Trash2, Check, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '@/app/store/types';
+import { RootState } from '@/types';
 import axios from 'axios';
 
 interface FormData {

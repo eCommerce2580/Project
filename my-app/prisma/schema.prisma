@@ -19,6 +19,8 @@ model Users {
   isVerified             Boolean    @default(false)
   emailVerificationToken String?
   emailTokenExpiry       DateTime?
+  passwordResetToken     String?    
+  passwordResetTokenExpiry DateTime?
 }
 
 model Address {
