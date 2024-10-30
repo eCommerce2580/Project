@@ -7,6 +7,7 @@ interface UserState {
   address: string | null;
   image :  string | null;
   isAuthenticated: boolean;
+  isVerified: boolean;
 }
 
 const initialState: UserState = {
@@ -16,32 +17,33 @@ const initialState: UserState = {
   address: null,
   image:null,
   isAuthenticated: false,
+  isVerified: false,
 };
 
 const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
-    // פעולה לעדכון פרטי משתמש בעת התחברות
-    login: (state, action: PayloadAction<{ id: string; name: string; email: string; address: string;image:string }>) => {
+    login: (state, action: PayloadAction<{ id: string; name: string; email: string; address: string; image: string; isVerified: boolean }>) => {
       state.id = action.payload.id;
       state.name = action.payload.name;
       state.email = action.payload.email;
       state.address = action.payload.address;
-      state.image=action.payload.image;
+      state.image = action.payload.image;
+      state.isVerified = action.payload.isVerified;
       state.isAuthenticated = true;
     },
-    // פעולה להתנתקות
     logout: (state) => {
       state.id = null;
       state.name = null;
       state.email = null;
       state.address = null;
-      state.image=null;
+      state.image = null;
+      state.isVerified = false;
       state.isAuthenticated = false;
     },
   },
 });
-
+  
 export const { login, logout } = userSlice.actions;
 export default userSlice.reducer;

@@ -8,16 +8,17 @@ datasource db {
 }
 
 model Users {
-  id        String     @id @default(auto()) @map("_id") @db.ObjectId
-  email     String     @unique
-  name      String?
-  image     String?
-  addressId String?    @db.ObjectId
-  address   Address?   @relation(fields: [addressId], references: [id]) // קשר לכתובת
-  password  Password?
-  employee  Employees?
-  isVerified Boolean  @default(false)
-
+  id                     String     @id @default(auto()) @map("_id") @db.ObjectId
+  email                  String     @unique
+  name                   String?
+  image                  String?
+  addressId              String?    @db.ObjectId
+  address                Address?   @relation(fields: [addressId], references: [id])
+  password               Password?
+  employee               Employees?
+  isVerified             Boolean    @default(false)
+  emailVerificationToken String?
+  emailTokenExpiry       DateTime?
 }
 
 model Address {
@@ -78,6 +79,7 @@ model Product {
 model SubCategory {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String 
+  imageUrl   String
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String    @db.ObjectId
   products   Product[]

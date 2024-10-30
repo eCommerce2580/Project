@@ -101,7 +101,7 @@ const AddressSection: React.FC<{
     </div>
   </div>
 );
-
+ 
 export default function UserDetails() {
   const userState = useSelector((state: RootState) => state.user);
   let user = { ...userState, country: "israel", city: "jerusalem", street: "thodor lavi", houseNumber: "10", zipCode: "9728172" };
