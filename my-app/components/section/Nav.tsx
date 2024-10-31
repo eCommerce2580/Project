@@ -110,9 +110,10 @@ export default function Nav() {
             </button>
             <Link href="/" className="flex items-center ml-2">
               <img
-                src="https://tecdn.b-cdn.net/img/logo/te-transparent-noshadows.webp"
+                src="/logo-removebg-preview.png"
                 alt="Logo"
-                className="h-8 w-auto"
+                style={{ height: '70px', width: 'auto' }} // גובה 40 פיקסלים
+
               />
             </Link>
           </div>
