@@ -75,9 +75,9 @@ export default function UserDetails() {
       return;
     }
 
-    const zipCodePattern = /^\d{5}$/;
+    const zipCodePattern = /^\d+$/;
     if (!zipCodePattern.test(formData.zipCode)) {
-      setErrorMessage('Zip code must be a 5-digit number.');
+      setErrorMessage('Zip code must contain only numbers.');
       return;
     }
 
