@@ -8,7 +8,6 @@ export async function POST(req: Request) {
   try {
     const { email, name, password } = await req.json();
 
-    // Check for existing user with the same email
     const existingUser = await prisma.users.findUnique({
       where: { email },
     });
@@ -34,14 +33,10 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash the password for new users
     const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Generate verification token
     const token = crypto.randomBytes(32).toString("hex");
-    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000); // Token valid for 1 hour
+    const tokenExpiry = new Date(Date.now() + 60 * 60 * 1000);
 
-    // Create a new user with the token and expiry
     const user = await prisma.users.create({
       data: {
         email,
@@ -52,7 +47,6 @@ export async function POST(req: Request) {
       },
     });
 
-    // Send verification email
     const verificationUrl = `http://localhost:3000/verifyEmail/${token}/${email}`;
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -69,6 +63,22 @@ export async function POST(req: Request) {
       text: `Please verify your email by clicking the link: ${verificationUrl}`,
       html: `<p>Please verify your email by clicking the link: <a href="${verificationUrl}">Verify Email</a></p>`,
     });
+
+    setTimeout(async () => {
+      const userToCheck = await prisma.users.findUnique({
+        where: { email },
+      });
+
+      if (userToCheck && !userToCheck.isVerified) {
+        await prisma.password.deleteMany({
+          where: { userId: userToCheck.id },
+        });
+        await prisma.users.delete({
+          where: { email },
+        });
+        console.log(`User with email ${email} deleted after token expired`);
+      }
+    }, 1000 * 60);
 
     return NextResponse.json({ message: "Verification email sent", success: true });
   } catch (error) {

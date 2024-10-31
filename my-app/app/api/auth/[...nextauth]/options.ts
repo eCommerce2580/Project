@@ -3,19 +3,11 @@ import type { NextAuthOptions } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
+import { SessionUser } from '@/types';
 
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 
-// הגדרת טיפוס עבור המשתמש ב-Session
-type SessionUser = {
-  id: string;
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  passwordSet?: boolean;
-  isVerified?: boolean; 
-};
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -31,23 +23,23 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) return null;
-      
+
         const user = await prisma.users.findUnique({
           where: { email: credentials.email },
           include: { password: true },
         });
-      
+
         if (!user || !user.password) {
           throw new Error("User not found or password not set");
         }
-      
+
         if (user.isVerified === false) {
           throw new Error("Email not verified");
         }
-      
+
         const isPasswordCorrect = await bcrypt.compare(credentials.password, user.password.hash);
         if (!isPasswordCorrect) throw new Error("Invalid password");
-      
+
         return {
           id: user.id,
           email: user.email,
@@ -56,7 +48,7 @@ export const authOptions: NextAuthOptions = {
           passwordSet: !!user.password,
           isVerified: user.isVerified,
         } as SessionUser;
-      },      
+      },
     }),
     GoogleProvider({
       clientId: GOOGLE_CLIENT_ID!,
@@ -73,7 +65,7 @@ export const authOptions: NextAuthOptions = {
           update: {
             name: user.name,
             image: user.image,
-            isVerified: true,  // סימון מאומת למשתמשי Google
+            isVerified: true,
           },
           create: {
             email: user.email,
@@ -85,34 +77,67 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async session({ session, token }) {
-      if (token?.email) {
-        const user = await prisma.users.findUnique({
-          where: { email: token.email },
-          include: { password: true },
-        });
-        session.user = {
-          ...session.user,
-          passwordSet: !!user?.password,
-          isVerified: user?.isVerified ?? false,
-        } as SessionUser;
-      }
-      return {
-        ...session,
-        user:{
-          ...session.user,
-          id:token.id
-        }
-      };
-    },
     async jwt({ token, user }) {
+      if (user) {
+        const dbUser = await prisma.users.findUnique({
+          where: { email: user.email! },
+          include: {
+            password: true,
+            address: true,
+            employee: {
+              include: { business: true },
+            },
+          },
+        });
 
-      if(user) return {
-        ...token,
-        id:user.id
-       }
-      return token  
-      },
+        if (dbUser) {
+          token = {
+            ...token,
+            id: dbUser.id,
+            email: dbUser.email,
+            name: dbUser.name,
+            image: dbUser.image,
+            address: dbUser.address // Full address details if an address exists
+              ? {
+                country: dbUser.address.country,
+                city: dbUser.address.city,
+                street: dbUser.address.street,
+                houseNumber: dbUser.address.houseNumber,
+                zipCode: dbUser.address.zipCode,
+              }
+              : null,
+            employee: dbUser.employee
+              ? {
+                id: dbUser.employee.id,
+                businessId: dbUser.employee.businessId,
+                business: {
+                  id: dbUser.employee.business.id,
+                  name: dbUser.employee.business.name,
+                  logo: dbUser.employee.business.logo,
+                  phone: dbUser.employee.business.phone,
+                  email: dbUser.employee.business.email,
+                },
+              }
+              : null,
+          };
+        }
+      }
+      return token;
     },
-};
 
+    async session({ session, token }) {
+      session.user = {
+        id: token.id,
+        email: token.email,
+        name: token.name,
+        // @ts-ignore
+        image: token.image,
+        passwordSet: token.passwordSet,
+        isVerified: token.isVerified,
+        address: token.address,
+        employee: token.employee,
+      };
+      return session;
+    },
+  },
+};
