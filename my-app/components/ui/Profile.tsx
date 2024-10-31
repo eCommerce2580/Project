@@ -28,13 +28,6 @@ export default function UserDetails() {
   const { fetchUser, user } = useUserStore();
   console.log("Session data:", session?.user);
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchUser(session.user.email);
-    }
-  }, [session, fetchUser]);
-  console.log("user", user)
-
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
