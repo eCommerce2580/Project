@@ -10,10 +10,12 @@ export async function POST(req: Request) {
 
     const existingUser = await prisma.users.findUnique({
       where: { email },
+include: {
+        password: true,}
     });
 
     if (existingUser) {
-      if (existingUser.isVerified) {
+      if (existingUser.isVerified && existingUser.password==null) {
         const hashedPassword = await bcrypt.hash(password, 10);
         await prisma.users.update({
           where: { email },
