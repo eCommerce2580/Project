@@ -1,4 +1,3 @@
-"use client";
 import React, { ChangeEvent } from 'react';
 import {  MapPin } from 'lucide-react';
 import { FormData } from '@/types';
@@ -25,6 +24,8 @@ export const AddressSection: React.FC<{
             value={formData.country}
             isEditing={isEditing}
             onChange={onChange('country')}
+            placeholder="Enter your country"
+
           />
           <DetailRow
             icon={MapPin}
@@ -32,6 +33,8 @@ export const AddressSection: React.FC<{
             value={formData.city}
             isEditing={isEditing}
             onChange={onChange('city')}
+            placeholder="Enter your city"
+
           />
         </div>
         <div className="-mx-2 md:items-center md:flex">
@@ -41,6 +44,8 @@ export const AddressSection: React.FC<{
             value={formData.street}
             isEditing={isEditing}
             onChange={onChange('street')}
+            placeholder="Enter your street"
+
           />
           <DetailRow
             icon={MapPin}
@@ -48,6 +53,8 @@ export const AddressSection: React.FC<{
             value={formData.houseNumber}
             isEditing={isEditing}
             onChange={onChange('houseNumber')}
+            placeholder="Enter your houseNumber"
+
           />
         </div>
         <div className="-mx-2 md:items-center">
@@ -57,6 +64,8 @@ export const AddressSection: React.FC<{
             value={formData.zipCode}
             isEditing={isEditing}
             onChange={onChange('zipCode')}
+            placeholder="Enter your zipCode"
+
           />
         </div>
       </div>

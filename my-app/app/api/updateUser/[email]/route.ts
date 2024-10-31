@@ -14,7 +14,6 @@ export async function PUT(
             name, country, city, street, houseNumber, zipCode 
         });
 
-        // Find the user with their current address
         const user = await prisma.users.findUnique({
             where: { email: email },
             include: { address: true },

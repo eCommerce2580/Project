@@ -1,6 +1,9 @@
 "use client"
 import React from 'react';
 import { useCartStore } from '@/providers/cartStore';
+import { useSelector } from 'react-redux';
+import Link from 'next/link';
+import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();

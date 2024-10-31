@@ -7,15 +7,15 @@ export interface CartItem {
 }
 
 // Cart state type
-export interface CartState {
-  items: CartItem[]; // ריבוי פריטים בעגלת הקניות
-}
+// export interface CartState {
+//   items: CartItem[]; // ריבוי פריטים בעגלת הקניות
+// }
 
-// טיפוס לכל ה-state של האפליקציה (store)
-export interface RootState {
-  user: UserState;
-  cart: CartState;
-}
+// // טיפוס לכל ה-state של האפליקציה (store)
+// export interface RootState {
+//   user: UserState;
+//   cart: CartState;
+// }
 
 
 export interface FormData {
