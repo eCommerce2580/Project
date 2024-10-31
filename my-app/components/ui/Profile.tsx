@@ -29,7 +29,7 @@ export default function UserDetails() {
   if (!user) {
     window.location = "http://localhost:3000/";
   }
-
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>(initialValue);
@@ -61,8 +61,6 @@ export default function UserDetails() {
         await axios.delete(`/api/deleteUser/${user.id}`);
         Cookies.remove('cookieName', { path: '' });
         await signOut({ redirect: false });
-      //  window.location = "http://localhost:3000/";
-
       } catch (error) {
         console.error('Error deleting user:', error);
       } finally {
@@ -72,27 +70,37 @@ export default function UserDetails() {
   };
 
   const handleUpdate = async () => {
+    setErrorMessage(null);
+    if (!formData.city || !formData.country || !formData.email || !formData.houseNumber || !formData.name || !formData.street || !formData.zipCode ) {
+      setErrorMessage('Please fill in all fields before saving changes.');
+      return;
+    }
+  
+    const zipCodePattern = /^\d{5}$/; 
+    if (!zipCodePattern.test(formData.zipCode)) {
+      setErrorMessage('Zip code must be a 5-digit number.');
+      return;
+    }
+  
+    const houseNumberPattern = /^\d+$/; 
+    if (!houseNumberPattern.test(formData.houseNumber)) {
+      setErrorMessage('House number must contain only numbers.');
+      return;
+    }
+  
     setIsLoading(true);
     try {
       await axios.put(`http://localhost:3000/api/updateUser/${user.email}`, formData);
-
-      // // עדכון הסשן עם הפרטים החדשים
-      // await signIn('credentials', {
-      //   email: formData.email,
-      //   password: user.password, // הנח שאתה שומר את הסיסמה במצב או יכול לשלוף אותה
-      //   redirect: false // אל תבצע הפנייה אוטומטית
-      // });
-
       setIsEditing(false);
-      alert('Profile updated successfully!');
+      setErrorMessage('Profile updated successfully!'); 
     } catch (error) {
       console.error('Error updating user:', error);
-      alert('Failed to update profile. Please try again.');
+      setErrorMessage('Failed to update profile. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
+  
 
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -135,12 +143,15 @@ export default function UserDetails() {
                 onChange={handleInputChange}
               />
             </div>
+            {errorMessage && (
+              <p className="mt-4 text-red-500" style={{color: errorMessage=="Profile updated successfully!"? "green" : "red"}}>{errorMessage}</p>
+            )}
 
             <div className="mt-6 flex justify-end space-x-4">
               {isEditing ? (
                 <>
                   <button
-                    onClick={() => setIsEditing(false)}
+                    onClick={()=> { setIsEditing(false), setErrorMessage("")}}
                     disabled={isLoading}
                     className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-gray-600 capitalize transition-colors duration-300 transform bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
                   >
