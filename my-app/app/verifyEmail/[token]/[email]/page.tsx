@@ -21,14 +21,14 @@ export default async function VerifyEmail({
         if (res.status === 200) {
           return (
             <div>
-              Email verified successfully! You can now log in. Thank you!! 👌👌👌
+              Email verified successfully! You can now log in. 
             </div>
           );
         } else {
           return <div>Verification failed or the token has expired. Try again.</div>;
         }
       } catch {
-        return <div>An error occurred while verifying your email.</div>;
+        return <div>Verification failed or the token has expired. Try again.</div>;
       }
     }
   };

@@ -9,15 +9,22 @@ export default function LoginForm() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
   const [email, setEmail] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
     };
+
+    // Check for empty fields
+    if (!values.email || !values.password) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
 
     try {
       const credential = await signIn("credentials", {
@@ -27,11 +34,13 @@ export default function LoginForm() {
 
       if (credential?.ok) {
         console.log("Login successful");
+        setErrorMessage("");
       } else {
-        console.log("Login failed", credential?.error);
+        setErrorMessage(credential?.error as string);
       }
     } catch (error) {
       console.error("Error during login:", error);
+      setErrorMessage("An error occurred during login. Please try again.");
     }
   }
 
@@ -40,36 +49,40 @@ export default function LoginForm() {
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
-      name: target.userName.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
+      name: target.userName.value.trim(),
     };
+
+    if (!values.email || !values.password || !values.name) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
 
     try {
       const response = await axios.post("/api/register", values);
 
       if (response.status === 200) {
-        const credential = await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          redirect: false,
-        });
-
-        if (credential?.ok) {
-          console.log("Registration and login successful");
-        } else {
-          console.log("Registration succeeded but login failed");
-        }
+        alert("A verification email has been sent to your email address");
+        setErrorMessage("");
+        setIsLogin(true);
       } else {
-        console.log("Registration failed");
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during registration:", error);
+      setErrorMessage(error as string);
     }
   }
 
+  // Handle forgot password
   async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!email) {
+      setErrorMessage("Please enter your email.");
+      return;
+    }
 
     try {
       const response = await axios.post("/api/forgotPassword", { email });
@@ -77,11 +90,13 @@ export default function LoginForm() {
       if (response.status === 200) {
         alert("Password reset link sent to your email.");
         setIsForgotPassword(false);
+        setErrorMessage("");
       } else {
-        console.log("Error sending password reset email.");
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
       console.error("Error during password reset request:", error);
+      setErrorMessage(error as string);
     }
   }
 
@@ -102,6 +117,7 @@ export default function LoginForm() {
               id="userName"
               name="userName"
               placeholder="Type Name"
+              required 
             />
           )}
           <InputLogin
@@ -110,6 +126,7 @@ export default function LoginForm() {
             id="email"
             name="email"
             placeholder="Type Email"
+            required 
           />
           <div className="mb-2 w-full">
             <label
@@ -123,12 +140,12 @@ export default function LoginForm() {
               id="password"
               name="password"
               placeholder="Type Password"
+              required 
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                 focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
                 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
                 dark:focus:border-blue-500 transition-colors"
             />
-            {/* Forgot Password Link right-aligned */}
             {isLogin && (
               <div className="w-[80%] mx-auto text-right mt-2">
                 <button
@@ -154,11 +171,19 @@ export default function LoginForm() {
             </button>
           </div>
 
-          {/* Sign Up Link below button */}
+          {errorMessage && (
+            <div className="w-[80%] mx-auto mt-4 text-center text-sm text-red-600">
+              {errorMessage}
+            </div>
+          )}
+
           <div className="text-center mt-4">
             <button
               type="button"
-              onClick={() => setIsLogin((prev) => !prev)}
+              onClick={() => {
+                setIsLogin((prev) => !prev);
+                setErrorMessage("");
+              }}
               className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
             >
               {isLogin
@@ -176,6 +201,7 @@ export default function LoginForm() {
             id="forgot-email"
             name="forgot-email"
             placeholder="Enter your email"
+            required 
             onChange={(e) => setEmail(e.target.value)}
           />
           <div className="w-full flex flex-col items-center gap-2">
@@ -229,8 +255,10 @@ type InputLoginProps = {
   id: string;
   name: string;
   placeholder: string;
+  required?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
+
 
 function InputLogin({ label, onChange, ...props }: InputLoginProps) {
   return (
@@ -242,12 +270,12 @@ function InputLogin({ label, onChange, ...props }: InputLoginProps) {
         {label}
       </label>
       <input
-        {...props}
         onChange={onChange}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
           focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
           dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
           dark:focus:border-blue-500 transition-colors"
+        {...props}
       />
     </div>
   );
