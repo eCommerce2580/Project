@@ -16,9 +16,15 @@ export default function LoginForm() {
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
     };
+
+    // Check for empty fields
+    if (!values.email || !values.password) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
 
     try {
       const credential = await signIn("credentials", {
@@ -43,10 +49,15 @@ export default function LoginForm() {
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
-      name: target.userName.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
+      name: target.userName.value.trim(),
     };
+
+    if (!values.email || !values.password || !values.name) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
 
     try {
       const response = await axios.post("/api/register", values);
@@ -54,7 +65,7 @@ export default function LoginForm() {
       if (response.status === 200) {
         alert("A verification email has been sent to your email address");
         setErrorMessage("");
-        setIsLogin(true); 
+        setIsLogin(true);
       } else {
         setErrorMessage(response.data.message);
       }
@@ -64,8 +75,14 @@ export default function LoginForm() {
     }
   }
 
+  // Handle forgot password
   async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
+
+    if (!email) {
+      setErrorMessage("Please enter your email.");
+      return;
+    }
 
     try {
       const response = await axios.post("/api/forgotPassword", { email });
@@ -100,6 +117,7 @@ export default function LoginForm() {
               id="userName"
               name="userName"
               placeholder="Type Name"
+              required 
             />
           )}
           <InputLogin
@@ -108,6 +126,7 @@ export default function LoginForm() {
             id="email"
             name="email"
             placeholder="Type Email"
+            required 
           />
           <div className="mb-2 w-full">
             <label
@@ -121,6 +140,7 @@ export default function LoginForm() {
               id="password"
               name="password"
               placeholder="Type Password"
+              required 
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                 focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
                 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
@@ -181,6 +201,7 @@ export default function LoginForm() {
             id="forgot-email"
             name="forgot-email"
             placeholder="Enter your email"
+            required 
             onChange={(e) => setEmail(e.target.value)}
           />
           <div className="w-full flex flex-col items-center gap-2">
@@ -234,8 +255,10 @@ type InputLoginProps = {
   id: string;
   name: string;
   placeholder: string;
+  required?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
+
 
 function InputLogin({ label, onChange, ...props }: InputLoginProps) {
   return (
@@ -247,12 +270,12 @@ function InputLogin({ label, onChange, ...props }: InputLoginProps) {
         {label}
       </label>
       <input
-        {...props}
         onChange={onChange}
         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
           focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
           dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
           dark:focus:border-blue-500 transition-colors"
+        {...props}
       />
     </div>
   );
