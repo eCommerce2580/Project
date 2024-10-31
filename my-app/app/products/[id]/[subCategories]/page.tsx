@@ -10,7 +10,7 @@ export default function Page({ params }: { params: { id: string; subCategories: 
     
     return (
         <div> 
-            <Store categoryIdAndSubId={categoryIdAndSubId} />
+            <Store categoryIdAndSubId={categoryIdAndSubId}  />
         </div>
     );
 }
