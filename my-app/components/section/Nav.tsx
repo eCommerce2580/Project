@@ -11,6 +11,7 @@ import SubcategoryMenu from "../ui/SubcategoryMenu";
 import { useSession } from "next-auth/react";
 import axios from "axios";
 import Link from "next/link";
+import { useUserStore } from '@/providers/userStore';
 
 interface CategoryRefs {
   [key: string]: HTMLDivElement | null;
@@ -27,8 +28,8 @@ export default function Nav() {
   const categoryRefs = useRef<CategoryRefs>({});
 
   const { data: session } = useSession();
-  const { cart } = useCartStore() // Access cart items and removeFromCart function
-
+  const { fetchUser } = useUserStore();
+  const { cart } = useCartStore();
   const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
@@ -46,19 +47,10 @@ export default function Nav() {
 
 
   useEffect(() => {
-    const fetchUser = async () => {
-      if (session?.user) {
-        try {
-          const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
-          const userData = response.data.user;
-          console.log("user", userData);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-    fetchUser();
-  }, [session]);
+    if (session?.user?.email) {
+      fetchUser(session.user.email);
+    }
+  }, [session, fetchUser]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {

@@ -28,13 +28,6 @@ export default function UserDetails() {
   const { fetchUser, user } = useUserStore();
   console.log("Session data:", session?.user);
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchUser(session.user.email);
-    }
-  }, [session, fetchUser]);
-  console.log("user", user)
-
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -82,9 +75,9 @@ export default function UserDetails() {
       return;
     }
 
-    const zipCodePattern = /^\d{5}$/;
+    const zipCodePattern = /^\d+$/;
     if (!zipCodePattern.test(formData.zipCode)) {
-      setErrorMessage('Zip code must be a 5-digit number.');
+      setErrorMessage('Zip code must contain only numbers.');
       return;
     }
 
