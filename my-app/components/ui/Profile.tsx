@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client";
 import Cookies from 'js-cookie';
-import { signIn, signOut } from 'next-auth/react'; // הוספה
+import { signIn, signOut } from 'next-auth/react';
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { User, Mail, Edit2, Trash2, Check, X } from 'lucide-react';
 import axios from 'axios';
