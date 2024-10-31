@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client";
 import Cookies from 'js-cookie';
-import { signIn, signOut } from 'next-auth/react'; // הוספה
+import { signIn, signOut } from 'next-auth/react';
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { User, Mail, Edit2, Trash2, Check, X } from 'lucide-react';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import { FormData } from '@/types';
 import { SessionUser } from '@/types';
 import { DetailRow } from './DetailRow';
 import { AddressSection } from './AddressSection';
+import { useUserStore } from '@/providers/userStore';
 
 const initialValue = {
   name: '',
@@ -24,11 +25,16 @@ const initialValue = {
 
 export default function UserDetails() {
   const { data: session } = useSession();
-  const user = session?.user;
+  const { fetchUser, user } = useUserStore();
+  console.log("Session data:", session?.user);
 
-  if (!user) {
-    window.location = "http://localhost:3000/";
-  }
+  useEffect(() => {
+    if (session?.user) {
+      fetchUser(session.user.email);
+    }
+  }, [session, fetchUser]);
+  console.log("user", user)
+
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,18 +43,18 @@ export default function UserDetails() {
   useEffect(() => {
     if (!user) return;
     setFormData({
-      name: user?.name || '',
-      email: user?.email || '',
-      country: user?.address?.country || '',
-      city: user?.address?.city || '',
-      street: user?.address?.street || '',
-      houseNumber: user?.address?.houseNumber || '',
-      zipCode: user?.address?.zipCode || '',
-      addressId: user?.address?.addressId || ''
+      name: user.name || '',
+      email: user.email || '',
+      country: user.address?.country || '',
+      city: user.address?.city || '',
+      street: user.address?.street || '',
+      houseNumber: user.address?.houseNumber || '',
+      zipCode: user.address?.zipCode || '',
+      addressId: user.address?.addressId || ''
     })
 
     console.log(user)
-  }, [, user]);
+  }, [user]);
 
   const handleInputChange = (field: keyof FormData) => (e: ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -71,28 +77,29 @@ export default function UserDetails() {
 
   const handleUpdate = async () => {
     setErrorMessage(null);
-    if (!formData.city || !formData.country || !formData.email || !formData.houseNumber || !formData.name || !formData.street || !formData.zipCode ) {
+    if (!formData.city || !formData.country || !formData.email || !formData.houseNumber || !formData.name || !formData.street || !formData.zipCode) {
       setErrorMessage('Please fill in all fields before saving changes.');
       return;
     }
-  
-    const zipCodePattern = /^\d{5}$/; 
+
+    const zipCodePattern = /^\d{5}$/;
     if (!zipCodePattern.test(formData.zipCode)) {
       setErrorMessage('Zip code must be a 5-digit number.');
       return;
     }
-  
-    const houseNumberPattern = /^\d+$/; 
+
+    const houseNumberPattern = /^\d+$/;
     if (!houseNumberPattern.test(formData.houseNumber)) {
       setErrorMessage('House number must contain only numbers.');
       return;
     }
-  
+
     setIsLoading(true);
     try {
       await axios.put(`http://localhost:3000/api/updateUser/${user.email}`, formData);
       setIsEditing(false);
-      setErrorMessage('Profile updated successfully!'); 
+      fetchUser(session.user.email);
+      setErrorMessage('Profile updated successfully!');
     } catch (error) {
       console.error('Error updating user:', error);
       setErrorMessage('Failed to update profile. Please try again.');
@@ -100,7 +107,7 @@ export default function UserDetails() {
       setIsLoading(false);
     }
   };
-  
+
 
   return (
     <section className="bg-white dark:bg-gray-900">
@@ -144,14 +151,14 @@ export default function UserDetails() {
               />
             </div>
             {errorMessage && (
-              <p className="mt-4 text-red-500" style={{color: errorMessage=="Profile updated successfully!"? "green" : "red"}}>{errorMessage}</p>
+              <p className="mt-4 text-red-500" style={{ color: errorMessage == "Profile updated successfully!" ? "green" : "red" }}>{errorMessage}</p>
             )}
 
             <div className="mt-6 flex justify-end space-x-4">
               {isEditing ? (
                 <>
                   <button
-                    onClick={()=> { setIsEditing(false), setErrorMessage("")}}
+                    onClick={() => { setIsEditing(false), setErrorMessage("") }}
                     disabled={isLoading}
                     className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-gray-600 capitalize transition-colors duration-300 transform bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
                   >
