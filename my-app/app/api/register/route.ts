@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
     const existingUser = await prisma.users.findUnique({
       where: { email },
-include: {
+      include: {
         password: true,}
     });
 
@@ -26,7 +26,7 @@ include: {
 
         return NextResponse.json(
           { message: "Password updated successfully", success: true },
-          { status: 200 }
+          { status: 201 }
         );
       }
       return NextResponse.json(
@@ -80,7 +80,7 @@ include: {
         });
         console.log(`User with email ${email} deleted after token expired`);
       }
-    }, 1000 * 60);
+    }, 60 * 60 * 1000);
 
     return NextResponse.json({ message: "Verification email sent", success: true });
   } catch (error) {
