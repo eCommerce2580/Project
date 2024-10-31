@@ -171,7 +171,7 @@ model Cart {
   id        String     @id @default(auto()) @map("_id") @db.ObjectId
   user      Users      @relation(fields: [userId], references: [id])
   userId    String     @unique @db.ObjectId
-  items     CartItem[] // Relation to CartItem to store individual products in the cart
+  items     CartItem[]
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
 }
@@ -182,8 +182,9 @@ model CartItem {
   cart      Cart    @relation(fields: [cartId], references: [id])
   productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int // Number of this product in the cart
-  size      String? // Optional size for the product
-  color     String? // Optional color for the product
+  quantity  Int 
+  size      String? 
+  color     String? 
   price     Float 
 }
+
