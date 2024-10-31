@@ -124,7 +124,6 @@ export const authOptions: NextAuthOptions = {
       }
       return token;
     },
-
     async session({ session, token }) {
       session.user = {
         id: token.id,

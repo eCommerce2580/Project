@@ -9,6 +9,7 @@ export async function GET(request: Request,  { params }: { params: { email: stri
 
         const user = await prisma.users.findUnique({
             where: { email: email }, 
+            include: { address: true },
         });
 
         return NextResponse.json({ message: "Success", success: true, user });
@@ -17,3 +18,4 @@ export async function GET(request: Request,  { params }: { params: { email: stri
         return NextResponse.json({ message: "Error fetching user", success: false }, { status: 500 });
     }
 }
+
