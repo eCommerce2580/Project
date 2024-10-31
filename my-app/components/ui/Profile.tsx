@@ -1,5 +1,7 @@
 //@ts-nocheck
 "use client";
+import Cookies from 'js-cookie';
+import { signIn, signOut } from 'next-auth/react'; // הוספה
 import React, { useState, ChangeEvent, useEffect } from 'react';
 import { User, Mail, Edit2, Trash2, Check, X } from 'lucide-react';
 import axios from 'axios';
@@ -11,12 +13,12 @@ import { AddressSection } from './AddressSection';
 
 const initialValue = {
   name: '',
-  email:'',
+  email: '',
   country: '',
-  city:'',
-  street:'',
+  city: '',
+  street: '',
   houseNumber: '',
-  zipCode:'',
+  zipCode: '',
   addressId: ''
 }
 
@@ -24,24 +26,29 @@ export default function UserDetails() {
   const { data: session } = useSession();
   const user = session?.user;
 
-  // // Initialize hooks unconditionally
+  if (!user) {
+    window.location = "http://localhost:3000/";
+  }
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [formData, setFormData] = useState<FormData>(initialValue);
 
-useEffect(() => {
-  if(!user) return;
-  setFormData({
-    name: user?.name || '',
-    email: user?.email || '',
-    country: user?.address?.country || '',
-    city: user?.address?.city || '',
-    street: user?.address?.street || '',
-    houseNumber: user?.address?.houseNumber || '',
-    zipCode: user?.address?.zipCode || '',
-    addressId: user?.address?.addressId || ''
-  })
-},[user]);
+  useEffect(() => {
+    if (!user) return;
+    setFormData({
+      name: user?.name || '',
+      email: user?.email || '',
+      country: user?.address?.country || '',
+      city: user?.address?.city || '',
+      street: user?.address?.street || '',
+      houseNumber: user?.address?.houseNumber || '',
+      zipCode: user?.address?.zipCode || '',
+      addressId: user?.address?.addressId || ''
+    })
+
+    console.log(user)
+  }, [, user]);
 
   const handleInputChange = (field: keyof FormData) => (e: ChangeEvent<HTMLInputElement>) => {
     setFormData(prev => ({ ...prev, [field]: e.target.value }));
@@ -51,7 +58,11 @@ useEffect(() => {
     if (window.confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
       setIsLoading(true);
       try {
-        await axios.delete(`/api/users/${user.id}`);
+        await axios.delete(`/api/deleteUser/${user.id}`);
+        Cookies.remove('cookieName', { path: '' });
+        await signOut({ redirect: false });
+      //  window.location = "http://localhost:3000/";
+
       } catch (error) {
         console.error('Error deleting user:', error);
       } finally {
@@ -64,6 +75,14 @@ useEffect(() => {
     setIsLoading(true);
     try {
       await axios.put(`http://localhost:3000/api/updateUser/${user.email}`, formData);
+
+      // // עדכון הסשן עם הפרטים החדשים
+      // await signIn('credentials', {
+      //   email: formData.email,
+      //   password: user.password, // הנח שאתה שומר את הסיסמה במצב או יכול לשלוף אותה
+      //   redirect: false // אל תבצע הפנייה אוטומטית
+      // });
+
       setIsEditing(false);
       alert('Profile updated successfully!');
     } catch (error) {
@@ -73,6 +92,7 @@ useEffect(() => {
       setIsLoading(false);
     }
   };
+
 
   return (
     <section className="bg-white dark:bg-gray-900">
