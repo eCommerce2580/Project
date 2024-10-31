@@ -1,4 +1,5 @@
 "use client";
+import { useCartStore } from '@/providers/cartStore';
 import { useState, useEffect, useRef } from "react";
 import CommandMenu from "../ui/CommandMenu";
 import Login from "../ui/Login";
@@ -30,11 +31,15 @@ export default function Nav() {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
+  const { cart } = useCartStore() // Access cart items and removeFromCart function
+
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
+    console.log("cartItemCount", cartItemCount)
     const fetchCategories = async () => {
       try {
-        const {data} = await axios.get('http://localhost:3000/api/categories');
+        const { data } = await axios.get('http://localhost:3000/api/categories');
         setCategories(data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -158,7 +163,13 @@ export default function Nav() {
 
             <Link href="/cart" className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaShoppingCart className="h-5 w-5" />
+
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-400 text-xs text-white">
+                {cartItemCount}
+              </span>
+
             </Link>
+
 
             <button className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaBell className="h-5 w-5" />
@@ -166,7 +177,6 @@ export default function Nav() {
                 1
               </span>
             </button>
-
             {user.isAuthenticated ? (
               <Avatar />
             ) : (
@@ -205,7 +215,7 @@ export default function Nav() {
           </div>
         )}
       </nav>
-{/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
+      {/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
       <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
           <div className="flex items-center">
@@ -229,7 +239,7 @@ export default function Nav() {
                     </Link>
 
                     {hoveredCategory === category.name && (
-                      <SubcategoryMenu subcategories={subcategories} categoryName={category.name}/>
+                      <SubcategoryMenu subcategories={subcategories} categoryName={category.name} />
                     )}
                   </li>
                 ))}

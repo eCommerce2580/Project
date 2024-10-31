@@ -57,23 +57,53 @@ model Password {
   user   Users  @relation(fields: [userId], references: [id])
   userId String @unique @db.ObjectId
 }
+model Color {
+  id       String          @id @default(auto()) @map("_id") @db.ObjectId
+  name     String
+  hexCode  String?         
+  products ProductColor[]  
+}
+
+model Size {
+  id       String          @id @default(auto()) @map("_id") @db.ObjectId
+  label    String          
+  products ProductSize[]   
+}
 
 model Product {
-  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  id            String          @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  description   String?
+  description   String
   price         Float
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   image         String
   amount        Int
   sales         Int
-  category      Category    @relation(fields: [categoryId], references: [id]) // קשר לקטגוריה
-  categoryId    String      @db.ObjectId
-  subCategory   SubCategory @relation(fields: [subCategoryId], references: [id]) // קשר לתת-קטגוריה
-  subCategoryId String      @db.ObjectId
-  employee      Employees   @relation(fields: [employeeId], references: [id])
-  employeeId    String      @db.ObjectId
+  category      Category        @relation(fields: [categoryId], references: [id])
+  categoryId    String          @db.ObjectId
+  subCategory   SubCategory     @relation(fields: [subCategoryId], references: [id])
+  subCategoryId String          @db.ObjectId
+  employee      Employees       @relation(fields: [employeeId], references: [id])
+  employeeId    String          @db.ObjectId
+  colors        ProductColor[]
+  sizes         ProductSize[]  
+}
+
+model ProductColor {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String   @db.ObjectId
+  color      Color    @relation(fields: [colorId], references: [id])
+  colorId    String   @db.ObjectId
+}
+
+model ProductSize {
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  product    Product  @relation(fields: [productId], references: [id])
+  productId  String   @db.ObjectId
+  size       Size     @relation(fields: [sizeId], references: [id])
+  sizeId     String   @db.ObjectId
 }
 
 model SubCategory {
