@@ -14,6 +14,7 @@ export default function Avatar() {
   async function handleSignOut(): Promise<void> {
     try {
       await signOut({ redirect: false });
+      window.location.assign("http://localhost:3000/");
       document.cookie = "next-auth.session-token=; Max-Age=0; path=/";
       document.cookie = "next-auth.callback-url=; Max-Age=0; path=/";
     } catch (error) {
