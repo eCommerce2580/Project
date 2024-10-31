@@ -2,134 +2,244 @@
 
 import React, { FormEvent, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { useDispatch } from "react-redux";
-import { login } from "@/app/store/slices/userSlice";
 import axios from "axios";
 import { signIn } from "next-auth/react";
 
 export default function LoginForm() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
-  const dispatch = useDispatch();
+  const [isForgotPassword, setIsForgotPassword] = useState<boolean>(false);
+  const [email, setEmail] = useState<string>("");
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
-  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
+  async function handleLogin(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
     };
+
+    // Check for empty fields
+    if (!values.email || !values.password) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+
     try {
       const credential = await signIn("credentials", {
         ...values,
         redirect: false,
       });
-      console.log("credential", credential);
 
       if (credential?.ok) {
-        console.log("credential", credential);
-        const user = (await axios.get(`http://localhost:3000/api/getUser/${values.email}`)).data.user;
-        console.log("user", user);
-
-        dispatch(login(user));
+        console.log("Login successful");
+        setErrorMessage("");
       } else {
-        console.log("Login failed", credential?.error);
+        setErrorMessage(credential?.error as string);
       }
     } catch (error) {
-      console.log("Error during login:", error);
+      console.error("Error during login:", error);
+      setErrorMessage("An error occurred during login. Please try again.");
     }
   }
 
-  async function register(e: FormEvent<HTMLFormElement>) {
+  async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const target = e.currentTarget;
 
     const values = {
-      email: target.email.value,
-      password: target.password.value,
-      //@ts-ignore
-      name: target.name.value,
+      email: target.email.value.trim(),
+      password: target.password.value.trim(),
+      name: target.userName.value.trim(),
     };
+
+    if (!values.email || !values.password || !values.name) {
+      setErrorMessage("Please fill in all fields.");
+      return;
+    }
+
     try {
       const response = await axios.post("/api/register", values);
 
-      console.log("data", response.data);
-
-      if (response.status == 200) {
-        const credential = await signIn("credentials", {
-          email: values.email,
-          password: values.password,
-          redirect: false,
-        });
-
-        if (credential?.ok) {
-          dispatch(login(response.data));
-        } else {
-          console.log("Registration succeeded but login failed");
-        }
+      if (response.status === 200) {
+        alert("A verification email has been sent to your email address");
+        setErrorMessage("");
+        setIsLogin(true);
       } else {
-        console.log("Registration failed");
+        setErrorMessage(response.data.message);
       }
     } catch (error) {
-      console.log("Error during registration:", error);
+      console.error("Error during registration:", error);
+      setErrorMessage(error as string);
+    }
+  }
+
+  // Handle forgot password
+  async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    if (!email) {
+      setErrorMessage("Please enter your email.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/forgotPassword", { email });
+
+      if (response.status === 200) {
+        alert("Password reset link sent to your email.");
+        setIsForgotPassword(false);
+        setErrorMessage("");
+      } else {
+        setErrorMessage(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error during password reset request:", error);
+      setErrorMessage(error as string);
     }
   }
 
   return (
     <div className="flex flex-col w-full justify-center items-center my-5">
-      <form onSubmit={isLogin ? handleSubmit : register} className="w-full">
-        <h1 className="text-center text-xl font-semibold">
-          {isLogin ? "Login" : "Register"}
-        </h1>
-        {!isLogin && (
-          <InputLogin
-            label="Name"
-            type="name"
-            id="name"
-            name="name"
-            placeholder="Type Name..."
-          />
-        )}
-        <InputLogin
-          label="Email"
-          type="email"
-          id="email"
-          name="email"
-          placeholder="Type Email..."
-        />
-        <InputLogin
-          label="Password"
-          type="password"
-          id="password"
-          name="password"
-          placeholder="Type Password..."
-        />
-        <p
-          onClick={() => setIsLogin((prev) => !prev)}
-          className="text-center text-blue-500 text-sm cursor-pointer"
+      {!isForgotPassword ? (
+        <form
+          onSubmit={isLogin ? handleLogin : handleRegister}
+          className="w-full"
         >
-          {isLogin ? "You haven't Account? - Sign Up" : "Already have av account? - Sigh in"}
-        </p>
-        <div className="w-full flex justify-center items-center">
-          <button
-            type="submit"
-            className="focus:outline-none w-[80%] text-white bg-purple-700 hover:bg-purple-800 
-         focus:ring-4 focus:ring-purple-300 font-medium rounded-lg text-sm px-5 py-2.5
-          my-5 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-          >
-            {isLogin ? "Sign In" : "Sign Up"}
-          </button>
-        </div>
-      </form>
-      {/* Google BTN */}
-      <div className="flex w-full flex-col justify-center items-center gap-4">
+          <h1 className="text-center text-xl font-semibold mb-6">
+            {isLogin ? "Login" : "Register"}
+          </h1>
+          {!isLogin && (
+            <InputLogin
+              label="Name"
+              type="text"
+              id="userName"
+              name="userName"
+              placeholder="Type Name"
+              required 
+            />
+          )}
+          <InputLogin
+            label="Email"
+            type="email"
+            id="email"
+            name="email"
+            placeholder="Type Email"
+            required 
+          />
+          <div className="mb-2 w-full">
+            <label
+              htmlFor="password"
+              className="block w-[80%] mx-auto mb-2 text-sm font-medium text-gray-900 dark:text-white"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="Type Password"
+              required 
+              className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+                focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
+                dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
+                dark:focus:border-blue-500 transition-colors"
+            />
+            {isLogin && (
+              <div className="w-[80%] mx-auto text-right mt-2">
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
+                >
+                  Forgot Password?
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="w-full flex justify-center items-center mt-6">
+            <button
+              type="submit"
+              className="focus:outline-none w-[80%] text-white bg-blue-600 hover:bg-blue-700 
+               focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5
+               dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 
+               transition-colors"
+            >
+              {isLogin ? "Sign In" : "Sign Up"}
+            </button>
+          </div>
+
+          {errorMessage && (
+            <div className="w-[80%] mx-auto mt-4 text-center text-sm text-red-600">
+              {errorMessage}
+            </div>
+          )}
+
+          <div className="text-center mt-4">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLogin((prev) => !prev);
+                setErrorMessage("");
+              }}
+              className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
+            >
+              {isLogin
+                ? "Don't have an account? Sign Up"
+                : "Already have an account? Sign In"}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <form onSubmit={handleForgotPassword} className="w-full">
+          <h1 className="text-center text-xl font-semibold mb-6">Forgot Password</h1>
+          <InputLogin
+            label="Email"
+            type="email"
+            id="forgot-email"
+            name="forgot-email"
+            placeholder="Enter your email"
+            required 
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <div className="w-full flex flex-col items-center gap-2">
+            <button
+              type="submit"
+              className="focus:outline-none w-[80%] text-white bg-blue-600 hover:bg-blue-700 
+               focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5
+               my-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800
+               transition-colors"
+            >
+              Send Reset Link
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsForgotPassword(false)}
+              className="text-blue-500 text-sm hover:text-blue-600 transition-colors"
+            >
+              Back to Login
+            </button>
+          </div>
+        </form>
+      )}
+
+      <div className="w-full flex items-center justify-center my-4">
+        <div className="border-t border-gray-300 w-[35%]"></div>
+        <span className="px-4 text-gray-500 text-sm">OR</span>
+        <div className="border-t border-gray-300 w-[35%]"></div>
+      </div>
+
+      <div className="flex w-full flex-col justify-center items-center">
         <button
           onClick={() => signIn("google")}
           className="flex w-[80%] items-center justify-center bg-white
-         dark:bg-gray-900 border border-gray-300 rounded-lg 
-         shadow-md px-6 py-2 text-sm font-medium text-gray-800
-          dark:text-white hover:bg-gray-200 focus:outline-none 
-          focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"
+           dark:bg-gray-900 border border-gray-300 rounded-lg 
+           shadow-md px-6 py-2 text-sm font-medium text-gray-800
+           dark:text-white hover:bg-gray-200 focus:outline-none 
+           focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
+           transition-all"
         >
           <FcGoogle className="h-6 w-6 mr-2" />
           <span>Continue with Google</span>
@@ -145,29 +255,28 @@ type InputLoginProps = {
   id: string;
   name: string;
   placeholder: string;
+  required?: boolean;
+  onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
 
-function InputLogin({ label, ...props }: InputLoginProps) {
+
+function InputLogin({ label, onChange, ...props }: InputLoginProps) {
   return (
-    <>
-      <div className="mb-6 w-full">
-        <label
-          htmlFor="default-input"
-          className="block w-[80%] mx-auto mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >
-          {label}
-        </label>
-        <input
-          {...props}
-          className="bg-gray-50 border border-gray-300
-           text-gray-900 text-sm rounded-lg
-            focus:ring-blue-500 focus:border-blue-500
-             block w-[80%] mx-auto p-2.5 dark:bg-gray-700
-              dark:border-gray-600 dark:placeholder-gray-400
-               dark:text-white dark:focus:ring-blue-500
-                dark:focus:border-blue-500"
-        />
-      </div>
-    </>
+    <div className="mb-6 w-full">
+      <label
+        htmlFor={props.id}
+        className="block w-[80%] mx-auto mb-2 text-sm font-medium text-gray-900 dark:text-white"
+      >
+        {label}
+      </label>
+      <input
+        onChange={onChange}
+        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
+          focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
+          dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
+          dark:focus:border-blue-500 transition-colors"
+        {...props}
+      />
+    </div>
   );
 }

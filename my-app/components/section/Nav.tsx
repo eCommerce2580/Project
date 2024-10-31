@@ -1,4 +1,5 @@
 "use client";
+import { useCartStore } from '@/providers/cartStore';
 import { useState, useEffect, useRef } from "react";
 import CommandMenu from "../ui/CommandMenu";
 import Login from "../ui/Login";
@@ -7,10 +8,7 @@ import Avatar from "../ui/Avatar";
 import { FaBell, FaShoppingCart } from "react-icons/fa";
 import { VscThreeBars } from "react-icons/vsc";
 import SubcategoryMenu from "../ui/SubcategoryMenu";
-import { useDispatch, useSelector } from "react-redux";
 import { useSession } from "next-auth/react";
-import { RootState } from "@/app/store/types";
-import { login } from "@/app/store/slices/userSlice";
 import axios from "axios";
 import Link from "next/link";
 
@@ -21,20 +19,23 @@ interface CategoryRefs {
 export default function Nav() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>("");
   const [categories, setCategories] = useState([]);
+
   const [subcategories, setSubcategories] = useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 });
 
   const categoryRefs = useRef<CategoryRefs>({});
 
-  const dispatch = useDispatch();
-  const user = useSelector((state: RootState) => state.user);
   const { data: session } = useSession();
+  const { cart } = useCartStore() // Access cart items and removeFromCart function
+
+  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
 
   useEffect(() => {
+    console.log("cartItemCount", cartItemCount)
     const fetchCategories = async () => {
       try {
-        const {data} = await axios.get('http://localhost:3000/api/categories');
+        const { data } = await axios.get('http://localhost:3000/api/categories');
         setCategories(data.categories);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -43,21 +44,21 @@ export default function Nav() {
     fetchCategories();
   }, []);
 
+
   useEffect(() => {
     const fetchUser = async () => {
-      if (session?.user && !user.isAuthenticated) {
+      if (session?.user) {
         try {
           const response = await axios.get(`http://localhost:3000/api/getUser/${session.user.email}`);
           const userData = response.data.user;
           console.log("user", userData);
-          dispatch(login(userData));
         } catch (error) {
           console.error("Error fetching user data:", error);
         }
       }
     };
     fetchUser();
-  }, [session, dispatch, user.isAuthenticated]);
+  }, [session]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {
@@ -124,6 +125,7 @@ export default function Nav() {
             </Link>
           </div>
 
+
           {/* Desktop Navigation & Search */}
           <div className="hidden lg:flex lg:flex-1 lg:items-center lg:justify-between lg:space-x-4">
             <div className="flex space-x-4">
@@ -142,6 +144,7 @@ export default function Nav() {
               <Link
                 href="#"
                 className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+
               >
                 Projects
               </Link>
@@ -158,7 +161,13 @@ export default function Nav() {
 
             <Link href="/cart" className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaShoppingCart className="h-5 w-5" />
+
+              <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-400 text-xs text-white">
+                {cartItemCount}
+              </span>
+
             </Link>
+
 
             <button className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaBell className="h-5 w-5" />
@@ -166,9 +175,13 @@ export default function Nav() {
                 1
               </span>
             </button>
+            
+            {/* Profile / Login */}
+            {session ? (
+              <div className="relative">
+                <Avatar />
+              </div>
 
-            {user.isAuthenticated ? (
-              <Avatar />
             ) : (
               <Login />
             )}
@@ -205,8 +218,8 @@ export default function Nav() {
           </div>
         )}
       </nav>
-{/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
-      <nav className="bg-gray-50 dark:bg-gray-700">
+      {/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-screen-xl px-4 py-3 mx-auto">
           <div className="flex items-center">
             <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative">
@@ -229,7 +242,7 @@ export default function Nav() {
                     </Link>
 
                     {hoveredCategory === category.name && (
-                      <SubcategoryMenu subcategories={subcategories} categoryName={category.name}/>
+                      <SubcategoryMenu subcategories={subcategories} categoryName={category.name} />
                     )}
                   </li>
                 ))}
