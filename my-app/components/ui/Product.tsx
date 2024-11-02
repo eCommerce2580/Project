@@ -42,7 +42,7 @@ export default function Product({ product }: ProductProps) {
                         </div>
                     </div>
                     <div className="w-5/6 h-[260px] p-4 overflow-hidden mx-auto aspect-w-16 aspect-h-8">
-                        <img src={product.imageUrl} alt="Product 1"
+                        <img src={product.imageUrl} alt={product.name}
                             className="h-full w-full object-contain" />
                     </div>
 
