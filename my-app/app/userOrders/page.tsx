@@ -2,7 +2,6 @@ import prisma from "@/prisma/client";
 import { getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]/options";
 import { OrderComponent } from "./orderComponent";
-import { OrderComponentProps } from "./orderComponent";
 
 async function getUserOrders(id: string) {
     try {
@@ -27,20 +26,42 @@ async function getUserOrders(id: string) {
                             select: {
                                 name: true,
                                 price: true,
-                                image:true,
+                                image: true,
+                                colors: {
+                                    include: {
+                                        color: {
+                                            select: {
+                                                name: true,
+                                            },
+                                        },
+                                    },
+                                },
+                                sizes: {
+                                    include: {
+                                        size: {
+                                            select: {
+                                                label: true,
+                                            },
+                                        },
+                                    },
+                                },
                             },
                         },
                     },
                 },
             },
         });
-        console.log(orders[0].orderProducts);
+        // const order=
+        console.log(orders[0].orderProducts[0].product.colors)
+        console.log(orders[0].orderProducts[0].product.sizes)
         return orders;
+
     } catch (error) {
         console.error("Error fetching orders:", error);
         throw error;
     }
 }
+
 
 
 export default async function UserOrders() {

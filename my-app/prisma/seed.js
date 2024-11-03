@@ -1,5 +1,5 @@
-const { PrismaClient } = require('@prisma/client')
-const prisma = new PrismaClient()
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 async function main() {
     // יצירת כתובת
@@ -57,6 +57,20 @@ async function main() {
         }
     });
 
+    // יצירת צבע ומידה
+    const colorRed = await prisma.color.create({
+        data: {
+            name: "Red",
+            hexCode: "#FF0000"
+        }
+    });
+
+    const sizeM = await prisma.size.create({
+        data: {
+            label: "M"
+        }
+    });
+
     // יצירת מוצרים וקישור לקטגוריה, תת-קטגוריה ועובד
     const productsData = [
         {
@@ -84,6 +98,16 @@ async function main() {
                 category: { connect: { id: categoryShoes.id } },
                 subCategory: { connect: { id: subCategorySportsShoes.id } },
                 employee: { connect: { id: employee.id } },
+                colors: {
+                    create: {
+                        color: { connect: { id: colorRed.id } }
+                    }
+                },
+                sizes: {
+                    create: {
+                        size: { connect: { id: sizeM.id } }
+                    }
+                }
             },
         });
         console.log("מוצר נוצר:", product);
@@ -119,7 +143,28 @@ async function main() {
         });
     }
 
-    console.log("הזמנה נוצרה:", order);
+    // יצירת עגלה ופריטים בעגלה
+    const cart = await prisma.cart.create({
+        data: {
+            user: { connect: { id: user.id } }
+        }
+    });
+
+    for (const productData of productsData) {
+        const product = await prisma.product.findFirst({ where: { name: productData.name } });
+        await prisma.cartItem.create({
+            data: {
+                cart: { connect: { id: cart.id } },
+                product: { connect: { id: product.id } },
+                quantity: 1,
+                size: "M",
+                color: "Red",
+                price: productData.price
+            }
+        });
+    }
+
+    console.log("נתוני Seed נוצרו בהצלחה!");
 }
 
 main()
