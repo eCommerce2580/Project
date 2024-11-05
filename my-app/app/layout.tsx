@@ -22,7 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        // className={`${inter.className} min-h-screen bg-background pb-6 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black`}
       >
         <SessionProvider>
             <ThemeProvider
