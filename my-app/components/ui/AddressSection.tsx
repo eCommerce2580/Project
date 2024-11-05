@@ -11,7 +11,7 @@ export const AddressSection: React.FC<{
   }> = ({ formData, isEditing, onChange }) => (
     <div className="mt-6 pt-6">
       <div className="flex items-center mb-4">
-        <span className="inline-block p-3 text-blue-500 rounded-full bg-blue-100/80 dark:bg-gray-800 mr-3">
+        <span className="inline-block p-3 text-blue-500 rounded-full hover:from-orange-300 hover:via-purple-300 hover:to-blue-200 bg-gradient-to-r from-orange-200 via-purple-200 to-blue-200 dark:bg-gray-800 mr-3">
           <MapPin className="h-5 w-5" />
         </span>
         <h4 className="text-lg font-medium text-gray-800 dark:text-white">Address Details</h4>

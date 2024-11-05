@@ -65,8 +65,10 @@ export default function Avatar() {
             </DropdownMenu.Item>
 
             <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-slate-100">
-              <GrHistory className="text-lg text-gray-600" />
-              <p className="text-slate-800 font-medium ml-3">My Orders</p>
+              <Link href="/userOrders" className="flex items-center">
+                <GrHistory className="text-lg text-gray-600" />
+                <p className="text-slate-800 font-medium ml-3">My Orders</p>
+              </Link>
             </DropdownMenu.Item>
 
             <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-slate-100">

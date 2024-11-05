@@ -17,11 +17,9 @@ export type categoryAndSubId ={
   useEffect(() => {
   const fetchProducts = async () => {
     const { category, subCategory } = categoryIdAndSubId;
-    console.log("categoryId:", category, "subCategory:", subCategory);
 
     try {
       const { data } = await axios.get(`/api/filteredProducts?category=${category}&subCategory=${subCategory}`);
-        // מעביר כ-params את כל האובייקט
       setProducts(data.filteredProducts);
       console.log(data.filteredProducts);
     } catch (error) {

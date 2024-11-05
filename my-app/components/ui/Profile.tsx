@@ -161,7 +161,9 @@ export default function UserDetails() {
                   <button
                     onClick={handleUpdate}
                     disabled={isLoading}
-                    className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
+                    className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
+ rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50"
                   >
                     <Check className="h-4 w-4 mr-2" />
                     Save Changes
@@ -171,7 +173,10 @@ export default function UserDetails() {
                 <>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-gray-600 capitalize transition-colors duration-300 transform bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50"
+                    className="inline-flex items-center px-6 py-3 text-sm font-medium tracking-wide text-gray-600 capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
+
+ rounded-lg hover:bg-gray-200 focus:outline-none focus:ring focus:ring-gray-300 focus:ring-opacity-50 text-white"
                   >
                     <Edit2 className="h-4 w-4 mr-2" />
                     Edit Profile
