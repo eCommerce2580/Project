@@ -5,6 +5,7 @@ import ThemeProvider from "@/providers/ThemeProvider";
 import Nav from "@/components/section/Nav";
 import ReduxProvider from "@/providers/ReduxProvider";
 import SessionProvider from "@/providers/SessionProvider";
+import PaypalProvider from "@/providers/PayPalProvider";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -32,8 +33,10 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <PaypalProvider>
                <Nav />
               {children}
+              </PaypalProvider>
             </ThemeProvider>
           </ReduxProvider>
         </SessionProvider>
