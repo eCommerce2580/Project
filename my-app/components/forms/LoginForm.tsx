@@ -36,7 +36,7 @@ export default function LoginForm() {
         console.log("Login successful");
         setErrorMessage("");
       } else {
-        setErrorMessage(credential?.error as string);
+        setErrorMessage("An error occurred during login. Please try again.");
       }
     } catch (error) {
       console.error("Error during login:", error);
@@ -61,19 +61,31 @@ export default function LoginForm() {
 
     try {
       const response = await axios.post("/api/register", values);
-
+    
       if (response.status === 200) {
         alert("A verification email has been sent to your email address");
         setErrorMessage("");
+        setIsLogin(true); 
+      } else if (response.status === 201) {
+        alert("Successful registration! You can now log in.");
         setIsLogin(true);
-      } else {
+        setErrorMessage("");
+      } else if (response.status === 400) {
         setErrorMessage(response.data.message);
       }
     } catch (error) {
-      console.error("Error during registration:", error);
-      setErrorMessage(error as string);
+      if (axios.isAxiosError(error) && error.response) {
+        if (error.response.status === 400) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage("An error occurred during login. Please try again.");
+        }
+      } else {
+        console.error("Error during login:", error);
+        setErrorMessage("An unknown error occurred. Please try again.");
+      }
     }
-  }
+  }    
 
   // Handle forgot password
   async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
@@ -95,8 +107,8 @@ export default function LoginForm() {
         setErrorMessage(response.data.message);
       }
     } catch (error) {
-      console.error("Error during password reset request:", error);
-      setErrorMessage(error as string);
+      console.error("Error during login:", error);
+      setErrorMessage("An error occurred during login. Please try again.");
     }
   }
 
@@ -117,7 +129,7 @@ export default function LoginForm() {
               id="userName"
               name="userName"
               placeholder="Type Name"
-              required 
+              required
             />
           )}
           <InputLogin
@@ -126,7 +138,7 @@ export default function LoginForm() {
             id="email"
             name="email"
             placeholder="Type Email"
-            required 
+            required
           />
           <div className="mb-2 w-full">
             <label
@@ -140,7 +152,7 @@ export default function LoginForm() {
               id="password"
               name="password"
               placeholder="Type Password"
-              required 
+              required
               className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg
                 focus:ring-blue-500 focus:border-blue-500 block w-[80%] mx-auto p-2.5 dark:bg-gray-700
                 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500
@@ -194,14 +206,16 @@ export default function LoginForm() {
         </form>
       ) : (
         <form onSubmit={handleForgotPassword} className="w-full">
-          <h1 className="text-center text-xl font-semibold mb-6">Forgot Password</h1>
+          <h1 className="text-center text-xl font-semibold mb-6">
+            Forgot Password
+          </h1>
           <InputLogin
             label="Email"
             type="email"
             id="forgot-email"
             name="forgot-email"
             placeholder="Enter your email"
-            required 
+            required
             onChange={(e) => setEmail(e.target.value)}
           />
           <div className="w-full flex flex-col items-center gap-2">
@@ -260,7 +274,6 @@ type InputLoginProps = {
   required?: boolean;
   onChange?: React.ChangeEventHandler<HTMLInputElement>;
 };
-
 
 function InputLogin({ label, onChange, ...props }: InputLoginProps) {
   return (
