@@ -117,6 +117,7 @@ model ProductSize {
 model SubCategory {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
+  imageUrl   String
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String    @db.ObjectId
   products   Product[]

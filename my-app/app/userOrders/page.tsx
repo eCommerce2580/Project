@@ -10,11 +10,6 @@ async function getUserOrders(id: string) {
                 userId: id,
             },
             include: {
-                paymentMethod: {
-                    select: {
-                        name: true,
-                    },
-                },
                 status: {
                     select: {
                         name: true,
@@ -51,47 +46,30 @@ async function getUserOrders(id: string) {
                 },
             },
         });
-        // const order=
-        console.log(orders[0].orderProducts[0].product.colors)
-        console.log(orders[0].orderProducts[0].product.sizes)
         return orders;
-
     } catch (error) {
         console.error("Error fetching orders:", error);
         throw error;
     }
 }
 
-
-
 export default async function UserOrders() {
     const session = await getServerSession(authOptions)
     if (!session) {
-        return <div>no orders</div>
+        return <div className="text-gray-800 dark:text-white">no orders</div>
     }
     // @ts-ignore
     const orders = await getUserOrders(session?.user.id)
     return (
-        <div>
+        <div className="bg-white dark:bg-gray-900">
             <section className="py-24 relative">
                 <div className="w-full max-w-7xl mx-auto px-4 md:px-8">
-                    <h2 className="font-manrope font-extrabold text-3xl leading-10 text-black mb-9">Orders History</h2>
-                    <div className="flex sm:flex-col lg:flex-row sm:items-center justify-between">
-                        <ul className="flex max-sm:flex-col sm:items-center gap-x-14 gap-y-3">
-                            <li className="font-medium text-lg leading-8 cursor-pointer text-indigo-600 transition-all duration-500 hover:text-indigo-600">All Orders</li>
-                            <li className="font-medium text-lg leading-8 cursor-pointer text-black transition-all duration-500 hover:text-indigo-600">Summary</li>
-                            <li className="font-medium text-lg leading-8 cursor-pointer text-black transition-all duration-500 hover:text-indigo-600">Completed</li>
-                            <li className="font-medium text-lg leading-8 cursor-pointer text-black transition-all duration-500 hover:text-indigo-600">Cancelled</li>
-                        </ul>
-                    </div>
-
+                    <h2 className="font-manrope font-extrabold text-3xl leading-10 text-gray-800 dark:text-white mb-9">
+                        Orders History
+                    </h2>
                     {orders.map((order) => <OrderComponent key={order.id} order={order} />)}
                 </div>
             </section>
         </div>
     );
 }
-
-
-
-

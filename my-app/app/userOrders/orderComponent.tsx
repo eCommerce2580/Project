@@ -1,9 +1,8 @@
-import { CancelAndReturnedButton } from "./CancelAndReturnedButton";
+import { StatusOfOrder } from "./StatusOfOrder";
 import { ProductInOrder } from "./productInOrderComponent";
 
 export type OrderComponentProps = {
     order: {
-        paymentMethod: { name: string };
         status: { name: string };
         orderProducts: {
             id: string;
@@ -34,39 +33,64 @@ export type OrderComponentProps = {
     };
 };
 
-
 export function OrderComponent({ order }: OrderComponentProps) {
     return (
-        <div className="mt-7 border border-gray-300 pt-9 pb-4"> {/* הוספת padding-bottom */}
-            <div className="flex max-md:flex-col items-center justify-between px-3 md:px-11">
-                <div className="data">
-                    <p className="font-medium text-lg leading-8 text-black whitespace-nowrap">
-                        Total Amount : ${order.totalAmount}
-                    </p>
-                    <p className="font-medium text-lg leading-8 text-black mt-3 whitespace-nowrap">
-                        Order Payment : {new Date(order.orderDate).toLocaleDateString()}
-                    </p>
-                    <p className="font-medium text-lg leading-8 text-black mt-3 whitespace-nowrap">
-                        Payment Method : {order.paymentMethod.name}
+        <div className="mt-7 border border-gray-300 dark:border-gray-700 pt-9 pb-4 bg-white dark:bg-gray-800 rounded-lg">
+            {/* Order Details Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-3 md:px-11 mb-8">
+
+                {/* Order Date Section */}
+                <div className="flex flex-col space-y-2">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Order Payment
+                    </h3>
+                    <p className="text-lg font-semibold text-gray-800 dark:text-white">
+                        {new Date(order.orderDate).toLocaleDateString()}
                     </p>
                 </div>
-                <div className="flex items-center justify-around w-full sm:pl-28 lg:pl-0">
-                    <div className="flex flex-col justify-center items-start max-sm:items-center">
-                        <p className="font-normal text-lg text-gray-500 leading-8 mb-2 text-left whitespace-nowrap">
-                            Delivery Expected by
-                        </p>
-                        <p className="font-semibold text-lg leading-8 text-black text-left whitespace-nowrap">
-                            {new Date(order.expectedDeliveryDate).toLocaleDateString()}
-                        </p>
+
+                {/* Total Amount Section */}
+                <div className="flex flex-col space-y-2">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Total Amount
+                    </h3>
+                    <p className="text-lg font-semibold text-gray-800 dark:text-white">
+                        ${order.totalAmount}
+                    </p>
+                </div>
+
+
+
+                {/* Delivery Date Section */}
+                <div className="flex flex-col space-y-2">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Delivery Expected by
+                    </h3>
+                    <p className="text-lg font-semibold text-gray-800 dark:text-white">
+                        {new Date(order.expectedDeliveryDate).toLocaleDateString()}
+                    </p>
+                </div>
+
+                {/* Status Section */}
+                <div className="flex flex-col space-y-2">
+                    <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                        Order Status
+                    </h3>
+                    <div className="flex items-center gap-4">
+                        <StatusOfOrder orderId={order.id} statusName={order.status.name} />
                     </div>
-                    <CancelAndReturnedButton orderId={order.id} statusName={order.status.name} />
                 </div>
             </div>
 
-            {order.orderProducts.map((product) => (
-                <ProductInOrder key={product.id} product={product} />
-            ))}
+            {/* Divider */}
+            <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-6"></div>
+
+            {/* Products List */}
+            <div className="px-3 md:px-11">
+                {order.orderProducts.map((product) => (
+                    <ProductInOrder key={product.id} product={product} />
+                ))}
+            </div>
         </div>
     );
 }
-
