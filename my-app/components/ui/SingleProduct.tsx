@@ -4,47 +4,37 @@ import axios from 'axios';
 import Cart from '@/app/cart/page';
 import { useCartStore } from '@/providers/cartStore';
 import { ShoppingCart } from './ShoppingCart';
+import { SingleProductProps } from '@/types';
 
 let i = 0
-export type SingleProductProps = {
-    product: {
-        id: string;
-        name: string;
-        image: string;
-        description: string;
-        price: number;
-        createdAt: Date;
-        updatedAt: Date;
-        amount: number;
-        sales: number;
-        categoryId: string;
-        subCategoryId: string;
-        employeeId: string;
-        colors: {
-            id: string;
-            productId: string;
-            colorId: string;
-            color: { name: string; };
-        }[];
-        sizes: {
-            id: string;
-            productId: string;
-            sizeId: string;
-            size: { label: string; };
-        }[];
-    };
-};
-
-type CartItem = {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-    size?: string;
-    color?: string;
-    uniqueId?:string
-};
+// export type SingleProductProps = {
+//     product: {
+//         id: string;
+//         name: string;
+//         image: string;
+//         description: string;
+//         price: number;
+//         createdAt: Date;
+//         updatedAt: Date;
+//         amount: number;
+//         sales: number;
+//         categoryId: string;
+//         subCategoryId: string;
+//         employeeId: string;
+//         colors: {
+//             id: string;
+//             productId: string;
+//             colorId: string;
+//             color: { name: string; };
+//         }[];
+//         sizes: {
+//             id: string;
+//             productId: string;
+//             sizeId: string;
+//             size: { label: string; };
+//         }[];
+//     };
+// };
 
 function SingleProduct({ product }: SingleProductProps) {
     const [selectedSize, setSelectedSize] = useState('');

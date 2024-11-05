@@ -1,11 +1,28 @@
+import cloudinary from "@/lib/cloudinary";
 import prisma from "@/prisma/client";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-    try {
-        const { name, description, price, image, amount, sales, category, subCategory, employeeId } = await request.json();
+    try {     
+        const formData = await request.formData();
+        console.log(formData);
+        const file = formData.get("file") as File;
+        const fileBuffer = await file.arrayBuffer();
+        const mimeType = file.type;
+        const encoding = "base64";
+        const base64Data = Buffer.from(fileBuffer).toString("base64");
+        const fileUri = "data:" + mimeType + ";" + encoding + "," + base64Data;
+        const result = await cloudinary.uploader.upload(fileUri)
+        const image = result.secure_url
+        const name = formData.get("name")!.toString();
+        const description = formData.get("description")!.toString();;
+        const price = parseFloat(formData.get("price")!.toString());
+        const amount = parseInt(formData.get("amount")!.toString());
+        const sales = parseInt(formData.get("sales")!.toString());
+        const categoryId = formData.get("category")!.toString();
+        const subCategoryId = formData.get("subCategory")!.toString();
+        const employeeId = formData.get("employeeId")!.toString();
 
-        // Create the product with all required fields
         const product = await prisma.product.create({
             data: {
                 name,
@@ -15,13 +32,13 @@ export async function POST(request: Request) {
                 amount,
                 sales,
                 category: {
-                    connect: { id: category } // Connect to existing Category by ID
+                    connect: { id: categoryId }
                 },
                 subCategory: {
-                    connect: { id: subCategory } // Connect to existing SubCategory by ID
+                    connect: { id: subCategoryId }
                 },
                 employee: {
-                    connect: { id: employeeId } // Connect to existing Employee by ID
+                    connect: { id: employeeId }
                 }
             },
             include: {
