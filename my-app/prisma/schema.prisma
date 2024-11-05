@@ -130,34 +130,6 @@ model Category {
   products      Product[]
 }
 
-model OrdersStatus {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  orders Orders[]
-}
-
-model PaymentMethod {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  orders Orders[]
-}
-
-model Orders {
-  id                   String         @id @default(auto()) @map("_id") @db.ObjectId
-  orderDate            DateTime       @default(now())
-  totalAmount          Float
-  paymentMethodId      String         @db.ObjectId
-  paymentMethod        PaymentMethod  @relation(fields: [paymentMethodId], references: [id])
-  shippingAddressId    String         @db.ObjectId
-  shippingAddress      Address        @relation(fields: [shippingAddressId], references: [id])
-  expectedDeliveryDate DateTime
-  userId               String         @db.ObjectId
-  user                 Users          @relation(fields: [userId], references: [id])
-  status               OrdersStatus   @relation(fields: [statusId], references: [id])
-  statusId             String         @db.ObjectId
-  orderProducts        OrderProduct[]
-}
-
 model OrderProduct {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
   orderId   String  @db.ObjectId
@@ -189,3 +161,29 @@ model CartItem {
   price     Float 
 }
 
+
+model Orders {
+  id                   String         @id @default(auto()) @map("_id") @db.ObjectId
+  orderDate            DateTime       @default(now())
+  totalAmount          Float
+  shippingAddressId    String         @db.ObjectId
+  shippingAddress      Address        @relation(fields: [shippingAddressId], references: [id])
+  expectedDeliveryDate DateTime
+  userId               String         @db.ObjectId
+  user                 Users          @relation(fields: [userId], references: [id])
+  status               OrdersStatus   @relation(fields: [statusId], references: [id])
+  statusId             String         @db.ObjectId
+  orderProducts        OrderProduct[]
+  email                String 
+  PhoneNumber          String 
+  name                 String
+  
+}
+
+
+model OrdersStatus {
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
+  name   String
+  progressLevel  String
+  orders Orders[]
+}
