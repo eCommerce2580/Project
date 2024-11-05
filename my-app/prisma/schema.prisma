@@ -117,10 +117,12 @@ model ProductSize {
 model SubCategory {
   id         String    @id @default(auto()) @map("_id") @db.ObjectId
   name       String
+  imageUrl   String
   category   Category  @relation(fields: [categoryId], references: [id])
   categoryId String    @db.ObjectId
   products   Product[]
 }
+
 
 model Category {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
@@ -132,12 +134,7 @@ model Category {
 model OrdersStatus {
   id     String   @id @default(auto()) @map("_id") @db.ObjectId
   name   String
-  orders Orders[]
-}
-
-model PaymentMethod {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
+  progressLevel  String
   orders Orders[]
 }
 
@@ -145,8 +142,6 @@ model Orders {
   id                   String         @id @default(auto()) @map("_id") @db.ObjectId
   orderDate            DateTime       @default(now())
   totalAmount          Float
-  paymentMethodId      String         @db.ObjectId
-  paymentMethod        PaymentMethod  @relation(fields: [paymentMethodId], references: [id])
   shippingAddressId    String         @db.ObjectId
   shippingAddress      Address        @relation(fields: [shippingAddressId], references: [id])
   expectedDeliveryDate DateTime
@@ -155,7 +150,12 @@ model Orders {
   status               OrdersStatus   @relation(fields: [statusId], references: [id])
   statusId             String         @db.ObjectId
   orderProducts        OrderProduct[]
+  email                String 
+  PhoneNumber          String 
+  name                 String
+  
 }
+
 
 model OrderProduct {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
