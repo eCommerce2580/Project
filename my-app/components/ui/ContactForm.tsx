@@ -40,7 +40,17 @@ function ContactForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    name: formData.firstName + " " + formData.lastName,
+                    email: formData.email,
+                    message: formData.message,
+                    subject: 'Your message has been received',
+                    text: 'Thank you for contacting us! We have received your message and will get back to you shortly.',
+                    html: `
+                        <h3>Thank you for contacting us!</h3>
+                        <p>We have received your message and will get back to you shortly.</p>
+                        `,
+                }),
             });
 
             if (res.ok) {
