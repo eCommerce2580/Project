@@ -82,6 +82,7 @@ export type SingleProductProps = {
   };
 };
 
+
 export type CartItem = {
   id: string;
   name: string;
@@ -90,5 +91,20 @@ export type CartItem = {
   image: string;
   size?: string;
   color?: string;
-  uniqueId?:string
+  uniqueId?: string;
 };
+
+export type SubCategoryType = {
+  id: string;
+  name: string;
+  imageUrl: string; // Assuming this is where the image URL is stored
+  categoryId: string; // You only need the categoryId, not the full category object
+};
+
+
+export type SubCategoriesProps = {
+  subCategory: SubCategoryType[];
+  categoryName: string;
+
+};
+
