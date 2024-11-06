@@ -1,233 +1,317 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
 import {
-    Dialog,
-    DialogBackdrop,
-    DialogPanel,
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
-    Menu,
-    MenuButton,
-    MenuItem,
-    MenuItems,
-} from '@headlessui/react'
-import { XMarkIcon, ChevronDownIcon, AdjustmentsHorizontalIcon } from '@heroicons/react/24/solid'
-import Product from './Product'
-
+  Dialog,
+  DialogBackdrop,
+  DialogPanel,
+  Disclosure,
+  DisclosureButton,
+  DisclosurePanel,
+  Menu,
+  MenuButton,
+  MenuItem,
+  MenuItems,
+} from "@headlessui/react";
+import {
+  XMarkIcon,
+  ChevronDownIcon,
+  AdjustmentsHorizontalIcon,
+} from "@heroicons/react/24/solid";
+import Product from "./Product";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 type SortOption = {
-    name: string
-    value: string
-    current: boolean
-}
+  name: string;
+  value: string;
+  current: boolean;
+};
 
 type FilterOption = {
-    id: string
-    name: string
-    options: string[]
-}
+  id: string;
+  name: string;
+  options: string[];
+};
 
 type Product = {
-    id: string
-    name: string
-    description: string
-}
+  id: string;
+  name: string;
+  description: string;
+};
+
+type Color = {
+  id: string;
+  name: string;
+};
+
+type Size = {
+  id: string;
+  label: string;
+};
 
 const sortOptions: SortOption[] = [
-    { name: 'Most Popular', value: 'popular', current: true },
-    { name: 'Best Rating', value: 'rating', current: false },
-    { name: 'Newest', value: 'newest', current: false },
-    { name: 'Price: Low to High', value: 'price_asc', current: false },
-    { name: 'Price: High to Low', value: 'price_desc', current: false },
-]
-
-const filters: FilterOption[] = [
-    { id: 'color', name: 'Color', options: ['white', 'beige', 'blue', 'brown', 'green', 'purple'] },
-    { id: 'category', name: 'Category', options: ['new-arrivals', 'sale', 'travel', 'organization', 'accessories'] },
-    { id: 'size', name: 'Size', options: ['2l', '6l', '12l', '18l', '20l', '40l'] },
-]
+  { name: "Most Popular", value: "popular", current: true },
+  { name: "Best Rating", value: "rating", current: false },
+  { name: "Newest", value: "newest", current: false },
+  { name: "Price: Low to High", value: "price_asc", current: false },
+  { name: "Price: High to Low", value: "price_desc", current: false },
+];
 
 type SelectedFilters = {
-    [key: string]: string[]
-}
+  [key: string]: string[];
+};
 
-export type categoryAndSubId = {
-    category: string;
-    subCategory: string;
-  };
-  
+export type CategoryAndSubId = {
+  category: string;
+  subCategory: string;
+};
 
 export default function FilterProduct({
-    categoryIdAndSubId,
-  }: {
-    categoryIdAndSubId: categoryAndSubId;
-  }){
-    
-    const [mobileFiltersOpen, setMobileFiltersOpen] = useState<boolean>(false)
-    const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({ color: [], category: [], size: [] })
-    const [products, setProducts] = useState<Product[]>([])
-          
-    const fetchProducts = async () => {
-      const { category, subCategory } = categoryIdAndSubId;
-  
+  categoryIdAndSubId,
+}: {
+  categoryIdAndSubId: CategoryAndSubId;
+}) {
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState<boolean>(false);
+  const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
+    color: [],
+    category: [],
+    size: [],
+  });
+  const [products, setProducts] = useState<Product[]>([]);
+  const [colors, setColors] = useState<Color[]>([]);
+  const [sizes, setSizes] = useState<Size[]>([]);
+
+  // קריאה ל-API להורדת הצבעים והמידות
+  useEffect(() => {
+    const fetchFilters = async () => {
       try {
-        const { data } = await axios.get(
-          `/api/filteredProducts?category=${category}&subCategory=${subCategory}`
-        );
-        
-        setProducts(data.filteredProducts);
-        console.log(data.filteredProducts);
+        const { data } = await axios.get("/api/getColorsAndSizes");
+        if (data.success) {
+          setColors(data.colors);
+          setSizes(data.sizes);
+        }
       } catch (error) {
-        console.error("Error fetching subcategories:", error);
+        console.error("Error fetching colors and sizes:", error);
       }
     };
-    useEffect(() => {
-      fetchProducts();
-    }, [categoryIdAndSubId]);   
-     
-        
-      
-      
-    const handleFilterChange = (filterId: string, option: string) => {
-        setSelectedFilters((prev) => {
-            const newFilters = { ...prev }
-            const isSelected = newFilters[filterId].includes(option)
-            newFilters[filterId] = isSelected
-                ? newFilters[filterId].filter((item) => item !== option)
-                : [...newFilters[filterId], option]
-            fetchProducts(); // קריאה ל-fetchProducts לאחר שינוי הסינונים
-            return newFilters
-        })
+
+    fetchFilters();
+  }, []);
+
+  // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
+  const fetchProducts = async (filters: SelectedFilters) => {
+    const { category, subCategory } = categoryIdAndSubId;
+    const colorFilter =
+      filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
+    const sizeFilter =
+      filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
+
+    try {
+      const { data } = await axios.get(
+        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}`
+      );
+      setProducts(data.filteredProducts);
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
     }
+  };
 
-    return (
-        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-            {/* Mobile Filter Dialog */}
-            <Dialog 
-                open={mobileFiltersOpen} 
-                onClose={setMobileFiltersOpen} 
-                className="relative z-50 lg:hidden"
+  useEffect(() => {
+    fetchProducts(selectedFilters);
+  }, [categoryIdAndSubId, selectedFilters]);
+
+  // פונקציה שמטפלת בשינויי סינון
+  const handleFilterChange = (filterId: string, option: string) => {
+    setSelectedFilters((prev) => {
+      const newFilters = { ...prev };
+      const isSelected = newFilters[filterId].includes(option);
+      newFilters[filterId] = isSelected
+        ? newFilters[filterId].filter((item) => item !== option)
+        : [...newFilters[filterId], option];
+      fetchProducts(newFilters);
+      return newFilters;
+    });
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+      {/* Mobile Filter Dialog */}
+      <Dialog
+        open={mobileFiltersOpen}
+        onClose={setMobileFiltersOpen}
+        className="relative z-50 lg:hidden"
+      >
+        <DialogBackdrop className="fixed inset-0 bg-black/30 dark:bg-black/50" />
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-medium dark:text-white">Filters</h2>
+            <button
+              onClick={() => setMobileFiltersOpen(false)}
+              className="rounded-md p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
             >
-                <DialogBackdrop className="fixed inset-0 bg-black/30 dark:bg-black/50" />
-                <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white dark:bg-gray-800 px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-                    <div className="flex items-center justify-between">
-                        <h2 className="text-lg font-medium dark:text-white">Filters</h2>
-                        <button 
-                            onClick={() => setMobileFiltersOpen(false)}
-                            className="rounded-md p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
-                        >
-                            <XMarkIcon className="h-6 w-6" />
-                        </button>
-                    </div>
-                    
-                    <div className="mt-6">
-                        {filters.map((section) => (
-                            <Disclosure key={section.id} as="div" className="border-b border-gray-200 dark:border-gray-700 py-4">
-                                <DisclosureButton className="flex w-full items-center justify-between py-2 text-gray-700 dark:text-gray-300">
-                                    <span className="font-medium">{section.name}</span>
-                                    <ChevronDownIcon className="h-5 w-5" />
-                                </DisclosureButton>
-                                <DisclosurePanel className="pt-4">
-                                    <div className="space-y-3">
-                                        {section.options.map((option) => (
-                                            <label key={option} className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedFilters[section.id]?.includes(option)}
-                                                    onChange={() => handleFilterChange(section.id, option)}
-                                                    className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
-                                                />
-                                                <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">{option}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </DisclosurePanel>
-                            </Disclosure>
-                        ))}
-                    </div>
-                </DialogPanel>
-            </Dialog>
+              <XMarkIcon className="h-6 w-6" />
+            </button>
+          </div>
 
-            {/* Main Content */}
-            <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
-                {/* Header */}
-                <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
-                    <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">Products</h1>
-                    
-                    <div className="flex items-center gap-4">
-                        <Menu as="div" className="relative">
-                            <MenuButton className="group inline-flex items-center rounded-md bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
-                                Sort
-                                <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
-                            </MenuButton>
-                            <MenuItems className="absolute right-0 mt-2 w-40 rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5">
-                                {sortOptions.map((option) => (
-                                    <MenuItem key={option.value}>
-                                        <button
-                                            className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                                            onClick={() => {
-                                                setSelectedFilters((prev) => ({ ...prev, sort: [option.value] }))
-                                            }}
-                                        >
-                                            {option.name}
-                                        </button>
-                                    </MenuItem>
-                                ))}
-                            </MenuItems>
-                        </Menu>
-                        
-                        <button
-                            onClick={() => setMobileFiltersOpen(true)}
-                            className="lg:hidden rounded-md bg-white dark:bg-gray-800 p-2 text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            <AdjustmentsHorizontalIcon className="h-5 w-5" />
-                        </button>
-                    </div>
+          <div className="mt-6">
+            <Disclosure as="div" className="border-b border-gray-200 dark:border-gray-700 py-4">
+              <DisclosureButton className="flex w-full items-center justify-between py-2 text-gray-700 dark:text-gray-300">
+                <span className="font-medium">Color</span>
+                <ChevronDownIcon className="h-5 w-5" />
+              </DisclosureButton>
+              <DisclosurePanel className="pt-4">
+                <div className="space-y-3">
+                  {colors.map((color) => (
+                    <label key={color.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.color.includes(color.name)}
+                        onChange={() => handleFilterChange("color", color.name)}
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                      <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                        {color.name}
+                      </span>
+                    </label>
+                  ))}
                 </div>
+              </DisclosurePanel>
+            </Disclosure>
 
-                {/* Content Grid */}
-                <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
-                    {/* Desktop Filters */}
-                    <form className="hidden lg:block lg:col-span-1">
-                        {filters.map((section) => (
-                            <Disclosure key={section.id} as="div" className="border-b border-gray-200 dark:border-gray-700 py-6">
-                                <DisclosureButton className="flex w-full items-center justify-between py-3 text-sm font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">
-                                    <span>{section.name}</span>
-                                    <ChevronDownIcon className="h-5 w-5" />
-                                </DisclosureButton>
-                                <DisclosurePanel className="pt-6">
-                                    <div className="space-y-4">
-                                        {section.options.map((option) => (
-                                            <label key={option} className="flex items-center">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedFilters[section.id]?.includes(option)}
-                                                    onChange={() => handleFilterChange(section.id, option)}
-                                                    className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
-                                                />
-                                                <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">{option}</span>
-                                            </label>
-                                        ))}
-                                    </div>
-                                </DisclosurePanel>
-                            </Disclosure>
-                        ))}
-                    </form>
-
-                    {/* Product Grid */}
-                    <div className="lg:col-span-4">
-                        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                            {products.map((product) => (
-                                //@ts-ignore
-                                <Product key={product.id} product={product} />
-                            ))}
-                        </div>
-                    </div>
+            <Disclosure as="div" className="border-b border-gray-200 dark:border-gray-700 py-4">
+              <DisclosureButton className="flex w-full items-center justify-between py-2 text-gray-700 dark:text-gray-300">
+                <span className="font-medium">Size</span>
+                <ChevronDownIcon className="h-5 w-5" />
+              </DisclosureButton>
+              <DisclosurePanel className="pt-4">
+                <div className="space-y-3">
+                  {sizes.map((size) => (
+                    <label key={size.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.size.includes(size.label)}
+                        onChange={() => handleFilterChange("size", size.label)}
+                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 dark:border-gray-600 dark:bg-gray-700"
+                      />
+                      <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                        {size.label}
+                      </span>
+                    </label>
+                  ))}
                 </div>
-            </main>
+              </DisclosurePanel>
+            </Disclosure>
+          </div>
+        </DialogPanel>
+      </Dialog>
+
+      {/* Main Content */}
+      <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
+        <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
+          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            Products
+          </h1>
+
+          <div className="flex items-center gap-4">
+            <Menu as="div" className="relative">
+              <MenuButton className="group inline-flex items-center rounded-md bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
+                Sort
+                <ChevronDownIcon className="ml-2 h-5 w-5 text-gray-400 group-hover:text-gray-500" />
+              </MenuButton>
+              <MenuItems className="absolute right-0 mt-2 w-40 rounded-md bg-white dark:bg-gray-800 shadow-lg ring-1 ring-black ring-opacity-5">
+                {sortOptions.map((option) => (
+                  <MenuItem key={option.value}>
+                    <button
+                      className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                      onClick={() => {
+                        setSelectedFilters((prev) => ({
+                          ...prev,
+                          sort: [option.value],
+                        }));
+                      }}
+                    >
+                      {option.name}
+                    </button>
+                  </MenuItem>
+                ))}
+              </MenuItems>
+            </Menu>
+
+            <button
+              onClick={() => setMobileFiltersOpen(true)}
+              className="lg:hidden rounded-md bg-white dark:bg-gray-800 p-2 text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700"
+            >
+              <AdjustmentsHorizontalIcon className="h-5 w-5" />
+            </button>
+          </div>
         </div>
-    )
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
+          {/* Desktop Filters */}
+          <form className="hidden lg:block lg:col-span-1">
+            <Disclosure as="div" className="border-b border-gray-200 dark:border-gray-700 py-6">
+              <DisclosureButton className="flex w-full items-center justify-between py-3 text-sm font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">
+                <span>Color</span>
+                <ChevronDownIcon className="h-5 w-5" />
+              </DisclosureButton>
+              <DisclosurePanel className="pt-6">
+                <div className="space-y-4">
+                  {colors.map((color) => (
+                    <label key={color.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.color.includes(color.name)}
+                        onChange={() => handleFilterChange("color", color.name)}
+                        className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
+                      />
+                      <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                        {color.name}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </DisclosurePanel>
+            </Disclosure>
+
+            <Disclosure as="div" className="border-b border-gray-200 dark:border-gray-700 py-6">
+              <DisclosureButton className="flex w-full items-center justify-between py-3 text-sm font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">
+                <span>Size</span>
+                <ChevronDownIcon className="h-5 w-5" />
+              </DisclosureButton>
+              <DisclosurePanel className="pt-6">
+                <div className="space-y-4">
+                  {sizes.map((size) => (
+                    <label key={size.id} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        checked={selectedFilters.size.includes(size.label)}
+                        onChange={() => handleFilterChange("size", size.label)}
+                        className="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-indigo-600 focus:ring-indigo-500 dark:bg-gray-700"
+                      />
+                      <span className="ml-3 text-sm text-gray-600 dark:text-gray-400">
+                        {size.label}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              </DisclosurePanel>
+            </Disclosure>
+          </form>
+
+          {/* Product Grid */}
+          <div className="lg:col-span-4">
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+              {products && products.length > 0 ? (
+                products.map((product) => (
+                  //@ts-ignore
+                  <Product key={product.id} product={product} />
+                ))
+              ) : (
+                <p>No products available.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
 }
-
-
