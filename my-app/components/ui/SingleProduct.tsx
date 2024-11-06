@@ -4,56 +4,22 @@ import axios from 'axios';
 import Cart from '@/app/cart/page';
 import { useCartStore } from '@/providers/cartStore';
 import { ShoppingCart } from './ShoppingCart';
-
-let i = 0
-export type SingleProductProps = {
-    product: {
-        id: string;
-        name: string;
-        image: string;
-        description: string;
-        price: number;
-        createdAt: Date;
-        updatedAt: Date;
-        amount: number;
-        sales: number;
-        categoryId: string;
-        subCategoryId: string;
-        employeeId: string;
-        colors: {
-            id: string;
-            productId: string;
-            colorId: string;
-            color: { name: string; };
-        }[];
-        sizes: {
-            id: string;
-            productId: string;
-            sizeId: string;
-            size: { label: string; };
-        }[];
-    };
-};
-
-type CartItem = {
-    id: string;
-    name: string;
-    price: number;
-    quantity: number;
-    image: string;
-    size?: string;
-    color?: string;
-    uniqueId?:string
-};
+import { SingleProductProps ,CartItem } from '@/types';
+import { ToastContainer, toast } from 'react-toast'
+import { useUserStore } from '@/providers/userStore';
 
 function SingleProduct({ product }: SingleProductProps) {
     const [selectedSize, setSelectedSize] = useState('');
     const [selectedColor, setSelectedColor] = useState('');
     const [isCartVisible, setIsCartVisible] = useState(false); // חדש: משתנה לבקרת תצוגת העגלה
     const addToCart = useCartStore((state) => state.addToCart);
-  
-    const handleAddToCart = () => {
+    const { user } = useUserStore();
 
+    const handleAddToCart = () => {
+        if(!user){
+            toast("you need to log in");
+            return;
+        }
         if (product.sizes.length === 0 && product.colors.length === 0) {
             addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image });
         } else {
@@ -158,6 +124,8 @@ function SingleProduct({ product }: SingleProductProps) {
                             <div className="flex flex-wrap gap-4 mt-8">
                                 <button type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded">Buy now</button>
                                 <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-2.5 border border-blue-600 bg-transparent hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded">Add to cart</button>
+                                <ToastContainer />
+
                             </div>
                         </div>
                     </div>

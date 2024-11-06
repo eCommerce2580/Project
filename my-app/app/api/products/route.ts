@@ -79,11 +79,14 @@ export async function POST(request: Request) {
                 sales,
                 category: {
                     connect: { id: categoryId }
+                    connect: { id: categoryId }
                 },
                 subCategory: {
                     connect: { id: subCategoryId }
+                    connect: { id: subCategoryId }
                 },
                 employee: {
+                    connect: { id: employeeId }
                     connect: { id: employeeId }
                 }
             },

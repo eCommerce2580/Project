@@ -1,20 +1,19 @@
 "use client";
 import { useSession } from "next-auth/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-type CancelOrderButtonProps = {
+type StatusOfOrderProps = {
   orderId: string;
   statusName: string;
 };
 
-export function CancelAndReturnedButton({ orderId, statusName }: CancelOrderButtonProps) { 
-  const { data: session } = useSession(); // Always run this hook
-  const [status, setStatus] = useState<string>(statusName); // Always run this hook
+export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
+  const { data: session } = useSession();
+  const [status, setStatus] = useState<string>(statusName);
   const [responseMessage, setResponseMessage] = useState<string>("");
 
-  // Handle session status once it's available
   if (!session) {
-    return <div>You need to log in to cancel your order.</div>;
+    return <div className="text-gray-800 dark:text-white">Please login</div>;
   }
 
   const sendMail = async (act: string) => {
@@ -30,10 +29,9 @@ export function CancelAndReturnedButton({ orderId, statusName }: CancelOrderButt
         html: `<p>The payment will be returned to you in the coming days.</p>`,
       }),
     });
-  }
+  };
 
-
-  const handleButton = async (act : string) => {
+  const handleButton = async (act: string) => {
     const body = { orderId, statusName: act };
     try {
       const res = await fetch("/api/orders", {
@@ -58,29 +56,29 @@ export function CancelAndReturnedButton({ orderId, statusName }: CancelOrderButt
   };
 
   return (
-    <div className="flex items-start gap-4 max-sm:flex-col">
-      <div className="flex flex-col">
-        <p className="font-normal text-lg text-gray-500">Status:</p>
-        <p className="font-semibold text-lg text-green-500">{status}</p>
-      </div>
+    <div className="flex items-center gap-4">
+      <p className="text-lg font-semibold text-gray-800 dark:text-white">
+        {status}
+      </p>
+      
       {status === "Received in System" && (
         <button
-          onClick={()=>handleButton("Cancelled")}
-          className="rounded-full px-5 py-2 bg-indigo-600 shadow-sm text-white font-semibold text-sm transition-all duration-500 hover:shadow-indigo-400 hover:bg-indigo-700 ml-auto"
+          onClick={() => handleButton("Cancelled")}
+          className="px-4 py-2 text-xs font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-50 dark:focus:ring-purple-600"
         >
           Cancel Order
         </button>
       )}
       {status === "Delivered" && (
         <button
-          onClick={()=>handleButton("Returned")}
-          className="rounded-full px-5 py-2 bg-indigo-600 shadow-sm text-white font-semibold text-sm transition-all duration-500 hover:shadow-indigo-400 hover:bg-indigo-700 ml-auto"
+          onClick={() => handleButton("Returned")}
+          className="px-4 py-2 text-xs font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-50 dark:focus:ring-purple-600"
         >
-          Return an order
+          Return Order
         </button>
       )}
-
-      {responseMessage && <p className="mt-2 text-red-500">{responseMessage}</p>}
+      
+      {responseMessage && <p className="text-red-500 dark:text-red-400">{responseMessage}</p>}
     </div>
   );
 }

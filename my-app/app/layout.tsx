@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 import ThemeProvider from "@/providers/ThemeProvider";
 import Nav from "@/components/section/Nav";
-import ReduxProvider from "@/providers/ReduxProvider";
 import SessionProvider from "@/providers/SessionProvider";
+import PaypalProvider from "@/providers/PayPalProvider";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -22,20 +22,19 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        // className={`${inter.className} min-h-screen bg-background pb-6 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black`}
       >
         <SessionProvider>
-          <ReduxProvider>
             <ThemeProvider
               attribute="class"
               defaultTheme="system"
               enableSystem
               disableTransitionOnChange
             >
+              <PaypalProvider>
                <Nav />
               {children}
+              </PaypalProvider>
             </ThemeProvider>
-          </ReduxProvider>
         </SessionProvider>
       </body>
     </html>
