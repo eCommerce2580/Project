@@ -9,7 +9,11 @@ import { totalmem } from "os";
 
 export const POST = async (req: Request) => {
   console.log("in cupture payment")
-  const { id, deliveryDetails, cart, adressId } = await req.json();
+  const body=await req.json();
+
+  console.log("body",body)
+  const { id, deliveryDetails, cart, addressId } = body;
+  console.log("adresId in route", addressId)
   try {
     const token = await generateToken();
 
@@ -24,7 +28,7 @@ export const POST = async (req: Request) => {
       },
     });
     console.log("success capture Order", data);
-    const order = await addOrder(deliveryDetails, cart, adressId);//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
+    const order = await addOrder(deliveryDetails, cart, addressId);//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
     return NextResponse.json(
 
       { success: true, message: "success capture Order", data },
@@ -58,7 +62,7 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
     }
     const statusId = status?.id
     if (!statusId) {
-      throw new Error("Shipping address ID is required");
+      throw new Error("status ID is required");
     }
     // const orderItems = cart;
     console.log("userId", userId)
