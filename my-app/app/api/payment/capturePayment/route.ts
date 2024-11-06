@@ -7,8 +7,8 @@ import { DateTime } from 'luxon';
 
 
 export const POST = async (req: Request) => {
-console.log("in cupture payment")
-  const { id, deliveryDetails,cart,adressId } = await req.json();
+  console.log("in cupture payment")
+  const { id, deliveryDetails, cart, adressId } = await req.json();
   try {
     const token = await generateToken();
 
@@ -23,7 +23,7 @@ console.log("in cupture payment")
       },
     });
     console.log("success capture Order", data);
-    const order = await addOrder( deliveryDetails,cart ,adressId );//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
+    const order = await addOrder(deliveryDetails, cart, adressId);//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
     return NextResponse.json(
 
       { success: true, message: "success capture Order", data },
@@ -37,8 +37,8 @@ console.log("in cupture payment")
   }
 };
 
-const addOrder = async function ( deliveryDetails: { phoneNumber: string, userId: string, email: string, name: string },cart:any,adressId:string) {
- console.log("add order",deliveryDetails,cart)
+const addOrder = async function (deliveryDetails: { phoneNumber: string, userId: string, email: string, name: string }, cart: any, adressId: string) {
+  console.log("add order", deliveryDetails, cart)
   const userId = deliveryDetails.userId;
   let toatalAmount = 0;
   const status = await prisma.ordersStatus.findFirst({
@@ -50,14 +50,14 @@ const addOrder = async function ( deliveryDetails: { phoneNumber: string, userId
   if (!statusId) {
     throw new Error("Shipping address ID is required");
   }
-   const orderItems = cart?.items;
+  const orderItems = cart?.items;
   try {
     // Create the order and update stock
     const order = await prisma.orders.create({
       data: {
         userId: userId,
         totalAmount: toatalAmount,
-        shippingAddressId:adressId,
+        shippingAddressId: adressId,
         expectedDeliveryDate: DateTime.now().plus({ weeks: 2 }).toISO(),
         // expectedDeliveryDate.toISO(),
         statusId: statusId,
@@ -73,8 +73,9 @@ const addOrder = async function ( deliveryDetails: { phoneNumber: string, userId
         name: deliveryDetails.name
       },
     });
-
-const updated= await updateAmount(orderItems);
+    console.log("orderPrisma", order)
+    const updated = await updateAmount(orderItems);
+    console.log("updated", updated)
 
     clearCartByUserId(userId)
       .catch(e => {
@@ -116,16 +117,16 @@ async function clearCartByUserId(userId: string) {
 
   console.log(`Cart cleared for userId: ${userId}`);
 }
-async function updateAmount(orderItems:any) {
-  
-interface OrderItem {
-  productId: string; // או טיפוס אחר מתאים
-  quantity: number;
-}
-    const updateData = orderItems.map((item:OrderItem) => ({
-      where: { id: item.productId },
-      data: { amount: { decrement: item.quantity } },
-    }));
-    
-    await prisma.product.updateMany(updateData);
+async function updateAmount(orderItems: any) {
+
+  interface OrderItem {
+    productId: string; // או טיפוס אחר מתאים
+    quantity: number;
+  }
+  const updateData = orderItems.map((item: OrderItem) => ({
+    where: { id: item.productId },
+    data: { amount: { decrement: item.quantity } },
+  }));
+
+  await prisma.product.updateMany(updateData);
 }

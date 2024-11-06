@@ -5,21 +5,34 @@ export type OrderComponentProps = {
     order: {
         status: { name: string };
         orderProducts: {
-            id: string;
+            id:string;
             orderId: string;
             productId: string;
             quantity: number;
             price: number;
-            product: { name: string; price: number, image:string };
+            product:
+            {
+                name: string;
+                price: number;
+                image: string;
+                colors: {
+                    color: { name: string; hexCode?: string | null };
+                }[];
+                sizes: {
+                    size: { label: string };
+                }[];
+            };
         }[];
         id: string;
         orderDate: Date;
         totalAmount: number;
-        paymentMethodId: string;
         shippingAddressId: string;
         expectedDeliveryDate: Date;
         userId: string;
         statusId: string;
+        email: string
+        PhoneNumber: string
+        name: string
     };
 };
 
@@ -49,8 +62,6 @@ export function OrderComponent({ order }: OrderComponentProps) {
                     </p>
                 </div>
 
-
-
                 {/* Delivery Date Section */}
                 <div className="flex flex-col space-y-2">
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
@@ -59,7 +70,6 @@ export function OrderComponent({ order }: OrderComponentProps) {
                     <p className="text-lg font-semibold text-gray-800 dark:text-white">
                         {new Date(order.expectedDeliveryDate).toLocaleDateString()}
                     </p>
-<p>{order.paymentMethod.name}</p>
                 </div>
 
                 {/* Status Section */}

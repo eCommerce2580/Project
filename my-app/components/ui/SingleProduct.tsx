@@ -5,6 +5,8 @@ import { ShoppingCart } from './ShoppingCart';
 import { SingleProductProps, CartItem } from '@/types';
 import { ToastContainer, toast } from 'react-toast'
 import { useUserStore } from '@/providers/userStore';
+import { useRouter } from "next/navigation";
+
 
 
 function SingleProduct({ product }: SingleProductProps) {
@@ -13,7 +15,7 @@ function SingleProduct({ product }: SingleProductProps) {
     const [isCartVisible, setIsCartVisible] = useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
     const addToCart = useCartStore((state) => state.addToCart);
-
+    const router=useRouter();
 
     const { user } = useUserStore();
     const handleAddToCart = () => {
@@ -123,7 +125,7 @@ function SingleProduct({ product }: SingleProductProps) {
                             )}
 
                             <div className="flex flex-wrap gap-4 mt-8">
-                                <button type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+                                <button onClick={() => router.push("/checkout")}  type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
 hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
 ">Buy now</button>                                <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-2.5 border border-blue-600 bg-white hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded">Add to cart</button>
                                 <ToastContainer />

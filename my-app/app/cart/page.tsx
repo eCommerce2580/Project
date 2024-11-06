@@ -4,9 +4,13 @@ import React from 'react';
 import { useCartStore } from '@/providers/cartStore';
 import Link from 'next/link';
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
+import { useRouter } from "next/navigation";
+
+
 
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
+    const router = useRouter();
 
     const calculateTotal = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -74,7 +78,7 @@ const Cart = () => {
                                                         +
                                                     </button>
                                                 </div>
-                                                <button 
+                                                <button
                                                     onClick={() => removeFromCart(item.uniqueId || item.id)}
                                                     className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-500"
                                                 >
@@ -101,7 +105,7 @@ const Cart = () => {
                                     <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                                     <span className="text-gray-900 dark:text-gray-100">${calculateTotal().toFixed(2)}</span>
                                 </div>
-                                <button className="mt-6 w-full bg-indigo-600 dark:bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-600">
+                                <button onClick={() => router.push("/checkout")} className="mt-6 w-full bg-indigo-600 dark:bg-indigo-500 text-white py-2 px-4 rounded-md hover:bg-indigo-700 dark:hover:bg-indigo-600">
                                     Checkout
                                 </button>
                             </div>

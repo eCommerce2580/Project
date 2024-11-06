@@ -123,7 +123,6 @@ model SubCategory {
   products   Product[]
 }
 
-
 model Category {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
@@ -132,10 +131,10 @@ model Category {
 }
 
 model OrdersStatus {
-  id     String   @id @default(auto()) @map("_id") @db.ObjectId
-  name   String
-  progressLevel  String
-  orders Orders[]
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  progressLevel String
+  orders        Orders[]
 }
 
 model Orders {
@@ -150,12 +149,10 @@ model Orders {
   status               OrdersStatus   @relation(fields: [statusId], references: [id])
   statusId             String         @db.ObjectId
   orderProducts        OrderProduct[]
-  email                String 
-  PhoneNumber          String 
+  email                String
+  PhoneNumber          String
   name                 String
-  
 }
-
 
 model OrderProduct {
   id        String  @id @default(auto()) @map("_id") @db.ObjectId
@@ -182,10 +179,8 @@ model CartItem {
   cart      Cart    @relation(fields: [cartId], references: [id])
   productId String  @db.ObjectId
   product   Product @relation(fields: [productId], references: [id])
-  quantity  Int 
-  size      String? 
-  color     String? 
-  price     Float 
+  quantity  Int
+  size      String?
+  color     String?
+  price     Float
 }
-
-
