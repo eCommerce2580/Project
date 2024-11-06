@@ -54,6 +54,7 @@ function PayPalBtn() {
     layout: "vertical",
     color: theme === "dark" ? "silver" : "blue", // צבע הכפתור בהתאם לתמה
     height: 40,
+    
   };
 
   return (
