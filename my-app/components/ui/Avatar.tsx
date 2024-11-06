@@ -7,12 +7,20 @@ import Link from "next/link";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { FaUserCircle } from "react-icons/fa";
 import { signOut, useSession } from "next-auth/react";
+import axios from "axios";
+import {  useCartStore } from '@/providers/cartStore';
+import { useUserStore } from '@/providers/userStore';
 
 export default function Avatar() {
   const { data: session } = useSession();
+  const { user } = useUserStore();
+  const { cart, setCart} = useCartStore();
 
   async function handleSignOut(): Promise<void> {
     try {
+      saveCartBeforeLogout();
+      setCart([])
+      localStorage.setItem("cart", JSON.stringify([]));
       await signOut({ redirect: false });
       window.location.assign("http://localhost:3000/");
       document.cookie = "next-auth.session-token=; Max-Age=0; path=/";
@@ -21,7 +29,19 @@ export default function Avatar() {
       console.error("Error during sign-out", error);
     }
   }
-
+  const saveCartBeforeLogout = async () => {
+    if (session && user?.id) {
+      console.log("log outttttttt")
+      try {
+        await axios.post(`http://localhost:3000/api/saveCart`, {
+          userId: user.id,
+          cart: cart,
+        });
+      } catch (error) {
+        console.error('Error saving cart:', error);
+      }
+    }
+  };
   return (
     <>
       <DropdownMenu.Root>
@@ -57,11 +77,6 @@ export default function Avatar() {
                 <FaCircleUser className="text-lg text-gray-600" />
                 <p className="text-slate-800 font-medium ml-3">My Profile</p>
               </Link>
-            </DropdownMenu.Item>
-
-            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-slate-100">
-              <MdOutlinePayment className="text-lg text-gray-600" />
-              <p className="text-slate-800 font-medium ml-3">Payment</p>
             </DropdownMenu.Item>
 
             <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-slate-100">

@@ -71,7 +71,7 @@ export type SingleProductProps = {
           id: string;
           productId: string;
           colorId: string;
-          color: { name: string; };
+          color: { name: string; hexCode: string | null }; // כולל את hexCode
       }[];
       sizes: {
           id: string;

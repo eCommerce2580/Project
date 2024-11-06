@@ -187,3 +187,5 @@ model CartItem {
   color     String? 
   price     Float 
 }
+
+
