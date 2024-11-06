@@ -5,7 +5,6 @@ import prisma from '@/prisma/client';
 export async function GET(request: Request, { params }: { params: { userId: string } }) {
   const { userId } = params;
   try {
-    // שליפת העגלה של המשתמש לפי userId
     const userCart = await prisma.cart.findUnique({
       where: { userId },
       select: {
@@ -26,12 +25,10 @@ export async function GET(request: Request, { params }: { params: { userId: stri
     });
     console.log("userCart" ,userCart?.items)
 
-    // אם לא נמצאה עגלה עבור המשתמש, נחזיר עגלה ריקה
     if (!userCart) {
       return NextResponse.json({ cartItems: [] });
     }
 
-    // עיבוד הנתונים לתצורה המבוקשת
     const cartData = userCart.items.map((item) => ({
       id: item.productId,
       name: item.product.name,
