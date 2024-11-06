@@ -34,6 +34,8 @@ export default function LoginForm() {
 
       if (credential?.ok) {
         console.log("Login successful");
+        localStorage.setItem("user", "disconnect");
+
         setErrorMessage("");
       } else {
         setErrorMessage("An error occurred during login. Please try again.");
@@ -43,6 +45,17 @@ export default function LoginForm() {
       setErrorMessage("An error occurred during login. Please try again.");
     }
   }
+  async function loginWithGoogle() :Promise<void>{
+    const result: any = signIn("google");
+    console.log("ppppppppppppppppppppppppppppppppppppppppppppppppppppp")
+
+    if (result.ok) {
+console.log("gggggggggggggghhhhhhhhhhhhhhhhhhhhhhhhhhh")
+      localStorage.setItem("user", "disconnect");
+    }
+
+  }
+
 
   async function handleRegister(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -61,11 +74,11 @@ export default function LoginForm() {
 
     try {
       const response = await axios.post("/api/register", values);
-    
+
       if (response.status === 200) {
         alert("A verification email has been sent to your email address");
         setErrorMessage("");
-        setIsLogin(true); 
+        setIsLogin(true);
       } else if (response.status === 201) {
         alert("Successful registration! You can now log in.");
         setIsLogin(true);
@@ -85,7 +98,7 @@ export default function LoginForm() {
         setErrorMessage("An unknown error occurred. Please try again.");
       }
     }
-  }    
+  }
 
   // Handle forgot password
   async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
@@ -249,7 +262,7 @@ hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
 
       <div className="flex w-full flex-col justify-center items-center">
         <button
-          onClick={() => signIn("google")}
+          onClick={loginWithGoogle}
           className="flex w-[80%] items-center justify-center bg-white
            dark:bg-gray-900 border border-gray-300 rounded-lg 
            shadow-md px-6 py-2 text-sm font-medium text-gray-800

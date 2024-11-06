@@ -35,7 +35,7 @@ export default function Nav() {
   const categoryRefs = useRef<CategoryRefs>({});
 
   const { data: session } = useSession();
-  const { fetchUser, user ,setUser} = useUserStore();
+  const { fetchUser, user, setUser } = useUserStore();
   const { cart, fetchCart, setCart } = useCartStore();
   const [isClient, setIsClient] = useState(false);
 
@@ -71,6 +71,8 @@ export default function Nav() {
             userId: user.id,
             cart: cart,
           });
+          localStorage.setItem("user", "connect");
+
         } catch (error) {
           console.error('Error saving cart:', error);
         }
@@ -85,25 +87,22 @@ export default function Nav() {
   useEffect(() => {
     if (session?.user?.email) {
       fetchUser(session.user.email);
-      console.log("asdfghjk", user)
-
-      if (user) {
-        console.log("user.id", user.id)
-        fetchCart(user.id);
-      }
     }
 
   }, [session, fetchUser]);
 
   useEffect(() => {
     console.log("asdfghjk", user)
-
-    if (user) {
+    const connect = localStorage.getItem("user");
+    console.log(connect,connect == `"disconnect"`)
+    if (user && connect == `"disconnect"`) {
       console.log("user.id", user.id)
+      localStorage.setItem("user", "connect");
+
       fetchCart(user.id);
     }
 
-  }, [fetchUser,setUser]);
+  }, [user]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {

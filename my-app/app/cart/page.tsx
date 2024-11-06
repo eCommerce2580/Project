@@ -20,7 +20,7 @@ const Cart = () => {
 
     return (
         <section className="min-h-screen bg-white dark:bg-gray-900">
-            {cart.length === 0 ? (
+            {cart && cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20">
                     <MdOutlineRemoveShoppingCart className="text-8xl text-gray-400 dark:text-gray-500" />
                     <h3 className="font-normal text-lg text-gray-600 dark:text-gray-300 mt-4">Your cart is empty.</h3>
@@ -49,7 +49,7 @@ const Cart = () => {
                                         <div className="flex flex-1 flex-col">
                                             <div className="flex justify-between">
                                                 <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">{item.name}</h3>
-                                                <p className="text-base font-medium text-gray-900 dark:text-gray-100">${item.price.toFixed(2)}</p>
+                                                <p className="text-base font-medium text-gray-900 dark:text-gray-100">${(item.price*item.quantity).toFixed(2)}</p>
                                             </div>
                                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{item.size} • {item.color}</p>
 

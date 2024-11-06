@@ -21,6 +21,8 @@ export default function Avatar() {
       saveCartBeforeLogout();
       setCart([])
       localStorage.setItem("cart", JSON.stringify([]));
+      localStorage.setItem("user", JSON.stringify("disconnect"));
+
       await signOut({ redirect: false });
       window.location.assign("http://localhost:3000/");
       document.cookie = "next-auth.session-token=; Max-Age=0; path=/";
