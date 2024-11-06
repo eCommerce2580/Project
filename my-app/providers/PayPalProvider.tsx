@@ -11,7 +11,7 @@ const PaypalProvider = ({ children }: Props) => {
   return (
     <PayPalScriptProvider
       options={{
-        clientId: process.env.NEXT_PUBLIC_CLIENT_ID!, // יש לשים את ה-clientId משתנה סביבת 
+        clientId: process.env.NEXT_PUBLIC_CLIENT_ID!, 
         intent: "capture",
         currency: "ILS",
       }}
