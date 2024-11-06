@@ -4,11 +4,16 @@ import { NextResponse } from "next/server";
 import prisma from "@/prisma/client";
 import { CartItem } from '@/providers/cartStore';
 import { DateTime } from 'luxon';
+import { totalmem } from "os";
 
 
 export const POST = async (req: Request) => {
   console.log("in cupture payment")
-  const { id, deliveryDetails, cart, adressId } = await req.json();
+  const body=await req.json();
+
+  console.log("body",body)
+  const { id, deliveryDetails, cart, addressId } = body;
+  console.log("adresId in route", addressId)
   try {
     const token = await generateToken();
 
@@ -23,7 +28,7 @@ export const POST = async (req: Request) => {
       },
     });
     console.log("success capture Order", data);
-    const order = await addOrder(deliveryDetails, cart, adressId);//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
+    const order = await addOrder(deliveryDetails, cart, addressId);//משהו כאםן לא מאה אחוז תקין מבחינת הבדיקות, הזריקות והתפיסות
     return NextResponse.json(
 
       { success: true, message: "success capture Order", data },
@@ -38,20 +43,37 @@ export const POST = async (req: Request) => {
 };
 
 const addOrder = async function (deliveryDetails: { phoneNumber: string, userId: string, email: string, name: string }, cart: any, adressId: string) {
-  console.log("add order", deliveryDetails, cart)
-  const userId = deliveryDetails.userId;
-  let toatalAmount = 0;
-  const status = await prisma.ordersStatus.findFirst({
-    where: {
-      progressLevel: " 1",
-    },
-  });
-  const statusId = status?.id
-  if (!statusId) {
-    throw new Error("Shipping address ID is required");
-  }
-  const orderItems = cart?.items;
   try {
+    console.log("add order", deliveryDetails, cart)
+    const userId = deliveryDetails.userId;
+    let toatalAmount = 0;
+    let status;
+    try {
+
+      status = await prisma.ordersStatus.findFirst({
+        where: {
+          progressLevel: "1",
+        },
+      });
+    }
+    catch (err) {
+
+      console.log("status", err)
+    }
+    const statusId = status?.id
+    if (!statusId) {
+      throw new Error("status ID is required");
+    }
+    // const orderItems = cart;
+    console.log("userId", userId)
+
+    console.log("address", adressId)
+
+    console.log("totalAmount", toatalAmount)
+
+    console.log("statusId", statusId)
+
+    console.log("userId", userId)
     // Create the order and update stock
     const order = await prisma.orders.create({
       data: {
@@ -62,10 +84,10 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
         // expectedDeliveryDate.toISO(),
         statusId: statusId,
         orderProducts: {
-          create: orderItems.map((item: { productId: string; quantity: number; price: number }) => ({
-            product: { connect: { id: item.productId } },
+          create: cart.map((item: { id: string; quantity: number; price: number }) => ({
+            productId: item.id,
             quantity: item.quantity,
-            price: item.price,
+            price: item.price * item.quantity,
           })),
         },
         email: deliveryDetails.email,
@@ -74,7 +96,7 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
       },
     });
     console.log("orderPrisma", order)
-    const updated = await updateAmount(orderItems);
+    const updated = await updateAmount(cart);
     console.log("updated", updated)
 
     clearCartByUserId(userId)

@@ -25,6 +25,7 @@ export default function DeliveryDetails() {
   };
 
   const gotopayment = (e: React.FormEvent) => {
+    console.log("user", user)
     e.preventDefault();
 //     console.log(formData);
 //     const isAddressComplete =

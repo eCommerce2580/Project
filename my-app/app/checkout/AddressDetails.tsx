@@ -8,7 +8,6 @@ import axios from 'axios';
 
 export default function AddressDetails() {
   const { user, setUser } = useUserStore();
-  console.log(user)
   const [isEditing, setIsEditing] = useState(false);
   const [addressForm, setAddressForm] = useState<any>({//state for the inputs
     country: user?.address?.country || '',
@@ -58,8 +57,12 @@ export default function AddressDetails() {
           ...user, address: updatedAddress,
         });
       }
+      const body={
+        name:user?.name,
+        ...updatedAddress
+      }
       // setOriginalAddress(updatedAddress); // עדכון הכתובת המקורית
-      await axios.put(`http://localhost:3000/api/updateUser/${user?.email}`, updatedAddress)
+      await axios.put(`http://localhost:3000/api/updateUser/${user?.email}`, body)
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update address:', error);
@@ -70,7 +73,7 @@ export default function AddressDetails() {
     <div className="address-details space-y-4">
      
 
-      <form className="space-y-4" >
+      {/* <form className="space-y-4" > */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {['country', 'city', 'street', 'houseNumber', 'zipCode'].map((field) => (
             <div key={field}>
@@ -96,7 +99,7 @@ export default function AddressDetails() {
             onClick={handleEditClick}
             className={`text-blue-500 hover:underline ${isEditing ? 'hidden' : 'block'}`}
           >
-            <FiEdit className="inline-block" /> ערוך כתובת
+            <FiEdit className="inline-block" /> edit address
           </button>
           {isEditing && (
             <>
@@ -118,7 +121,7 @@ export default function AddressDetails() {
             </>
           )}
         </div>
-      </form>
+      {/* </form> */}
     </div>
   );
 }

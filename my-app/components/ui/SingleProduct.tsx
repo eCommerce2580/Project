@@ -35,9 +35,8 @@ function SingleProduct({ product }: SingleProductProps) {
             addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image, size: selectedSize, color: selectedColor, uniqueId });
         }
 
-        setIsCartVisible(true); // הצגת העגלה
+        setIsCartVisible(true); 
 
-        // חדש: טיימר לסגירת העגלה אחרי 5 שניות
         setTimeout(() => setIsCartVisible(false), 3000);
     };
 
@@ -77,7 +76,6 @@ function SingleProduct({ product }: SingleProductProps) {
                             <p className="text-gray-600 dark:text-gray-400 mt-2">{product.description}</p>
 
                             <div className="flex space-x-2 mt-4">
-                                {/* Star ratings (SVGs) */}
                             </div>
 
                             <div className="flex flex-wrap gap-4 mt-8">
@@ -125,9 +123,12 @@ function SingleProduct({ product }: SingleProductProps) {
                             )}
 
                             <div className="flex flex-wrap gap-4 mt-8">
-                                <button onClick={() => router.push("/checkout")}  type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+                                {/* <button onClick={() => router.push("/checkout")}  type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
 hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
-">Buy now</button>                                <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-2.5 border border-blue-600 bg-white hover:bg-gray-50 text-gray-800 text-sm font-semibold rounded">Add to cart</button>
+">Buy now</button>                              */}
+  <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
+">Add to cart</button> 
                                 <ToastContainer />
                             </div>
                         </div>

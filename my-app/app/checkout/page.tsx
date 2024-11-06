@@ -8,7 +8,7 @@ export default function Checkout() {
 
   return (
     <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-      <form action="#" className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+      {/* <form action="#" className="mx-auto max-w-screen-xl px-4 2xl:px-0"> */}
         <  DeliveryDetails />
         {/* <OrderSteps /> */}
 
@@ -17,7 +17,7 @@ export default function Checkout() {
     <  PayPalBtn />}
 
       
-      </form>
+      {/* </form> */}
     </section>
   );
 }
