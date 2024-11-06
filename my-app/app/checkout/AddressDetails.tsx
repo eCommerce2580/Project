@@ -70,7 +70,7 @@ export default function AddressDetails() {
     <div className="address-details space-y-4">
      
 
-      <form className="space-y-4" >
+      {/* <form className="space-y-4" > */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {['country', 'city', 'street', 'houseNumber', 'zipCode'].map((field) => (
             <div key={field}>
@@ -118,7 +118,7 @@ export default function AddressDetails() {
             </>
           )}
         </div>
-      </form>
+      {/* </form> */}
     </div>
   );
 }
