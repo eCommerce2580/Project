@@ -10,7 +10,7 @@ export default async function Prod({ params }: { params: { productId: string } }
       colors: {
         include: {
           color: {
-            select: { name: true }
+            select: { name: true, hexCode: true }
           }
         }
       },

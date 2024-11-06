@@ -1,7 +1,5 @@
 "use client"
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import Cart from '@/app/cart/page';
+import React, { useState } from 'react';
 import { useCartStore } from '@/providers/cartStore';
 import { ShoppingCart } from './ShoppingCart';
 import { SingleProductProps, CartItem } from '@/types';
@@ -116,7 +114,7 @@ function SingleProduct({ product }: SingleProductProps) {
                                                 key={`${color.id}-${index}`}
                                                 type="button"
                                                 className={`w-10 h-10 rounded-full shrink-0 transition-all ${selectedColor === color.color.name ? 'ring-2 ring-gray-800 dark:ring-gray-200' : ''}`}
-                                                style={{ backgroundColor: color.color.name }}
+                                                style={{ backgroundColor: color.color.hexCode || color.color.name}} // כאן השתמש ב-hexCode
                                                 onClick={() => setSelectedColor(color.color.name)}
                                             ></button>
                                         ))}
