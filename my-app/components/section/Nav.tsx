@@ -129,17 +129,17 @@ export default function Nav() {
                 Contact us
               </Link>
               <Link
-                href="#"
+                href="/team"
                 className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
               >
                 Team
               </Link>
               <Link
-                href="#"
+                href="/about"
                 className="rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
 
               >
-                Projects
+                About
               </Link>
             </div>
 
@@ -196,16 +196,16 @@ export default function Nav() {
                 Contact us
               </Link>
               <Link
-                href="#"
+                href="/team"
                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300"
               >
                 Team
               </Link>
               <Link
-                href="#"
+                href="/about"
                 className="block rounded-md px-3 py-2 text-base font-medium text-gray-700 dark:text-gray-300"
               >
-                Projects
+                About
               </Link>
             </div>
           </div>
