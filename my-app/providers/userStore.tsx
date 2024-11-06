@@ -32,7 +32,7 @@ export const useUserStore = create<UserState>((set) => ({
     try {
     const response = await axios.get(`http://localhost:3000/api/getUser/${userEmail}`);
     const userData = response.data.user;
-    console.log("API response:", userData); // הוספה
+    console.log("API response:", userData); 
     set({ user: userData });
     } catch (error) {
       console.error('Error fetching user:', error);

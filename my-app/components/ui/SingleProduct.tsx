@@ -4,6 +4,7 @@ import axios from 'axios';
 import Cart from '@/app/cart/page';
 import { useCartStore } from '@/providers/cartStore';
 import { ShoppingCart } from './ShoppingCart';
+import { SingleProductProps } from '@/types';
 import { ToastContainer, toast } from 'react-toast'
 
 let i = 0
@@ -46,7 +47,6 @@ type CartItem = {
     color?: string;
     uniqueId?:string
 };
-import { useUserStore } from '@/providers/userStore';
 
 function SingleProduct({ product }: SingleProductProps) {
     const [selectedSize, setSelectedSize] = useState('');

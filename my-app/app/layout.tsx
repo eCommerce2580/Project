@@ -4,6 +4,7 @@ import "./globals.css";
 import ThemeProvider from "@/providers/ThemeProvider";
 import Nav from "@/components/section/Nav";
 import SessionProvider from "@/providers/SessionProvider";
+import PaypalProvider from "@/providers/PayPalProvider";
 
 // const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        // className={`${inter.className} min-h-screen bg-background pb-6 antialiased selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black`}
       >
         <SessionProvider>
             <ThemeProvider
@@ -30,8 +30,10 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              <PaypalProvider>
                <Nav />
               {children}
+              </PaypalProvider>
             </ThemeProvider>
         </SessionProvider>
       </body>

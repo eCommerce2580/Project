@@ -1,23 +1,3 @@
-// Cart item type
-export interface CartItem {
-  productId: string;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-// Cart state type
-// export interface CartState {
-//   items: CartItem[]; // ריבוי פריטים בעגלת הקניות
-// }
-
-// // טיפוס לכל ה-state של האפליקציה (store)
-// export interface RootState {
-//   user: UserState;
-//   cart: CartState;
-// }
-
-
 export interface FormData {
   name: string;
   email: string;
@@ -72,3 +52,59 @@ export type SessionUser = {
     };
   } | null;
 };
+
+export type SingleProductProps = {
+  product: {
+      id: string;
+      name: string;
+      image: string;
+      description: string | null;  // מאפשר גם null
+      price: number;
+      createdAt: Date;
+      updatedAt: Date;
+      amount: number;
+      sales: number;
+      categoryId: string;
+      subCategoryId: string;
+      employeeId: string;
+      colors: {
+          id: string;
+          productId: string;
+          colorId: string;
+          color: { name: string; };
+      }[];
+      sizes: {
+          id: string;
+          productId: string;
+          sizeId: string;
+          size: { label: string; };
+      }[];
+  };
+};
+
+
+export type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  image: string;
+  size?: string;
+  color?: string;
+  uniqueId?: string;
+};
+
+export type SubCategoryType = {
+  id: string;
+  name: string;
+  imageUrl: string; // Assuming this is where the image URL is stored
+  categoryId: string; // You only need the categoryId, not the full category object
+};
+
+
+export type SubCategoriesProps = {
+  subCategory: SubCategoryType[];
+  categoryName: string;
+
+};
+
