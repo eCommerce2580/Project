@@ -7,15 +7,19 @@ import { useUserStore } from '@/providers/userStore';
 import axios from "axios";
 import { useDeliveryDetailsStore } from '@/providers/deliveryDetailsStrore'; 
 import {useCartStore} from '@/providers/cartStore'
+import { useRouter } from "next/navigation";
+
  function PayPalBtn() {
 const  {deliveryDetails} =useDeliveryDetailsStore();
 const {cart}=useCartStore();
+const router = useRouter()
 const { user, setUser } = useUserStore();
 let adressId="0";
 if(user?.address?.addressId){
   adressId=user.address.addressId;}
   const createOrder: PayPalButtonsComponentProps["createOrder"] = async () => {
     try {
+   
       const { data } = await axios({
         url: "/api/payment/createOrder",
         method: "POST",
@@ -34,14 +38,19 @@ if(user?.address?.addressId){
 
   const onApprove: PayPalButtonsComponentProps["onApprove"] = async (d) => {
     // Capture the funds from the transaction.
-    const { data } = await axios({
-      url: "/api/payment/capturePayment",
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      data: JSON.stringify({ id:d.orderID,deliveryDetails,cart,adressId }),
-    });
+   try{const { data } = await axios({
+    url: "/api/payment/capturePayment",
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    data: JSON.stringify({ id:d.orderID,deliveryDetails,cart,adressId }),
+  });} catch(error) {
+    console.error(error);
+     throw error;
+  }
 
    alert(`Transaction completed by`);
+   
+   router.push("/userOrder")
   };
 
   const styles: PayPalButtonsComponentProps["style"] = {

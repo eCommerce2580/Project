@@ -7,7 +7,7 @@ import AddressDetails from './AddressDetails';
 
 export default function DeliveryDetails() {
   const { fetchUser, user } = useUserStore();
-  const { setDeliveryDetails } = useDeliveryDetailsStore();
+  const { deliveryDetails, setDeliveryDetails } = useDeliveryDetailsStore();
   
   const [formData, setFormData] = useState({
     name: user?.name,
@@ -26,15 +26,24 @@ export default function DeliveryDetails() {
 
   const gotopayment = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
-
-    setDeliveryDetails({
-      userId: user?.id || '',
-      phoneNumber: formData.phone,
-      email: formData.email|| "",
-      name: formData.name||"",
-      isComplited: true
-    });
+//     console.log(formData);
+//     const isAddressComplete =
+//     user?.address?.city &&
+//     user?.address?.country &&
+//     user?.address?.houseNumber &&
+//     user?.address?.street &&
+//     user?.address?.zipCode;
+// if(isAddressComplete)
+// alert("plese fhinish to edit your adress");
+ setDeliveryDetails({
+    ...deliveryDetails,
+  phoneNumber: formData.phone,
+   email: formData.email|| "",
+   name: formData.name||"",
+   userId: user?.id ?? null,
+   isComplited: true
+ });
+ 
   };
 
   return (

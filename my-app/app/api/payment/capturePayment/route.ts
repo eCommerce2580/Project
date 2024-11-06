@@ -5,8 +5,9 @@ import prisma from "@/prisma/client";
 import { CartItem } from '@/providers/cartStore';
 import { DateTime } from 'luxon';
 
-export const POST = async (req: Request) => {
 
+export const POST = async (req: Request) => {
+console.log("in cupture payment")
   const { id, deliveryDetails,cart,adressId } = await req.json();
   try {
     const token = await generateToken();
@@ -37,6 +38,7 @@ export const POST = async (req: Request) => {
 };
 
 const addOrder = async function ( deliveryDetails: { phoneNumber: string, userId: string, email: string, name: string },cart:any,adressId:string) {
+ console.log("add order",deliveryDetails,cart)
   const userId = deliveryDetails.userId;
   let toatalAmount = 0;
   const status = await prisma.ordersStatus.findFirst({
