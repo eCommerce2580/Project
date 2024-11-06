@@ -1,16 +1,16 @@
-import Store from '@/components/ui/Store';
+import Store, { categoryAndSubId } from '@/components/ui/Store';
 import React from 'react';
 
 
 export default function Page({ params }: { params: { id: string; subCategories: string } }) {
-    const categoryIdAndSubId = {
-        categoryId: params.id,
-        subCategoryId: params.subCategories
+    const categoryIdAndSubId : categoryAndSubId = {
+        category: params.id,
+        subCategory: params.subCategories
     };
     
     return (
         <div> 
-            <Store categoryIdAndSubId={categoryIdAndSubId} />
+            <Store categoryIdAndSubId={categoryIdAndSubId}  />
         </div>
     );
 }

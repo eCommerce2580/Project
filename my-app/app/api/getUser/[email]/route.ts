@@ -4,11 +4,11 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request,  { params }: { params: { email: string } }
 ) {
     try {
-        // Assuming you want to fetch a user by an email passed in query parameters
         const { email } = params;
 
         const user = await prisma.users.findUnique({
             where: { email: email }, 
+            include: { address: true },
         });
 
         return NextResponse.json({ message: "Success", success: true, user });
@@ -17,3 +17,4 @@ export async function GET(request: Request,  { params }: { params: { email: stri
         return NextResponse.json({ message: "Error fetching user", success: false }, { status: 500 });
     }
 }
+

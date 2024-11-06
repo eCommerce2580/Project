@@ -40,7 +40,17 @@ function ContactForm() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify({
+                    name: formData.firstName + " " + formData.lastName,
+                    email: formData.email,
+                    message: formData.message,
+                    subject: 'Your message has been received',
+                    text: 'Thank you for contacting us! We have received your message and will get back to you shortly.',
+                    html: `
+                        <h3>Thank you for contacting us!</h3>
+                        <p>We have received your message and will get back to you shortly.</p>
+                        `,
+                }),
             });
 
             if (res.ok) {
@@ -103,8 +113,8 @@ function ContactForm() {
                     ></textarea>
                 </div>
 
-                <button type="submit" className="w-full px-6 py-3 mt-4 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-blue-500 rounded-lg hover:bg-blue-400 focus:outline-none focus:ring focus:ring-blue-300 focus:ring-opacity-50">
-                    Send message
+                <button type="submit" 
+                    className="w-full px-6 py-3 mt-4 text-sm font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-50">                    Send message
                 </button>
             </form>
             {responseMessage && <p className="mt-4" style={{ color: responseMessage.includes("successfully") ? "green" : "red" }}>{responseMessage}</p>}
