@@ -18,7 +18,7 @@ const Cart = () => {
     };
 
     return (
-        <section className="relative z-10 after:contents-[''] after:absolute after:z-0 after:h-full xl:after:w-1/3 after:top-0 after:right-0 after:bg-gray-50 dark:after:bg-gray-900">
+        <section>
             {cart.length === 0 ? (
                 <div className="flex flex-col items-center justify-center min-h-screen py-20">
                     <MdOutlineRemoveShoppingCart className="text-8xl text-blue-500 dark:text-blue-400" />
