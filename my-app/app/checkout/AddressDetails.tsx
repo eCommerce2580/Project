@@ -1,26 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useUserStore } from '@/providers/userStore';
+import React, { useEffect, useState } from 'react';
+
+import { useUserStore, UserAddress } from '@/providers/userStore';
 import { FiEdit } from 'react-icons/fi'; // אייקון לעריכה (יש להתקין את react-icons במידת הצורך)
 import axios from 'axios';
 
 export default function AddressDetails() {
   const { user, setUser } = useUserStore();
+  console.log(user)
   const [isEditing, setIsEditing] = useState(false);
-  const [originalAddress, setOriginalAddress] = useState({
+  const [addressForm, setAddressForm] = useState<any>({//state for the inputs
     country: user?.address?.country || '',
     city: user?.address?.city || '',
     street: user?.address?.street || '',
     houseNumber: user?.address?.houseNumber || '',
-    zipCode: user?.address?.zipCode || '',
+    zipCode: user?.address?.zipCode || ''
   });
-  
-  const [addressForm, setAddressForm] = useState({ ...originalAddress });
+  const [originalAddress, setOriginalAddress] = useState<any>();//state for the original Adress
+  useEffect(() => {
+    if (!user) return;
+    setAddressForm({
+      country: user?.address?.country || '',
+      city: user?.address?.city || '',
+      street: user?.address?.street || '',
+      houseNumber: user?.address?.houseNumber || '',
+      zipCode: user?.address?.zipCode || ''
+    })
+  }, [user])
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
-    setAddressForm((prevForm) => ({
+    setAddressForm((prevForm: any) => ({
       ...prevForm,
       [id]: value,
     }));
@@ -40,13 +52,14 @@ export default function AddressDetails() {
     // שמירת הכתובת בחנות ובשרת
     try {
       const updatedAddress = { ...addressForm };
-      // await axios.post('/api/updateAddress', { userId: user?.id, address: updatedAddress });
+
       if (user) {
         setUser({
           ...user, address: updatedAddress,
         });
       }
-      setOriginalAddress(updatedAddress); // עדכון הכתובת המקורית
+      // setOriginalAddress(updatedAddress); // עדכון הכתובת המקורית
+      await axios.put(`http://localhost:3000/api/updateUser/${user?.email}`, updatedAddress)
       setIsEditing(false);
     } catch (error) {
       console.error('Failed to update address:', error);
@@ -55,9 +68,9 @@ export default function AddressDetails() {
 
   return (
     <div className="address-details space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">פרטי כתובת</h2>
+     
 
-      <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
+      <form className="space-y-4" >
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {['country', 'city', 'street', 'houseNumber', 'zipCode'].map((field) => (
             <div key={field}>
@@ -92,14 +105,15 @@ export default function AddressDetails() {
                 onClick={handleCancel}
                 className="text-red-500 hover:underline"
               >
-                ביטול
+                cancle
               </button>
               <button
-                type="submit"
+                type="button"
                 className="w-full rounded-lg bg-blue-600 text-white px-4 py-2 hover:bg-blue-700"
                 disabled={!Object.values(addressForm).every((val) => val !== '')}
+                onClick={handleSave}
               >
-             save adress
+                save adress
               </button>
             </>
           )}

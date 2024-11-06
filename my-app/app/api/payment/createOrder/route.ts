@@ -4,10 +4,12 @@ import { NextResponse } from "next/server";
 export const POST = async (req: Request) => {
 
   const { cart } = await req.json();
-//לעשות את השורות האלו לפי מבנה של עגלה, לשאול את אביטל
-  const units = cart.map((cartItem : any) => ({
-    reference_id: cartItem.productId,
-    amount: { currency_code: "ILS", value: Number(cartItem.price*cartItem.quantity).toFixed(2) },
+
+  console.log("the prodacts:", cart)
+  const units = cart.map((cartItem: any) => ({
+    reference_id: cartItem.uniqueId,
+    amount: { currency_code: "ILS", value: Number(cartItem.price * cartItem.quantity).toFixed(2) },
+
   }));
 
   try {
@@ -20,26 +22,17 @@ export const POST = async (req: Request) => {
       url: "https://api-m.sandbox.paypal.com/v2/checkout/orders",
       data: JSON.stringify({
         intent: "CAPTURE",
-        purchase_units:[...units],
-        // payment_source: {
-        //   paypal: {
-        //     application_context: {
-        //     //   shipping_preference: "SET_PROVIDED_ADDRESS",
-        //       user_action: "PAY_NOW",
-        //     //   return_url: "https://example.com/returnUrl",
-        //     //   cancel_url: "https://example.com/cancelUrl",
-        //     },
-        //   },
-        // },
+        purchase_units: [...units],
+        
       }),
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
     });
-
+    console.log("orderCreated as well", data)
     return NextResponse.json(
-      { success: true, message: "success create Order" , id:data.id },
+      { success: true, message: "success create Order", id: data.id },
       { status: 200 }
     );
   } catch (error) {

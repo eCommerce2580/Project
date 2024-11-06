@@ -6,7 +6,8 @@ type DeliveryDetails = {
   userId: string | null; // Allow userId to be null initially
   email: string;
   name: string
-  isComplited:boolean
+   isComplited:boolean
+
 };
 
 type DeliveryDetailsState = {
