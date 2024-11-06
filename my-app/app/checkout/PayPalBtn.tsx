@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
  function PayPalBtn() {
 const  {deliveryDetails} =useDeliveryDetailsStore();
-const {cart}=useCartStore();
+const {cart,setCart}=useCartStore();
 const router = useRouter()
 const { user, setUser } = useUserStore();
 let adressId="0";
@@ -47,6 +47,8 @@ if(user?.address?.addressId){
     console.error(error);
      throw error;
   }
+  localStorage.setItem("cart","");
+  setCart([]);
 
    alert(`Transaction completed by`);
    
