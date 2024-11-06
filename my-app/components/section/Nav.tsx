@@ -1,5 +1,5 @@
 "use client";
-import { useCartStore } from '@/providers/cartStore';
+import { getCartFromLocalStorage, useCartStore } from '@/providers/cartStore';
 import { useState, useEffect, useRef } from "react";
 import CommandMenu from "../ui/CommandMenu";
 import Login from "../ui/Login";
@@ -16,6 +16,13 @@ import { useUserStore } from '@/providers/userStore';
 interface CategoryRefs {
   [key: string]: HTMLDivElement | null;
 }
+export type user = {
+  id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
+
 
 export default function Nav() {
   const [hoveredCategory, setHoveredCategory] = useState<string | null>("");
@@ -28,9 +35,19 @@ export default function Nav() {
   const categoryRefs = useRef<CategoryRefs>({});
 
   const { data: session } = useSession();
-  const { fetchUser } = useUserStore();
-  const { cart } = useCartStore();
-  const cartItemCount = cart.reduce((total, item) => total + item.quantity, 0);
+  const { fetchUser, user ,setUser} = useUserStore();
+  const { cart, fetchCart, setCart } = useCartStore();
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    setCart(getCartFromLocalStorage())
+  }, []);
+
+  const cartItemCount = isClient ? cart.reduce((total, item) => total + item.quantity, 0) : 0;
 
   useEffect(() => {
     console.log("cartItemCount", cartItemCount)
@@ -45,12 +62,48 @@ export default function Nav() {
     fetchCategories();
   }, []);
 
+  useEffect(() => {
+    const saveCartBeforeUnload = async () => {
+      if (session && user?.id) {
+        console.log("ggggsssssssssssgggg")
+        try {
+          await axios.post(`http://localhost:3000/api/saveCart`, {
+            userId: user.id,
+            cart: cart,
+          });
+        } catch (error) {
+          console.error('Error saving cart:', error);
+        }
+      }
+    };
+
+    window.addEventListener("beforeunload", saveCartBeforeUnload);
+    return () => window.removeEventListener("beforeunload", saveCartBeforeUnload);
+  }, [cart, session]);
+
 
   useEffect(() => {
     if (session?.user?.email) {
       fetchUser(session.user.email);
+      console.log("asdfghjk", user)
+
+      if (user) {
+        console.log("user.id", user.id)
+        fetchCart(user.id);
+      }
     }
+
   }, [session, fetchUser]);
+
+  useEffect(() => {
+    console.log("asdfghjk", user)
+
+    if (user) {
+      console.log("user.id", user.id)
+      fetchCart(user.id);
+    }
+
+  }, [fetchUser,setUser]);
 
   const fetchSubCategories = async (categoryId: string) => {
     try {
@@ -154,12 +207,11 @@ export default function Nav() {
 
             <Link href="/cart" className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaShoppingCart className="h-5 w-5" />
-
               <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-400 text-xs text-white">
                 {cartItemCount}
               </span>
-
             </Link>
+
 
 
             <button className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
@@ -168,7 +220,7 @@ export default function Nav() {
                 1
               </span>
             </button>
-            
+
             {/* Profile / Login */}
             {session ? (
               <div className="relative">
