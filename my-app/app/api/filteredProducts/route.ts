@@ -57,6 +57,35 @@ export async function GET(request: Request) {
             };
         }
 
+        let orderBy: any = {};
+
+        if (sort) {
+            switch (sort) {
+                case "price_asc":
+                    orderBy = { price: "asc" };
+                    break;
+                case "price_desc":
+                    orderBy = { price: "desc" };
+                    break;
+                case "popular":
+                    orderBy = { sales: "asc" };
+                    break;
+                case "rating":
+                    //לסדר!!!
+                    orderBy = { sales: "desc" };
+                    break;
+                case "newest":
+                    orderBy = { createdAt: "desc" };
+                    break;
+                default:
+                    orderBy = { createdAt: "desc" };
+                    break;
+            }
+        }
+
+        console.log("Filters:", filters);
+        console.log("OrderBy:", orderBy);
+
         const favorites = prisma.favorites.findMany({
             where: {
                 userId: userID!,
@@ -80,7 +109,6 @@ export async function GET(request: Request) {
             filteredProducts,
             fav,
         });
-
 
     } catch (error) {
         console.error("Error fetching products:", error);
