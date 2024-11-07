@@ -4,7 +4,7 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("DATABASE_URL")
+  url = env("DATABASE_URL")
 }
 
 model Users {
@@ -23,8 +23,17 @@ model Users {
   passwordResetTokenExpiry DateTime?
   cart                     Cart?
   orders                   Orders[]
-}
+  favorites     Favorites[]    // קשר למועדפים - מוצר יכול להיות במועדפים של כמה משתמשים
 
+}
+model Favorites {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  user      Users    @relation(fields: [userId], references: [id])
+  userId    String   @db.ObjectId
+  product   Product  @relation(fields: [productId], references: [id])
+  productId String   @db.ObjectId
+  @@unique([userId, productId]) // מונע כפילויות - משתמש לא יכול להוסיף את אותו מוצר פעמיים למועדפים
+}
 model Address {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
   country     String
@@ -96,6 +105,8 @@ model Product {
   cartItems     CartItem[]
   colors        ProductColor[]
   sizes         ProductSize[]
+  favorites     Favorites[]    // קשר למועדפים - מוצר יכול להיות במועדפים של כמה משתמשים
+
 }
 
 model ProductColor {
@@ -133,7 +144,7 @@ model Category {
 model OrdersStatus {
   id            String   @id @default(auto()) @map("_id") @db.ObjectId
   name          String
-  progressLevel String
+  progressLevel Int
   orders        Orders[]
 }
 
@@ -155,13 +166,17 @@ model Orders {
 }
 
 model OrderProduct {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  orderId   String  @db.ObjectId
-  productId String  @db.ObjectId
-  quantity  Int
-  price     Float
-  order     Orders  @relation(fields: [orderId], references: [id])
-  product   Product @relation(fields: [productId], references: [id])
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  orderId       String  @db.ObjectId
+  productId     String  @db.ObjectId
+  quantity      Int
+  price         Float
+  productName   String  // שם המוצר
+  productImage  String? // תמונת המוצר
+  productColor  String? // צבע המוצר
+  productSize   String? // גודל המוצר
+  order         Orders  @relation(fields: [orderId], references: [id])
+  product       Product @relation(fields: [productId], references: [id])
 }
 
 model Cart {

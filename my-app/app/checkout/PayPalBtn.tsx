@@ -15,7 +15,7 @@ function PayPalBtn() {
   const { cart, setCart } = useCartStore();
   const router = useRouter();
   const { user } = useUserStore();
-  const addressId = user?.address?.addressId;
+  const addressId = user?.address?.id;
   const { theme } = useTheme();
 
   const createOrder: PayPalButtonsComponentProps["createOrder"] = async () => {
@@ -31,13 +31,13 @@ function PayPalBtn() {
   };
 
   const onApprove: PayPalButtonsComponentProps["onApprove"] = async (d) => {
-    console.log("adress id is",addressId)
-    const body={
+    console.log("user", user)
+    console.log("adress id is", addressId)
+    const body = {
       id: d.orderID,
-      deliveryDetails:deliveryDetails,
-      cart:cart,
-      addressId:"672bbdf508431d4fdca83c1e",
-
+      deliveryDetails: deliveryDetails,
+      cart: cart,
+      addressId: addressId,
     }
     try {
       await axios.post("/api/payment/capturePayment", body);
@@ -62,9 +62,8 @@ function PayPalBtn() {
     <>
       {deliveryDetails?.isComplited && (
         <div
-          className={`p-6 rounded-lg shadow-lg flex justify-center ${
-            theme === "dark" ? "bg-gray-900 text-white" : ""
-          }`}
+          className={`p-6 rounded-lg shadow-lg flex justify-center ${theme === "dark" ? "bg-gray-900 text-white" : ""
+            }`}
         >
           <PayPalButtons
             style={styles}

@@ -18,6 +18,7 @@ import {
 import Product from "./Product";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useUserStore } from "@/providers/userStore";
 
 type SortOption = {
   name: string;
@@ -46,6 +47,12 @@ type Size = {
   id: string;
   label: string;
 };
+
+export type Favorites = {
+  id: String;
+  userId: String;
+  productId: String;
+}
 
 const sortOptions: SortOption[] = [
   { name: "Most Popular", value: "popular", current: true },
@@ -76,11 +83,15 @@ export default function FilterProduct({
     size: [],
   });
 
+  const { user } = useUserStore();
+  console.log(user?.id)
+
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
   const [sortOption, setSortOption] = useState<string>("");
   const { category, subCategory } = categoryIdAndSubId;
+  const [favorites, setFavorites] = useState<Favorites[]>([]); 
 
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
@@ -108,14 +119,19 @@ export default function FilterProduct({
       filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
       const sortFilter = sortOption ? `&sort=${sortOption}` : "";
 
-    try {
-      const { data } = await axios.get(
-        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}`
-      );
-      setProducts(data.filteredProducts);
-    } catch (error) {
-      console.error("Error fetching filtered products:", error);
-    }
+      try {
+        const { data } = await axios.get(
+          `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}&userID=${user?.id}`
+        );
+        setProducts(data.filteredProducts);
+        setFavorites(data.fav)
+        console.log(data.filteredProducts);
+        console.log(data.fav);
+  
+      } catch (error) {
+        console.error("Error fetching filtered products:", error);
+      }
+  
   };
 
 
@@ -304,15 +320,19 @@ export default function FilterProduct({
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products && products.length > 0 ? (
-                products.map((product) => (
-                  //@ts-ignore
-                  <Product key={product.id} product={product} />
-                ))
+                products.map((product) => {
+                  const isFavorite = favorites.some((fav) => fav.productId === product.id); 
+                  return (
+                    //@ts-ignore
+                    <Product key={product.id} product={product} isFavorite= {isFavorite?true:false } /> 
+                  );
+                })
               ) : (
                 <p>No products available.</p>
               )}
             </div>
           </div>
+
         </div>
       </main>
     </div>

@@ -3,7 +3,7 @@ import { ProductInOrder } from "./productInOrderComponent";
 
 export type OrderComponentProps = {
     order: {
-        status: { name: string };
+        status: { name: string ; progressLevel:number};
         orderProducts: {
             id:string;
             orderId: string;
@@ -58,7 +58,7 @@ export function OrderComponent({ order }: OrderComponentProps) {
                         Total Amount
                     </h3>
                     <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                        ${order.totalAmount}
+                       {order.totalAmount} ₪
                     </p>
                 </div>
 
@@ -78,7 +78,7 @@ export function OrderComponent({ order }: OrderComponentProps) {
                         Order Status
                     </h3>
                     <div className="flex items-center gap-4">
-                        <StatusOfOrder orderId={order.id} statusName={order.status.name} />
+                        <StatusOfOrder orderId={order.id} status={order.status} />
                     </div>
                 </div>
             </div>

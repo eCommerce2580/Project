@@ -9,9 +9,9 @@ import { totalmem } from "os";
 
 export const POST = async (req: Request) => {
   console.log("in cupture payment")
-  const body=await req.json();
+  const body = await req.json();
 
-  console.log("body",body)
+  console.log("body", body)
   const { id, deliveryDetails, cart, addressId } = body;
   console.log("adresId in route", addressId)
   try {
@@ -46,13 +46,12 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
   try {
     console.log("add order", deliveryDetails, cart)
     const userId = deliveryDetails.userId;
-    let toatalAmount = 0;
+    const totalAmount = cart.reduce((acc: number, item: { id: string; quantity: number; price: number }) => acc + item.price * item.quantity, 0);
     let status;
     try {
-
       status = await prisma.ordersStatus.findFirst({
         where: {
-          progressLevel: "1",
+          progressLevel: 1,
         },
       });
     }
@@ -64,21 +63,11 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
     if (!statusId) {
       throw new Error("status ID is required");
     }
-    // const orderItems = cart;
-    console.log("userId", userId)
-
-    console.log("address", adressId)
-
-    console.log("totalAmount", toatalAmount)
-
-    console.log("statusId", statusId)
-
-    console.log("userId", userId)
     // Create the order and update stock
     const order = await prisma.orders.create({
       data: {
         userId: userId,
-        totalAmount: toatalAmount,
+        totalAmount: totalAmount,
         shippingAddressId: adressId,
         expectedDeliveryDate: DateTime.now().plus({ weeks: 2 }).toISO(),
         // expectedDeliveryDate.toISO(),
@@ -140,15 +129,17 @@ async function clearCartByUserId(userId: string) {
   console.log(`Cart cleared for userId: ${userId}`);
 }
 async function updateAmount(orderItems: any) {
-
+  console.log("orderItems", orderItems)
   interface OrderItem {
-    productId: string; // או טיפוס אחר מתאים
+    id: string; // או טיפוס אחר מתאים
     quantity: number;
   }
-  const updateData = orderItems.map((item: OrderItem) => ({
-    where: { id: item.productId },
-    data: { amount: { decrement: item.quantity } },
-  }));
+  await Promise.all(orderItems.map((item:OrderItem) => prisma.product.update({
+    where: { id: item.id },
+    data: {
+      amount: { decrement: item.quantity },
+      sales: { increment: item.quantity },
+    }
+  })));
 
-  await prisma.product.updateMany(updateData);
 }
