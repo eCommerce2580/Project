@@ -9,22 +9,13 @@ import { useDeliveryDetailsStore } from "@/providers/deliveryDetailsStrore";
 import { useCartStore } from "@/providers/cartStore";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 
 function PayPalBtn() {
   const { deliveryDetails } = useDeliveryDetailsStore();
   const { cart, setCart } = useCartStore();
   const router = useRouter();
   const { user } = useUserStore();
-//   const[addressId,setAddresId]=useState<any>();
-//   useEffect(() => {
-//     if (!user) return;
-//     console.log("in user in paypal",user.address?.addressId);
-//     setAddresId(user?.address?.addressId)
-//   }
-// ,[user])
-const addressId='672badaf12cd9a260f6902ce'
-   console.log("the adress id is",addressId)
+  const addressId = user?.address?.addressId;
   const { theme } = useTheme();
 
   const createOrder: PayPalButtonsComponentProps["createOrder"] = async () => {
@@ -41,13 +32,15 @@ const addressId='672badaf12cd9a260f6902ce'
 
   const onApprove: PayPalButtonsComponentProps["onApprove"] = async (d) => {
     console.log("adress id is",addressId)
+    const body={
+      id: d.orderID,
+      deliveryDetails:deliveryDetails,
+      cart:cart,
+      addressId:"672bbdf508431d4fdca83c1e",
+
+    }
     try {
-      await axios.post("/api/payment/capturePayment", {
-        id: d.orderID,
-        deliveryDetails,
-        cart,
-        addressId,
-      });
+      await axios.post("/api/payment/capturePayment", body);
       localStorage.setItem("cart", "");
       setCart([]);
       alert("Transaction completed successfully");

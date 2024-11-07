@@ -33,7 +33,7 @@ export default function Avatar() {
   }
   const saveCartBeforeLogout = async () => {
     if (session && user?.id) {
-      console.log("log outttttttt")
+      console.log("log out")
       try {
         await axios.post(`http://localhost:3000/api/saveCart`, {
           userId: user.id,
