@@ -1,17 +1,21 @@
-import { StatusOfOrder } from "./StatusOfOrder";
-import { ProductInOrder } from "./productInOrderComponent";
+import React from 'react';
+import { StatusOfOrder } from './StatusOfOrder';
+import { ProductInOrder } from './productInOrderComponent';
 
-export type OrderComponentProps = {
+export interface OrderComponentProps {
     order: {
-        status: { name: string ; progressLevel:number};
+        id: string;
+        orderDate: Date;
+        expectedDeliveryDate: Date;
+        totalAmount: number;
+        status: { name: string; progressLevel: number }
         orderProducts: {
-            id:string;
+            id: string;
             orderId: string;
             productId: string;
             quantity: number;
             price: number;
-            product:
-            {
+            product: {
                 name: string;
                 price: number;
                 image: string;
@@ -23,27 +27,15 @@ export type OrderComponentProps = {
                 }[];
             };
         }[];
-        id: string;
-        orderDate: Date;
-        totalAmount: number;
-        shippingAddressId: string;
-        expectedDeliveryDate: Date;
-        userId: string;
-        statusId: string;
-        email: string
-        PhoneNumber: string
-        name: string
     };
-};
+}
 
-export function OrderComponent({ order }: OrderComponentProps) {
+export const OrderComponent: React.FC<OrderComponentProps> = ({ order }) => {
     return (
-        <div className="mt-7 border border-gray-300 dark:border-gray-700 pt-9 pb-4 bg-white dark:bg-gray-800 rounded-lg">
-            {/* Order Details Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 px-3 md:px-11 mb-8">
-
+        <div className="mt-7 border border-gray-300 dark:border-gray-700 pt-9 pb-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+            <div className="px-3 md:px-11 mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
                 {/* Order Date Section */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col items-center space-y-2">
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Order Payment
                     </h3>
@@ -53,17 +45,17 @@ export function OrderComponent({ order }: OrderComponentProps) {
                 </div>
 
                 {/* Total Amount Section */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col items-center space-y-2">
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Total Amount
                     </h3>
                     <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                       {order.totalAmount} ₪
+                        {order.totalAmount} ₪
                     </p>
                 </div>
 
                 {/* Delivery Date Section */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col items-center space-y-2">
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Delivery Expected by
                     </h3>
@@ -73,7 +65,7 @@ export function OrderComponent({ order }: OrderComponentProps) {
                 </div>
 
                 {/* Status Section */}
-                <div className="flex flex-col space-y-2">
+                <div className="flex flex-col items-center space-y-2">
                     <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">
                         Order Status
                     </h3>
@@ -84,14 +76,14 @@ export function OrderComponent({ order }: OrderComponentProps) {
             </div>
 
             {/* Divider */}
-            <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-6"></div>
+            <div className="w-full h-px bg-gray-200 dark:bg-gray-700 my-4"></div>
 
             {/* Products List */}
             <div className="px-3 md:px-11">
                 {order.orderProducts.map((product) => (
-                    <ProductInOrder key={product.id} product={product} />
+                    <ProductInOrder key={product.id} product={product} isLastProduct={product.id === order.orderProducts[order.orderProducts.length - 1].id} />
                 ))}
             </div>
         </div>
     );
-}
+};
