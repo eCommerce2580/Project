@@ -9,6 +9,7 @@ export async function GET(request: Request) {
         const color: string | null = searchParams.get("color");
         const size: string | null = searchParams.get("size");
         const sort: string | null = searchParams.get("sort");
+        const userID: string | null = searchParams.get("userID");
 
         if (!category || !subCategory) {
             return NextResponse.json(
@@ -85,16 +86,30 @@ export async function GET(request: Request) {
         console.log("Filters:", filters);
         console.log("OrderBy:", orderBy);
 
-        const filteredProducts = await prisma.product.findMany({
+        const favorites = prisma.favorites.findMany({
+            where: {
+                userId: userID!,
+            },
+        });
+
+       
+
+        const products = prisma.product.findMany({
             where: filters,
             orderBy: orderBy,
         });
 
+        const [filteredProducts,fav]= await Promise.all([products,favorites])
+        console.log(filteredProducts)
+        console.log(fav)
+ 
         return NextResponse.json({
             message: "Success",
             success: true,
             filteredProducts,
+            fav,
         });
+
     } catch (error) {
         console.error("Error fetching products:", error);
         return NextResponse.json(
