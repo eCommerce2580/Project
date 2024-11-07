@@ -8,13 +8,13 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { FaUserCircle } from "react-icons/fa";
 import { signOut, useSession } from "next-auth/react";
 import axios from "axios";
-import {  useCartStore } from '@/providers/cartStore';
+import { useCartStore } from '@/providers/cartStore';
 import { useUserStore } from '@/providers/userStore';
 
 export default function Avatar() {
   const { data: session } = useSession();
   const { user } = useUserStore();
-  const { cart, setCart} = useCartStore();
+  const { cart, setCart } = useCartStore();
 
   async function handleSignOut(): Promise<void> {
     try {
@@ -88,9 +88,12 @@ export default function Avatar() {
               </Link>
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-800">
-              <CiHeart className="text-lg text-gray-600 dark:text-white" />
-              <p className="text-slate-800 font-medium ml-3 dark:text-white">Favorites</p>
+            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer bg-slate-100">
+              <CiHeart className="text-lg text-gray-600" />
+              <Link href="/favorites" className="flex items-center">
+                <CiHeart className="text-lg text-gray-600" />
+                <p className="text-slate-800 font-medium ml-3">Favorites</p>
+              </Link>
             </DropdownMenu.Item>
 
             <DropdownMenu.Separator className="my-1 border-t border-slate-200" />
