@@ -48,6 +48,12 @@ type Size = {
   label: string;
 };
 
+export type Favorites = {
+  id: String;
+  userId: String;
+  productId: String;
+}
+
 const sortOptions: SortOption[] = [
   { name: "Most Popular", value: "popular", current: true },
   { name: "Best Rating", value: "rating", current: false },
@@ -64,11 +70,7 @@ export type CategoryAndSubId = {
   category: string;
   subCategory: string;
 };
-export type Favorites = {
-  id: String;
-  userId: String;
-  productId: String;
-}
+
 export default function FilterProduct({
   categoryIdAndSubId,
 }: {
@@ -80,13 +82,16 @@ export default function FilterProduct({
     category: [],
     size: [],
   });
+
   const { user } = useUserStore();
   console.log(user?.id)
+
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
-  const [favorites, setFavorites] = useState<Favorites[]>([]);  const [sortOption, setSortOption] = useState<string>("");
+  const [sortOption, setSortOption] = useState<string>("");
   const { category, subCategory } = categoryIdAndSubId;
+  const [favorites, setFavorites] = useState<Favorites[]>([]); 
 
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
@@ -114,18 +119,19 @@ export default function FilterProduct({
       filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
       const sortFilter = sortOption ? `&sort=${sortOption}` : "";
 
-    try {
-      const { data } = await axios.get(
-        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}&userID=${user?.id}`
-      );
-      setProducts(data.filteredProducts);
-      setFavorites(data.fav)
-      console.log(data.filteredProducts);
-      console.log(data.fav);
-
-    } catch (error) {
-      console.error("Error fetching filtered products:", error);
-    }
+      try {
+        const { data } = await axios.get(
+          `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}&userID=${user?.id}`
+        );
+        setProducts(data.filteredProducts);
+        setFavorites(data.fav)
+        console.log(data.filteredProducts);
+        console.log(data.fav);
+  
+      } catch (error) {
+        console.error("Error fetching filtered products:", error);
+      }
+  
   };
 
 
@@ -311,13 +317,11 @@ export default function FilterProduct({
           </form>
 
           {/* Product Grid */}
-
-
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products && products.length > 0 ? (
                 products.map((product) => {
-                  const isFavorite = favorites.some((fav) => fav.productId === product.id); // בדיקת קיום ב-favorites
+                  const isFavorite = favorites.some((fav) => fav.productId === product.id); 
                   return (
                     //@ts-ignore
                     <Product key={product.id} product={product} isFavorite= {isFavorite?true:false } /> 
@@ -328,8 +332,6 @@ export default function FilterProduct({
               )}
             </div>
           </div>
-
-
 
         </div>
       </main>

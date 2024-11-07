@@ -14,20 +14,19 @@ export default function Product({ product, isFavorite }: SingleProductProps & {i
   const [productData, setProductData] = useState<typeof product | null>(null);
   const [isPress, setisPress] = useState<Boolean>(isFavorite);
   const { user } = useUserStore();
-console.log(isFavorite)
 console.log(isPress)
 
 
   const  handleToggleFavorite = async () => {
     if (isPress) {
-      setisPress(false);
-      //axios
+      await axios.delete(`/api/deleteFavorites`, { 
+        params: { userId: user?.id, productId: product.id }
+      });      setisPress(false);
     } else {
       setisPress(true);
       await axios.post('/api/addFavorites', { userId: user?.id, productId: product.id });
-      console.log(isPress)
     }
-  };
+  }
 
   return (
     <>
