@@ -51,6 +51,7 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
     try {
       status = await prisma.ordersStatus.findFirst({
         where: {
+          //@ts-ignore
           progressLevel: 1,
         },
       });

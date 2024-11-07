@@ -73,7 +73,10 @@ export default function AddressDetails() {
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {['country', 'city', 'street', 'houseNumber', 'zipCode'].map(field => (
           <div key={field}>
-            <label htmlFor={field} className="block text-sm font-medium text-gray-900 dark:text-white">
+            <label 
+           // className="block text-sm font-medium text-gray-900 dark:text-white"
+             className="block mb-2 text-sm text-gray-600 dark:text-gray-200"
+            >
               {field.charAt(0).toUpperCase() + field.slice(1)}
             </label>
             <input
@@ -81,9 +84,12 @@ export default function AddressDetails() {
               id={field}
               value={addressForm[field as keyof typeof addressForm]}
               onChange={handleInputChange}
-              className="block w-full rounded-lg border p-2.5 text-sm text-gray-900 dark:bg-gray-700 dark:text-white"
+             className="block w-full rounded-lg border p-3 text-sm text-gray-900 dark:bg-gray-700 dark:text-white"
               readOnly={!isEditing}
-              required
+              placeholder={field}
+              autoFocus={isEditing}
+              tabIndex={isEditing ? 0 : -1}
+            //  className="block w-full px-5 py-3 mt-2 text-gray-700 placeholder-gray-400 bg-white border border-gray-200 rounded-md dark:placeholder-gray-600 dark:bg-gray-900 dark:text-gray-300 dark:border-gray-700 focus:border-blue-400 dark:focus:border-blue-400 focus:ring-blue-400 focus:outline-none focus:ring focus:ring-opacity-40"     
             />
           </div>
         ))}
@@ -100,6 +106,7 @@ export default function AddressDetails() {
               Cancel
             </button>
             <button
+            type="button"
               onClick={handleSave}
               className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none"
               disabled={!Object.values(addressForm).every(val => val !== '')}
@@ -110,6 +117,7 @@ export default function AddressDetails() {
           </>
         ) : (
           <button
+            type="button"
             onClick={handleEditClick}
             className="inline-flex items-center px-4 py-2 text-sm font-medium text-blue-500 hover:bg-blue-100 rounded-lg focus:outline-none"
           >
