@@ -7,7 +7,7 @@ export const POST = async (req: Request) => {
 
   console.log("the prodacts:", cart)
   const units = cart.map((cartItem: any) => ({
-    reference_id: cartItem.uniqueId,
+    reference_id: cartItem.id,
     amount: { currency_code: "ILS", value: Number(cartItem.price * cartItem.quantity).toFixed(2) },
 
   }));
