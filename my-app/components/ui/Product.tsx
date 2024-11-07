@@ -1,21 +1,24 @@
-"use client";
-import { useState } from "react";
-import axios from "axios";
+"use client"
+
+import { useState } from 'react';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 import { BsCartPlus } from "react-icons/bs";
 import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
 import { SingleProductProps } from "@/types";
 import { useUserStore } from "@/providers/userStore";
-
+import axios from "axios";
 
 export default function Product({ product, isFavorite }: SingleProductProps & {isFavorite:Boolean}) {
+
   const [showQuickView, setShowQuickView] = useState(false);
   const [productData, setProductData] = useState<typeof product | null>(null);
   const [isPress, setisPress] = useState<Boolean>(isFavorite);
   const { user } = useUserStore();
-console.log(isPress)
 
+  
 
   const  handleToggleFavorite = async () => {
     if (isPress) {
@@ -68,6 +71,8 @@ console.log(isPress)
           <button
             onClick={(e) => {
               e.preventDefault();
+              setShowQuickView(true);
+              setProductData(product);
             }}
             className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 font-medium text-sm"
           >
@@ -87,13 +92,13 @@ console.log(isPress)
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              {product.price}
+              {product.price}$
             </span>
           </div>
         </div>
       </Link>
 
-      {/* Quick View Modal with Full Product Page Content */}
+      {/* Quick View Modal with Image Zoom */}
       {showQuickView && productData && (
         <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
@@ -110,22 +115,15 @@ console.log(isPress)
               <IoClose className="w-5 h-5 text-gray-600 dark:text-gray-200" />
             </button>
 
-            {/* Modal Content */}
-            <div className="p-8">
-              <img
-                src={productData.image || "/api/placeholder/300/300"}
-                alt={productData.name}
-                className="w-full h-64 object-cover mb-6"
-              />
-              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
-                {productData.name}
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
-                {productData.description}
-              </p>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">
-                {productData.price}
-              </span>
+            {/* Modal Content - Image Zoom */}
+            <div className="p-4">
+              <Zoom>
+                <img 
+                  src={productData.image || "/api/placeholder/300/300"} 
+                  alt={productData.name} 
+                  className="w-full h-auto object-contain"
+                />
+              </Zoom>
             </div>
           </div>
         </div>

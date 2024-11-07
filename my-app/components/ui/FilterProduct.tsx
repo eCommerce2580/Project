@@ -48,6 +48,7 @@ type Size = {
   label: string;
 };
 
+
 export type Favorites = {
   id: String;
   userId: String;
@@ -86,15 +87,16 @@ export default function FilterProduct({
     size: [],
   });
 
+
   const { user } = useUserStore();
   console.log(user?.id)
+
 
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
-  const [sortOption, setSortOption] = useState<string>("");
+  const [favorites, setFavorites] = useState<Favorites[]>([]);  const [sortOption, setSortOption] = useState<string>("");
   const { category, subCategory } = categoryIdAndSubId;
-  const [favorites, setFavorites] = useState<Favorites[]>([]); 
 
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
@@ -113,34 +115,30 @@ export default function FilterProduct({
     fetchFilters();
   }, []);
 
-  useEffect(() => {
-    // Set loading to false once cart data is available
-    if (products && products.length >= 0) {
-        setLoading(false);
-    }
-}, [products]);
-  // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
-  const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
-    const colorFilter =
-      filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
-    const sizeFilter =
-      filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
-      const sortFilter = sortOption ? `&sort=${sortOption}` : "";
 
-      try {
-        const { data } = await axios.get(
-          `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}&userID=${user?.id}`
-        );
-        setProducts(data.filteredProducts);
-        setFavorites(data.fav)
-        console.log(data.filteredProducts);
-        console.log(data.fav);
-  
-      } catch (error) {
-        console.error("Error fetching filtered products:", error);
-      }
-  
-  };
+// פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
+const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
+  const colorFilter =
+    filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
+  const sizeFilter =
+    filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
+  const sortFilter = sortOption ? `&sort=${sortOption}` : "";
+  const userFilter = user?.id ? `&userID=${user.id}` : ""; // בדיקה אם קיים userID ורק אז מוסיפים
+
+  try {
+    const { data } = await axios.get(
+      `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}${userFilter}`
+    );
+    setProducts(data.filteredProducts);
+    if (user?.id) {
+      setFavorites(data.fav);
+    }
+    console.log(data.filteredProducts);
+    console.log(data.fav);
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+  }
+};
 
 
   useEffect(() => {

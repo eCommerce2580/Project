@@ -71,7 +71,6 @@ export async function GET(request: Request) {
                     orderBy = { sales: "asc" };
                     break;
                 case "rating":
-                    //לסדר!!!
                     orderBy = { sales: "desc" };
                     break;
                 case "newest":
@@ -86,25 +85,24 @@ export async function GET(request: Request) {
         console.log("Filters:", filters);
         console.log("OrderBy:", orderBy);
 
-        const favorites = prisma.favorites.findMany({
-            where: {
-                userId: userID!,
-            },
-        });
+        let fav: { id: string; userId: string; productId: string; }[] = [];
+        if (userID) {
+            fav = await prisma.favorites.findMany({
+                where: {
+                    userId: userID,
+                },
+            });
+        }
 
-        const products = prisma.product.findMany({
+        const products = await prisma.product.findMany({
             where: filters,
             orderBy: orderBy,
         });
 
-        const [filteredProducts,fav]= await Promise.all([products,favorites])
-        console.log(filteredProducts)
-        console.log(fav)
- 
         return NextResponse.json({
             message: "Success",
             success: true,
-            filteredProducts,
+            filteredProducts: products,
             fav,
         });
 
