@@ -263,10 +263,10 @@ export default function Nav() {
         )}
       </nav>
       {/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-screen-xl px-4 py-3 mx-auto">
-          <div className="flex items-center">
-            <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 dark:bg-gray-900">
+        <div className="max-w-screen-xl px-4 py-3 mx-auto dark:bg-gray-900">
+          <div className="flex items-center dark:bg-gray-900">
+            <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative dark:bg-gray-900">
               {categories &&
                 categories.map((category: any, index: any) => (
                   <li

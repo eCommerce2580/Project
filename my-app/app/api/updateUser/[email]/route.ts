@@ -18,7 +18,6 @@ export async function PUT(
             where: { email: email },
             include: { address: true },
         });
-
         if (!user) {
             return NextResponse.json(
                 { message: "User not found", success: false },
@@ -29,7 +28,6 @@ export async function PUT(
         // Start a transaction to ensure all updates succeed or fail together
         const updatedUser = await prisma.$transaction(async (prisma) => {
             let addressId = user.addressId;
-
             // Handle address update/creation
             if (addressId) {
                 // Update existing address

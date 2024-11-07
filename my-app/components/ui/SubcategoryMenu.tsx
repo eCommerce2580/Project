@@ -6,9 +6,9 @@ function SubcategoryMenu({ subcategories , categoryName}: { subcategories: {id:s
   console.log(subcategories)
  
   return (
-    <div className="flex gap-4">
-      <div className="mb-2 text-sm font-medium">
-        <ul className="absolute left-0 mt-1 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-10">
+    <div className="flex gap-4  dark:bg-gray-900">
+      <div className="mb-2 text-sm font-medium dark:bg-gray-900">
+        <ul className="absolute left-0 mt-1 w-48 bg-white border dark:bg-gray-900 border-gray-200 rounded-lg shadow-lg z-10">
           {subcategories.map((subcategory, index) => {
             // const categoryIdAndSubId = {
             //     categoryId: subcategory.categoryId,
