@@ -32,13 +32,15 @@ function PayPalBtn() {
 
   const onApprove: PayPalButtonsComponentProps["onApprove"] = async (d) => {
     console.log("adress id is",addressId)
+    const body={
+      id: d.orderID,
+      deliveryDetails:deliveryDetails,
+      cart:cart,
+      addressId:"672bbdf508431d4fdca83c1e",
+
+    }
     try {
-      await axios.post("/api/payment/capturePayment", {
-        id: d.orderID,
-        deliveryDetails,
-        cart,
-        addressId,
-      });
+      await axios.post("/api/payment/capturePayment", body);
       localStorage.setItem("cart", "");
       setCart([]);
       alert("Transaction completed successfully");
