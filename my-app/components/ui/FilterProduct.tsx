@@ -113,28 +113,29 @@ export default function FilterProduct({
   }, []);
 
 
-  // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
-  const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
-    const colorFilter =
-      filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
-    const sizeFilter =
-      filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
-      const sortFilter = sortOption ? `&sort=${sortOption}` : "";
+// פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
+const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
+  const colorFilter =
+    filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
+  const sizeFilter =
+    filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
+  const sortFilter = sortOption ? `&sort=${sortOption}` : "";
+  const userFilter = user?.id ? `&userID=${user.id}` : ""; // בדיקה אם קיים userID ורק אז מוסיפים
 
-      try {
-        const { data } = await axios.get(
-          `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}&userID=${user?.id}`
-        );
-        setProducts(data.filteredProducts);
-        setFavorites(data.fav)
-        console.log(data.filteredProducts);
-        console.log(data.fav);
-  
-      } catch (error) {
-        console.error("Error fetching filtered products:", error);
-      }
-  
-  };
+  try {
+    const { data } = await axios.get(
+      `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}${userFilter}`
+    );
+    setProducts(data.filteredProducts);
+    if (user?.id) {
+      setFavorites(data.fav);
+    }
+    console.log(data.filteredProducts);
+    console.log(data.fav);
+  } catch (error) {
+    console.error("Error fetching filtered products:", error);
+  }
+};
 
 
   useEffect(() => {
