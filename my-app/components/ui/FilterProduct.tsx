@@ -75,9 +75,11 @@ export default function FilterProduct({
     category: [],
     size: [],
   });
+
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
+  const [sortOption, setSortOption] = useState<string>("");
 
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
@@ -97,16 +99,17 @@ export default function FilterProduct({
   }, []);
 
   // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
-  const fetchProducts = async (filters: SelectedFilters) => {
+  const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
     const { category, subCategory } = categoryIdAndSubId;
     const colorFilter =
       filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
     const sizeFilter =
       filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
+      const sortFilter = sortOption ? `&sort=${sortOption}` : "";
 
     try {
       const { data } = await axios.get(
-        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}`
+        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}`
       );
       setProducts(data.filteredProducts);
     } catch (error) {
@@ -114,11 +117,11 @@ export default function FilterProduct({
     }
   };
 
-  useEffect(() => {
-    fetchProducts(selectedFilters);
-  }, [categoryIdAndSubId, selectedFilters]);
 
-  // פונקציה שמטפלת בשינויי סינון
+  useEffect(() => {
+    fetchProducts(selectedFilters, sortOption);
+  }, [selectedFilters, categoryIdAndSubId, sortOption]); // Adding sortOption to the dependency array
+  
   const handleFilterChange = (filterId: string, option: string) => {
     setSelectedFilters((prev) => {
       const newFilters = { ...prev };
@@ -126,10 +129,15 @@ export default function FilterProduct({
       newFilters[filterId] = isSelected
         ? newFilters[filterId].filter((item) => item !== option)
         : [...newFilters[filterId], option];
-      fetchProducts(newFilters);
       return newFilters;
     });
   };
+  
+  const handleSortChange = (option: SortOption) => {
+    setSortOption(option.value); // מגדיר את ערך המיון הנבחר
+    sortOptions.forEach((opt) => (opt.current = opt.value === option.value));
+  }
+  
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -206,9 +214,9 @@ export default function FilterProduct({
       {/* Main Content */}
       <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Products
-          </h1>
+          <h5 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
+            עעעע
+          </h5>
 
           <div className="flex items-center gap-4">
             <Menu as="div" className="relative">
@@ -221,12 +229,7 @@ export default function FilterProduct({
                   <MenuItem key={option.value}>
                     <button
                       className="block w-full px-4 py-2 text-left text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                      onClick={() => {
-                        setSelectedFilters((prev) => ({
-                          ...prev,
-                          sort: [option.value],
-                        }));
-                      }}
+                      onClick={() => handleSortChange(option)}
                     >
                       {option.name}
                     </button>

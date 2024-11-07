@@ -8,6 +8,7 @@ export async function GET(request: Request) {
         const subCategory: string | null = searchParams.get("subCategory");
         const color: string | null = searchParams.get("color");
         const size: string | null = searchParams.get("size");
+        const sort: string | null = searchParams.get("sort");
 
         if (!category || !subCategory) {
             return NextResponse.json(
@@ -33,9 +34,8 @@ export async function GET(request: Request) {
             subCategoryId: subCategoryId?.id,
         };
 
-        // הוספת סינון לפי צבע אם קיים
         if (color) {
-            const colors = color.split(","); // מניחים שהצבעים מופרדים בפסיק
+            const colors = color.split(",");
             filters.colors = {
                 some: {
                     color: {
@@ -45,9 +45,8 @@ export async function GET(request: Request) {
             };
         }
 
-        // הוספת סינון לפי מידה אם קיים
         if (size) {
-            const sizes = size.split(","); // מניחים שהמידות מופרדות בפסיק
+            const sizes = size.split(",");
             filters.sizes = {
                 some: {
                     size: {
@@ -57,8 +56,38 @@ export async function GET(request: Request) {
             };
         }
 
+        let orderBy: any = {};
+
+        if (sort) {
+            switch (sort) {
+                case "price_asc":
+                    orderBy = { price: "asc" };
+                    break;
+                case "price_desc":
+                    orderBy = { price: "desc" };
+                    break;
+                case "popular":
+                    orderBy = { sales: "asc" };
+                    break;
+                case "rating":
+                    //לסדר!!!
+                    orderBy = { sales: "desc" };
+                    break;
+                case "newest":
+                    orderBy = { createdAt: "desc" };
+                    break;
+                default:
+                    orderBy = { createdAt: "desc" };
+                    break;
+            }
+        }
+
+        console.log("Filters:", filters);
+        console.log("OrderBy:", orderBy);
+
         const filteredProducts = await prisma.product.findMany({
             where: filters,
+            orderBy: orderBy,
         });
 
         return NextResponse.json({

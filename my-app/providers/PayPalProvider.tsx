@@ -16,6 +16,7 @@ const PaypalProvider = ({ children }: Props) => {
         currency: "ILS",
       }}
     >
+      
       {children}
     </PayPalScriptProvider>
   );
