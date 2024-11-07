@@ -17,7 +17,7 @@ export type ProductInOrderProps = {
             }[];
         };
     },
-    isLastProduct:boolean
+    isLastProduct: boolean
 };
 
 
@@ -51,9 +51,9 @@ export function ProductInOrder({ product, isLastProduct }: ProductInOrderProps) 
                             <span className="font-normal text-base leading-6 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                 Qty: {product.quantity}
                             </span>
-                            <p className="font-semibold text-lg leading-6 text-gray-800 dark:text-white whitespace-nowrap">
-                                Price: {product.price} ₪
-                            </p>
+                            <span className="font-normal text-base leading-6 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                                Price: {product.price}$
+                            </span>
                         </div>
                     </div>
                 </div>

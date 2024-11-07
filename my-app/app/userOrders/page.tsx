@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]/options";
 import { OrderComponent } from "./orderComponent";
 
+
 async function getUserOrders(id: string) {
     try {
         const orders = await prisma.orders.findMany({
@@ -56,6 +57,35 @@ async function getUserOrders(id: string) {
     }
 }
 
+
+export interface OrderComponentProps {
+    order: {
+        id: string;
+        orderDate: Date;
+        expectedDeliveryDate: Date;
+        totalAmount: number;
+        status: { name: string; progressLevel: number }
+        orderProducts: {
+            id: string;
+            orderId: string;
+            productId: string;
+            quantity: number;
+            price: number;
+            product: {
+                name: string;
+                price: number;
+                image: string;
+                colors: {
+                    color: { name: string; hexCode?: string | null };
+                }[];
+                sizes: {
+                    size: { label: string };
+                }[];
+            };
+        }[];
+    };
+}
+
 export default async function UserOrders() {
     const session = await getServerSession(authOptions)
     if (!session) {
@@ -63,6 +93,7 @@ export default async function UserOrders() {
     }
     // @ts-ignore
     const orders = await getUserOrders(session?.user.id)
+    const sortedOrders = orders.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
     return (
         <div className="bg-gray-100 dark:bg-gray-900 min-h-screen flex flex-col">
             <div className="flex-1 mt-20 mb-10">
@@ -77,7 +108,7 @@ export default async function UserOrders() {
                         <h2 className="font-manrope font-extrabold text-3xl leading-10 text-gray-800 dark:text-white mb-9">
                             Orders History
                         </h2>
-                        {orders.map((order) => (
+                        {sortedOrders.map((order) => (
                             <OrderComponent key={order.id} order={order} />
                         ))}
                     </section>

@@ -1,36 +1,10 @@
 import React from 'react';
 import { StatusOfOrder } from './StatusOfOrder';
 import { ProductInOrder } from './productInOrderComponent';
-
-export interface OrderComponentProps {
-    order: {
-        id: string;
-        orderDate: Date;
-        expectedDeliveryDate: Date;
-        totalAmount: number;
-        status: { name: string; progressLevel: number }
-        orderProducts: {
-            id: string;
-            orderId: string;
-            productId: string;
-            quantity: number;
-            price: number;
-            product: {
-                name: string;
-                price: number;
-                image: string;
-                colors: {
-                    color: { name: string; hexCode?: string | null };
-                }[];
-                sizes: {
-                    size: { label: string };
-                }[];
-            };
-        }[];
-    };
-}
+import { OrderComponentProps } from './page';
 
 export const OrderComponent: React.FC<OrderComponentProps> = ({ order }) => {
+
     return (
         <div className="mt-7 border border-gray-300 dark:border-gray-700 pt-9 pb-4 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <div className="px-3 md:px-11 mb-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
@@ -40,7 +14,11 @@ export const OrderComponent: React.FC<OrderComponentProps> = ({ order }) => {
                         Order Payment
                     </h3>
                     <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                        {new Date(order.orderDate).toLocaleDateString()}
+                        {new Date(order.orderDate).toLocaleDateString("he-IL", {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                        }).replace(/\//g, ".")}
                     </p>
                 </div>
 
@@ -50,7 +28,7 @@ export const OrderComponent: React.FC<OrderComponentProps> = ({ order }) => {
                         Total Amount
                     </h3>
                     <p className="text-lg font-semibold text-gray-800 dark:text-white">
-                        {order.totalAmount} ₪
+                        {order.totalAmount}$
                     </p>
                 </div>
 
