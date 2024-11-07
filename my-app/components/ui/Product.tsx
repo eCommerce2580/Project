@@ -53,12 +53,12 @@ export default function Product({ product }: SingleProductProps) {
             >
               <IoHeartOutline className="w-5 h-5 text-gray-600 dark:text-gray-200" />
             </button>
-            <button 
+            {/* <button 
               className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               aria-label="Add to cart"
             >
               <BsCartPlus className="w-5 h-5 text-gray-600 dark:text-gray-200" />
-            </button>
+            </button> */}
           </div>
           {/* Quick View Button */}
           <button

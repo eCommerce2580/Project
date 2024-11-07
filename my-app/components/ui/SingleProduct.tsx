@@ -15,7 +15,7 @@ function SingleProduct({ product }: SingleProductProps) {
     const [isCartVisible, setIsCartVisible] = useState(false);
     const [isFavorited, setIsFavorited] = useState(false);
     const addToCart = useCartStore((state) => state.addToCart);
-    const router=useRouter();
+    const router = useRouter();
 
     const { user } = useUserStore();
     const handleAddToCart = () => {
@@ -35,7 +35,7 @@ function SingleProduct({ product }: SingleProductProps) {
             addToCart({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image, size: selectedSize, color: selectedColor, uniqueId });
         }
 
-        setIsCartVisible(true); 
+        setIsCartVisible(true);
 
         setTimeout(() => setIsCartVisible(false), 3000);
     };
@@ -114,7 +114,7 @@ function SingleProduct({ product }: SingleProductProps) {
                                                 key={`${color.id}-${index}`}
                                                 type="button"
                                                 className={`w-10 h-10 rounded-full shrink-0 transition-all ${selectedColor === color.color.name ? 'ring-2 ring-gray-800 dark:ring-gray-200' : ''}`}
-                                                style={{ backgroundColor: color.color.hexCode || color.color.name}} // כאן השתמש ב-hexCode
+                                                style={{ backgroundColor: color.color.hexCode || color.color.name }} // כאן השתמש ב-hexCode
                                                 onClick={() => setSelectedColor(color.color.name)}
                                             ></button>
                                         ))}
@@ -123,12 +123,9 @@ function SingleProduct({ product }: SingleProductProps) {
                             )}
 
                             <div className="flex flex-wrap gap-4 mt-8">
-                                {/* <button onClick={() => router.push("/checkout")}  type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
+                                <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
 hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
-">Buy now</button>                              */}
-  <button onClick={handleAddToCart} type="button" className="min-w-[200px] px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400
-hover:from-orange-400 hover:via-purple-400 hover:to-blue-300
-">Add to cart</button> 
+">Add to cart</button>
                                 <ToastContainer />
                             </div>
                         </div>
