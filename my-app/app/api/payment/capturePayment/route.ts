@@ -49,10 +49,9 @@ const addOrder = async function (deliveryDetails: { phoneNumber: string, userId:
     const totalAmount = cart.reduce((acc: number, item: { id: string; quantity: number; price: number }) => acc + item.price * item.quantity, 0);
     let status;
     try {
-
       status = await prisma.ordersStatus.findFirst({
         where: {
-          progressLevel: "1",
+          progressLevel: 1,
         },
       });
     }

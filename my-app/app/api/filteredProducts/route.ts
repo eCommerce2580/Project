@@ -92,8 +92,6 @@ export async function GET(request: Request) {
             },
         });
 
-       
-
         const products = prisma.product.findMany({
             where: filters,
             orderBy: orderBy,

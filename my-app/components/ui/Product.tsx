@@ -20,16 +20,16 @@ export default function Product({ product, isFavorite }: SingleProductProps & {i
 
   
 
-const  handleToggleFavorite = async () => {
-  if (isPress) {
-    setisPress(false);
-    //axios
-  } else {
-    setisPress(true);
-    await axios.post('/api/addFavorites', { userId: user?.id, productId: product.id });
-    console.log(isPress)
+  const  handleToggleFavorite = async () => {
+    if (isPress) {
+      await axios.delete(`/api/deleteFavorites`, { 
+        params: { userId: user?.id, productId: product.id }
+      });      setisPress(false);
+    } else {
+      setisPress(true);
+      await axios.post('/api/addFavorites', { userId: user?.id, productId: product.id });
+    }
   }
-};
 
   return (
     <>
@@ -60,12 +60,12 @@ const  handleToggleFavorite = async () => {
                 <IoHeartOutline className="text-black text-[24px]" />
               )}
             </button>
-            <button
+            {/* <button 
               className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               aria-label="Add to cart"
             >
               <BsCartPlus className="w-5 h-5 text-gray-600 dark:text-gray-200" />
-            </button>
+            </button> */}
           </div>
           {/* Quick View Button */}
           <button
