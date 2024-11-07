@@ -80,6 +80,7 @@ export default function FilterProduct({
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
   const [sortOption, setSortOption] = useState<string>("");
+  const { category, subCategory } = categoryIdAndSubId;
 
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
@@ -98,9 +99,9 @@ export default function FilterProduct({
     fetchFilters();
   }, []);
 
+
   // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
   const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
-    const { category, subCategory } = categoryIdAndSubId;
     const colorFilter =
       filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
     const sizeFilter =
@@ -214,10 +215,9 @@ export default function FilterProduct({
       {/* Main Content */}
       <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
-          <h5 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            עעעע
+          <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          {category}/{subCategory}
           </h5>
-
           <div className="flex items-center gap-4">
             <Menu as="div" className="relative">
               <MenuButton className="group inline-flex items-center rounded-md bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700">
