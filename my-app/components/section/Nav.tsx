@@ -65,7 +65,6 @@ export default function Nav() {
   useEffect(() => {
     const saveCartBeforeUnload = async () => {
       if (session && user?.id) {
-        console.log("ggggsssssssssssgggg")
         try {
           await axios.post(`http://localhost:3000/api/saveCart`, {
             userId: user.id,
@@ -92,15 +91,17 @@ export default function Nav() {
   }, [session, fetchUser]);
 
   useEffect(() => {
-    console.log("asdfghjk", user)
+    console.log("asdfghjk", user); // בדיקת הערך של המשתנה user
     const connect = localStorage.getItem("user");
-    console.log(connect,connect == `"disconnect"`)
-    if (user && connect == `"disconnect"`) {
-      console.log("user.id", user.id)
+    console.log("connect:", `"${connect}"`, "length:", connect?.length);
+
+    if (user && connect === "disconnect") { // משתמשים ב-=== להשוואה מדויקת
+      console.log("user.id", user.id);
       localStorage.setItem("user", "connect");
 
       fetchCart(user.id);
     }
+
 
   }, [user]);
 

@@ -1,16 +1,22 @@
 'use client'
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useCartStore } from '@/providers/cartStore';
 import Link from 'next/link';
 import { MdOutlineRemoveShoppingCart } from "react-icons/md";
 import { useRouter } from "next/navigation";
 
-
-
 const Cart = () => {
     const { cart, removeFromCart, updateQuantity, clearCart } = useCartStore();
+    const [loading, setLoading] = useState(true);
     const router = useRouter();
+
+    useEffect(() => {
+        // Set loading to false once cart data is available
+        if (cart && cart.length >= 0) {
+            setLoading(false);
+        }
+    }, [cart]);
 
     const calculateTotal = () => {
         return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -21,6 +27,15 @@ const Cart = () => {
             updateQuantity(itemId, newQuantity);
         }
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-white dark:bg-gray-900">
+                <div className="text-4xl text-indigo-600 dark:text-indigo-400 animate-spin">🌀</div>
+                <span className="ml-4 text-2xl text-gray-700 dark:text-gray-300">Loading...</span>
+            </div>
+        );
+    }
 
     return (
         <section className="min-h-screen bg-white dark:bg-gray-900">
@@ -53,7 +68,7 @@ const Cart = () => {
                                         <div className="flex flex-1 flex-col">
                                             <div className="flex justify-between">
                                                 <h3 className="text-base font-medium text-gray-900 dark:text-gray-100">{item.name}</h3>
-                                                <p className="text-base font-medium text-gray-900 dark:text-gray-100">${(item.price*item.quantity).toFixed(2)}</p>
+                                                <p className="text-base font-medium text-gray-900 dark:text-gray-100">${(item.price * item.quantity).toFixed(2)}</p>
                                             </div>
                                             <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{item.size} • {item.color}</p>
 
