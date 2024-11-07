@@ -2,12 +2,12 @@ import { create } from 'zustand';
 import axios from 'axios';
 
 export type UserAddress = {
+  id:string;
   country: string;
   city: string;
   street: string;
   houseNumber: string;
   zipCode: string;
-  addressId?: string;
 };
 
 export type User = {

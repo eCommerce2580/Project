@@ -8,6 +8,7 @@ export async function GET(request: Request) {
         const subCategory: string | null = searchParams.get("subCategory");
         const color: string | null = searchParams.get("color");
         const size: string | null = searchParams.get("size");
+        const sort: string | null = searchParams.get("sort");
         const userID: string | null = searchParams.get("userID");
 
         if (!category || !subCategory) {
@@ -34,9 +35,8 @@ export async function GET(request: Request) {
             subCategoryId: subCategoryId?.id,
         };
 
-        // הוספת סינון לפי צבע אם קיים
         if (color) {
-            const colors = color.split(","); // מניחים שהצבעים מופרדים בפסיק
+            const colors = color.split(",");
             filters.colors = {
                 some: {
                     color: {
@@ -46,9 +46,8 @@ export async function GET(request: Request) {
             };
         }
 
-        // הוספת סינון לפי מידה אם קיים
         if (size) {
-            const sizes = size.split(","); // מניחים שהמידות מופרדות בפסיק
+            const sizes = size.split(",");
             filters.sizes = {
                 some: {
                     size: {
@@ -68,6 +67,7 @@ export async function GET(request: Request) {
 
         const products = prisma.product.findMany({
             where: filters,
+            orderBy: orderBy,
         });
 
         const [filteredProducts,fav]= await Promise.all([products,favorites])

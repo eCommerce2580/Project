@@ -48,11 +48,11 @@ export default function LoginForm() {
   async function loginWithGoogle() :Promise<void>{
     const result: any = signIn("google");
     console.log("ppppppppppppppppppppppppppppppppppppppppppppppppppppp")
+    localStorage.setItem("user", "disconnect");
 
-    if (result.ok) {
-console.log("gggggggggggggghhhhhhhhhhhhhhhhhhhhhhhhhhh")
-      localStorage.setItem("user", "disconnect");
-    }
+//     if (result.ok) {
+// console.log("gggggggggggggghhhhhhhhhhhhhhhhhhhhhhhhhhh")
+//     }
 
   }
 

@@ -43,7 +43,7 @@ export default function UserDetails() {
       street: user.address?.street || '',
       houseNumber: user.address?.houseNumber || '',
       zipCode: user.address?.zipCode || '',
-      addressId: user.address?.addressId || ''
+      addressId: user.address?.id || ''
     })
 
     console.log(user)

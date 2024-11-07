@@ -65,7 +65,6 @@ export default function Nav() {
   useEffect(() => {
     const saveCartBeforeUnload = async () => {
       if (session && user?.id) {
-        console.log("ggggsssssssssssgggg")
         try {
           await axios.post(`http://localhost:3000/api/saveCart`, {
             userId: user.id,
@@ -92,15 +91,17 @@ export default function Nav() {
   }, [session, fetchUser]);
 
   useEffect(() => {
-    console.log("asdfghjk", user)
+    console.log("asdfghjk", user); // בדיקת הערך של המשתנה user
     const connect = localStorage.getItem("user");
-    console.log(connect,connect == `"disconnect"`)
-    if (user && connect == `"disconnect"`) {
-      console.log("user.id", user.id)
+    console.log("connect:", `"${connect}"`, "length:", connect?.length);
+
+    if (user && connect === "disconnect") { // משתמשים ב-=== להשוואה מדויקת
+      console.log("user.id", user.id);
       localStorage.setItem("user", "connect");
 
       fetchCart(user.id);
     }
+
 
   }, [user]);
 
@@ -263,10 +264,10 @@ export default function Nav() {
         )}
       </nav>
       {/* mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 */}
-      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-screen-xl px-4 py-3 mx-auto">
-          <div className="flex items-center">
-            <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative">
+      <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 dark:bg-gray-900">
+        <div className="max-w-screen-xl px-4 py-3 mx-auto dark:bg-gray-900">
+          <div className="flex items-center dark:bg-gray-900">
+            <ul className="flex flex-row font-medium mt-0 space-x-8 rtl:space-x-reverse text-sm relative dark:bg-gray-900">
               {categories &&
                 categories.map((category: any, index: any) => (
                   <li
