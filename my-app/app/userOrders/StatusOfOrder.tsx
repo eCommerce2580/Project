@@ -4,12 +4,16 @@ import { useState } from "react";
 
 type StatusOfOrderProps = {
   orderId: string;
-  statusName: string;
+  status:{
+    progressLevel: number;
+    name:string;
+  }
 };
 
-export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
+export function StatusOfOrder({ orderId, status }: StatusOfOrderProps) {
   const { data: session } = useSession();
-  const [status, setStatus] = useState<string>(statusName);
+  const [statusName, setStatusName] = useState<string>(status.name);
+  const [progressLevel, setProgressLevel] = useState<number>(status.progressLevel);
   const [responseMessage, setResponseMessage] = useState<string>("");
 
   if (!session) {
@@ -32,7 +36,12 @@ export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
   };
 
   const handleButton = async (act: string) => {
-    const body = { orderId, statusName: act };
+    let body;
+    if (act === "Returned")
+      body = { orderId, progressLevel: 5 };
+    else
+      body = { orderId, progressLevel: 6 };
+
     try {
       const res = await fetch("/api/orders", {
         method: "PUT",
@@ -41,7 +50,11 @@ export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
       });
 
       if (res.ok) {
-        setStatus(act);
+        setStatusName(act);
+        if (act === "Returned")
+          setProgressLevel(5);
+        else
+        setProgressLevel(6);
         try {
           await sendMail(act);
         } catch (error) {
@@ -58,10 +71,10 @@ export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
   return (
     <div className="flex items-center gap-4">
       <p className="text-lg font-semibold text-gray-800 dark:text-white">
-        {status}
+        {statusName}
       </p>
-      
-      {status === "Received in System" && (
+
+      {progressLevel === 1 && (
         <button
           onClick={() => handleButton("Cancelled")}
           className="px-4 py-2 text-xs font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-50 dark:focus:ring-purple-600"
@@ -69,7 +82,7 @@ export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
           Cancel Order
         </button>
       )}
-      {status === "Delivered" && (
+      {progressLevel === 4 && (
         <button
           onClick={() => handleButton("Returned")}
           className="px-4 py-2 text-xs font-medium tracking-wide text-white capitalize transition-colors duration-300 transform bg-gradient-to-r from-orange-500 via-purple-500 to-blue-400 rounded-lg hover:from-orange-400 hover:via-purple-400 hover:to-blue-300 focus:outline-none focus:ring focus:ring-purple-300 focus:ring-opacity-50 dark:focus:ring-purple-600"
@@ -77,7 +90,7 @@ export function StatusOfOrder({ orderId, statusName }: StatusOfOrderProps) {
           Return Order
         </button>
       )}
-      
+
       {responseMessage && <p className="text-red-500 dark:text-red-400">{responseMessage}</p>}
     </div>
   );
