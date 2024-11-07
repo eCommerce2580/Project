@@ -6,14 +6,13 @@ import { SingleProductProps, CartItem } from "@/types";
 import { ToastContainer, toast } from "react-toast";
 import { useUserStore } from "@/providers/userStore";
 import { useRouter } from "next/navigation";
-import ReactImageMagnify from "react-image-magnify";
 
 function SingleProduct({ product }: SingleProductProps) {
   const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [isCartVisible, setIsCartVisible] = useState(false);
   const [isFavorited, setIsFavorited] = useState(false);
-  const [isImageModalOpen, setIsImageModalOpen] = useState(false); // State for image modal
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const addToCart = useCartStore((state) => state.addToCart);
   const router = useRouter();
   const { user } = useUserStore();
@@ -71,23 +70,7 @@ function SingleProduct({ product }: SingleProductProps) {
           <div className="grid items-start grid-cols-1 lg:grid-cols-5 gap-12 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-700">
             <div className="lg:col-span-3 w-full lg:sticky top-0 text-center">
               <div className="px-4 py-10 rounded-lg relative">
-                {/* Image Magnify for zoom on hover */}
-                <ReactImageMagnify
-                  {...{
-                    smallImage: {
-                      alt: product.name,
-                      isFluidWidth: true,
-                      src: product.image,
-                    },
-                    largeImage: {
-                      src: product.image,
-                      width:1200,
-                      height: 900,
-                    },
-                    enlargedImageContainerStyle: { zIndex: 9 },
-                  }}
-                />
-                {/* Image click to open in modal */}
+                <img src={product.image} alt={product.name} />
               </div>
             </div>
 
