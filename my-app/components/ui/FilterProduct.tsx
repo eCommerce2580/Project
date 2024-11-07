@@ -19,6 +19,7 @@ import Product from "./Product";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserStore } from "@/providers/userStore";
+import { useUserStore } from "@/providers/userStore";
 
 type SortOption = {
   name: string;
@@ -70,7 +71,11 @@ export type CategoryAndSubId = {
   category: string;
   subCategory: string;
 };
-
+export type Favorites = {
+  id: String;
+  userId: String;
+  productId: String;
+}
 export default function FilterProduct({
   categoryIdAndSubId,
 }: {
@@ -317,6 +322,8 @@ export default function FilterProduct({
           </form>
 
           {/* Product Grid */}
+
+
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products && products.length > 0 ? (
@@ -337,4 +344,4 @@ export default function FilterProduct({
       </main>
     </div>
   );
-}
+  }}
