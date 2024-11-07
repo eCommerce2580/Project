@@ -18,6 +18,7 @@ import {
 import Product from "./Product";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { useUserStore } from "@/providers/userStore";
 
 type SortOption = {
   name: string;
@@ -63,7 +64,11 @@ export type CategoryAndSubId = {
   category: string;
   subCategory: string;
 };
-
+export type Favorites = {
+  id: String;
+  userId: String;
+  productId: String;
+}
 export default function FilterProduct({
   categoryIdAndSubId,
 }: {
@@ -75,10 +80,12 @@ export default function FilterProduct({
     category: [],
     size: [],
   });
+  const { user } = useUserStore();
+  console.log(user?.id)
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
-
+  const [favorites, setFavorites] = useState<Favorites[]>([]);
   // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
     const fetchFilters = async () => {
@@ -106,9 +113,13 @@ export default function FilterProduct({
 
     try {
       const { data } = await axios.get(
-        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}`
+        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}&userID=${user?.id}`
       );
       setProducts(data.filteredProducts);
+      setFavorites(data.fav)
+      console.log(data.filteredProducts);
+      console.log(data.fav);
+
     } catch (error) {
       console.error("Error fetching filtered products:", error);
     }
@@ -298,18 +309,26 @@ export default function FilterProduct({
           </form>
 
           {/* Product Grid */}
+
+
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {products && products.length > 0 ? (
-                products.map((product) => (
-                  //@ts-ignore
-                  <Product key={product.id} product={product} />
-                ))
+                products.map((product) => {
+                  const isFavorite = favorites.some((fav) => fav.productId === product.id); // בדיקת קיום ב-favorites
+                  return (
+                    //@ts-ignore
+                    <Product key={product.id} product={product} isFavorite= {isFavorite?true:false } /> 
+                  );
+                })
               ) : (
                 <p>No products available.</p>
               )}
             </div>
           </div>
+
+
+
         </div>
       </main>
     </div>

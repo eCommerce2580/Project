@@ -1,59 +1,64 @@
-"use client"
-
-import { useState } from 'react';
-import axios from 'axios';
+"use client";
+import { useState } from "react";
+import axios from "axios";
 import { BsCartPlus } from "react-icons/bs";
-import { IoHeartOutline } from "react-icons/io5";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
 import Link from "next/link";
 import { SingleProductProps } from "@/types";
+import { useUserStore } from "@/providers/userStore";
 
-export default function Product({ product }: SingleProductProps) {
+
+export default function Product({ product, isFavorite }: SingleProductProps & {isFavorite:Boolean}) {
   const [showQuickView, setShowQuickView] = useState(false);
   const [productData, setProductData] = useState<typeof product | null>(null);
+  const [isPress, setisPress] = useState<Boolean>(isFavorite);
+  const { user } = useUserStore();
+console.log(isFavorite)
+console.log(isPress)
 
-//   const { favorites,removeFavorite,addFavorite } = useFavoritesStore();
-//   const isFavorite = favorites.some((fav) => fav.productId === product.id);
-//   const [isPress, setisPress] = useState<boolean>(isFavorite);
-  
-  
-  const handleToggleFavorite = () => {
-    //   if (isFavorite) {
-    //        removeFavorite(product.id);
-    //        setisPress(false)
-    //   } else {
-    //       addFavorite(product.id);
-    //       setisPress(true)
-    //   }
-    //   console.log(favorites)
+
+  const  handleToggleFavorite = async () => {
+    if (isPress) {
+      setisPress(false);
+      //axios
+    } else {
+      setisPress(true);
+      await axios.post('/api/addFavorites', { userId: user?.id, productId: product.id });
+      console.log(isPress)
+    }
   };
-  
+
   return (
     <>
-      <Link 
-        href={`${window.location.pathname}/${product.id}`} 
+      <Link
+        href={`${window.location.pathname}/${product.id}`}
         className="w-full max-w-sm bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl block"
       >
         {/* Product Image */}
         <div className="relative group">
-          <img 
-            src={product.image || "/api/placeholder/300/300"} 
+          <img
+            src={product.image || "/api/placeholder/300/300"}
             alt={product.name}
             className="w-full h-64 object-cover group-hover:opacity-95 transition-opacity"
           />
           {/* Floating Buttons */}
-          <div 
-            onClick={(e) => e.preventDefault()} 
+          <div
+            onClick={(e) => e.preventDefault()}
             className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           >
-            <button 
+            <button
               className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               aria-label="Add to wishlist"
               onClick={handleToggleFavorite}
             >
-              <IoHeartOutline className="w-5 h-5 text-gray-600 dark:text-gray-200" />
+              {isPress ? (
+                <IoHeart className="text-red-500 text-[24px]" />
+              ) : (
+                <IoHeartOutline className="text-black text-[24px]" />
+              )}
             </button>
-            <button 
+            <button
               className="p-2 bg-white dark:bg-gray-700 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
               aria-label="Add to cart"
             >
@@ -91,13 +96,13 @@ export default function Product({ product }: SingleProductProps) {
 
       {/* Quick View Modal with Full Product Page Content */}
       {showQuickView && productData && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
           onClick={() => setShowQuickView(false)}
         >
-          <div 
+          <div
             className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setShowQuickView(false)}
@@ -108,16 +113,20 @@ export default function Product({ product }: SingleProductProps) {
 
             {/* Modal Content */}
             <div className="p-8">
-              <img 
-                src={productData.image || "/api/placeholder/300/300"} 
-                alt={productData.name} 
+              <img
+                src={productData.image || "/api/placeholder/300/300"}
+                alt={productData.name}
                 className="w-full h-64 object-cover mb-6"
               />
-              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">{productData.name}</h3>
+              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">
+                {productData.name}
+              </h3>
               <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
                 {productData.description}
               </p>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">{productData.price}</span>
+              <span className="text-xl font-bold text-gray-900 dark:text-white">
+                {productData.price}
+              </span>
             </div>
           </div>
         </div>
