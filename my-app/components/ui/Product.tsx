@@ -1,7 +1,8 @@
 "use client"
 
 import { useState } from 'react';
-import axios from 'axios';
+import Zoom from 'react-medium-image-zoom';
+import 'react-medium-image-zoom/dist/styles.css';
 import { BsCartPlus } from "react-icons/bs";
 import { IoHeartOutline } from "react-icons/io5";
 import { IoClose } from "react-icons/io5";
@@ -12,20 +13,8 @@ export default function Product({ product }: SingleProductProps) {
   const [showQuickView, setShowQuickView] = useState(false);
   const [productData, setProductData] = useState<typeof product | null>(null);
 
-//   const { favorites,removeFavorite,addFavorite } = useFavoritesStore();
-//   const isFavorite = favorites.some((fav) => fav.productId === product.id);
-//   const [isPress, setisPress] = useState<boolean>(isFavorite);
-  
-  
   const handleToggleFavorite = () => {
-    //   if (isFavorite) {
-    //        removeFavorite(product.id);
-    //        setisPress(false)
-    //   } else {
-    //       addFavorite(product.id);
-    //       setisPress(true)
-    //   }
-    //   console.log(favorites)
+    // הוסף כאן את הלוגיקה של המועדפים
   };
   
   return (
@@ -64,6 +53,8 @@ export default function Product({ product }: SingleProductProps) {
           <button
             onClick={(e) => {
               e.preventDefault();
+              setShowQuickView(true);
+              setProductData(product);
             }}
             className="absolute bottom-4 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-4 py-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-white rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-600 font-medium text-sm"
           >
@@ -83,20 +74,20 @@ export default function Product({ product }: SingleProductProps) {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-xl font-bold text-gray-900 dark:text-white">
-              {product.price}
+              {product.price}$
             </span>
           </div>
         </div>
       </Link>
 
-      {/* Quick View Modal with Full Product Page Content */}
+      {/* Quick View Modal with Image Zoom */}
       {showQuickView && productData && (
         <div 
           className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4"
           onClick={() => setShowQuickView(false)}
         >
           <div 
-            className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto relative"
+            className="bg-white dark:bg-gray-800 rounded-xl w-full max-w-lg max-h-[80vh] overflow-y-auto relative"
             onClick={e => e.stopPropagation()}
           >
             <button
@@ -106,18 +97,15 @@ export default function Product({ product }: SingleProductProps) {
               <IoClose className="w-5 h-5 text-gray-600 dark:text-gray-200" />
             </button>
 
-            {/* Modal Content */}
-            <div className="p-8">
-              <img 
-                src={productData.image || "/api/placeholder/300/300"} 
-                alt={productData.name} 
-                className="w-full h-64 object-cover mb-6"
-              />
-              <h3 className="text-2xl font-semibold text-gray-800 dark:text-white">{productData.name}</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 mb-4">
-                {productData.description}
-              </p>
-              <span className="text-xl font-bold text-gray-900 dark:text-white">{productData.price}</span>
+            {/* Modal Content - Image Zoom */}
+            <div className="p-4">
+              <Zoom>
+                <img 
+                  src={productData.image || "/api/placeholder/300/300"} 
+                  alt={productData.name} 
+                  className="w-full h-auto object-contain"
+                />
+              </Zoom>
             </div>
           </div>
         </div>
