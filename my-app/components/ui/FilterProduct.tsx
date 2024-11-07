@@ -77,6 +77,9 @@ export default function FilterProduct({
   categoryIdAndSubId: CategoryAndSubId;
 }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState(true);
+
+
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
     color: [],
     category: [],
@@ -110,7 +113,12 @@ export default function FilterProduct({
     fetchFilters();
   }, []);
 
-
+  useEffect(() => {
+    // Set loading to false once cart data is available
+    if (products && products.length >= 0) {
+        setLoading(false);
+    }
+}, [products]);
   // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
   const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
     const colorFilter =
