@@ -15,16 +15,6 @@ export default function DeliveryDetails() {
     isComplited: false,
   });
 
-  useEffect(() => {
-    if (!user) return;
-    setFormData({
-      name: user?.name,
-      email: user?.email,
-      phone: '',
-      isComplited: false,
-    });
-  }, [user]);
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { id, value } = e.target;
     setFormData((prevData) => ({
@@ -76,6 +66,7 @@ export default function DeliveryDetails() {
               onChange={handleInputChange}
               className="block w-full rounded-lg border p-3 text-sm text-gray-900 dark:bg-gray-700 dark:text-white"
               required
+              placeholder={user?.name}
             />
           </div>
 
@@ -88,6 +79,8 @@ export default function DeliveryDetails() {
               onChange={handleInputChange}
               className="block w-full rounded-lg border p-3 text-sm text-gray-900 dark:bg-gray-700 dark:text-white"
               required
+              placeholder={user?.email}
+
             />
           </div>
 

@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next"
 import { authOptions } from "../api/auth/[...nextauth]/options";
 import { OrderComponent } from "./orderComponent";
 
+export const revalidate = 5; 
 
 async function getUserOrders(id: string) {
     try {
