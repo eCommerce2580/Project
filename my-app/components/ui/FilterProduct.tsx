@@ -19,6 +19,7 @@ import Product from "./Product";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUserStore } from "@/providers/userStore";
+import { Spinner } from "./Spinner";
 
 type SortOption = {
   name: string;
@@ -47,7 +48,6 @@ type Size = {
   id: string;
   label: string;
 };
-
 
 export type Favorites = {
   id: String;
@@ -78,8 +78,7 @@ export default function FilterProduct({
   categoryIdAndSubId: CategoryAndSubId;
 }) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState<boolean>(false);
-  const [loading, setLoading] = useState(true);
-
+  const [loading, setLoading] = useState(true);  // מצב טעינה
 
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters>({
     color: [],
@@ -87,15 +86,14 @@ export default function FilterProduct({
     size: [],
   });
 
-
   const { user } = useUserStore();
   console.log(user?.id)
-
 
   const [products, setProducts] = useState<Product[]>([]);
   const [colors, setColors] = useState<Color[]>([]);
   const [sizes, setSizes] = useState<Size[]>([]);
-  const [favorites, setFavorites] = useState<Favorites[]>([]);  const [sortOption, setSortOption] = useState<string>("");
+  const [favorites, setFavorites] = useState<Favorites[]>([]);
+  const [sortOption, setSortOption] = useState<string>("");
   const { category, subCategory } = categoryIdAndSubId;
 
   // קריאה ל-API להורדת הצבעים והמידות
@@ -115,36 +113,33 @@ export default function FilterProduct({
     fetchFilters();
   }, []);
 
+  // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
+  const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
+    const colorFilter =
+      filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
+    const sizeFilter =
+      filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
+    const sortFilter = sortOption ? `&sort=${sortOption}` : "";
+    const userFilter = user?.id ? `&userID=${user.id}` : ""; // בדיקה אם קיים userID ורק אז מוסיפים
 
-// פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
-const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
-  const colorFilter =
-    filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
-  const sizeFilter =
-    filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
-  const sortFilter = sortOption ? `&sort=${sortOption}` : "";
-  const userFilter = user?.id ? `&userID=${user.id}` : ""; // בדיקה אם קיים userID ורק אז מוסיפים
-
-  try {
-    const { data } = await axios.get(
-      `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}${userFilter}`
-    );
-    setProducts(data.filteredProducts);
-    if (user?.id) {
+    try {
+      const { data } = await axios.get(
+        `/api/filteredProducts?category=${category}&subCategory=${subCategory}${colorFilter}${sizeFilter}${sortFilter}${userFilter}`
+      );
+      setProducts(data.filteredProducts);
       setFavorites(data.fav);
+      setLoading(false); // אחרי שנטענו את המוצרים, נעדכן את מצב ה- loading
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      setLoading(false); // גם אם יש שגיאה, נעצור את טעינת המוצרים
     }
-    console.log(data.filteredProducts);
-    console.log(data.fav);
-  } catch (error) {
-    console.error("Error fetching filtered products:", error);
-  }
-};
-
+  };
 
   useEffect(() => {
+    setLoading(true);  // נתחיל בטעינה כאשר המשתנים משתנים
     fetchProducts(selectedFilters, sortOption);
   }, [selectedFilters, categoryIdAndSubId, sortOption]); // Adding sortOption to the dependency array
-  
+
   const handleFilterChange = (filterId: string, option: string) => {
     setSelectedFilters((prev) => {
       const newFilters = { ...prev };
@@ -155,12 +150,11 @@ const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
       return newFilters;
     });
   };
-  
+
   const handleSortChange = (option: SortOption) => {
     setSortOption(option.value); // מגדיר את ערך המיון הנבחר
     sortOptions.forEach((opt) => (opt.current = opt.value === option.value));
-  }
-  
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -238,7 +232,7 @@ const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
       <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
           <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-          {category}/{subCategory}
+            {category}/{subCategory}
           </h5>
           <div className="flex items-center gap-4">
             <Menu as="div" className="relative">
@@ -325,20 +319,25 @@ const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
           {/* Product Grid */}
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {products && products.length > 0 ? (
+              {loading ? (
+    <div className="col-span-4 flex justify-center items-center min-h-[50vh]">
+                  <Spinner /> {/* אלמנט טעינה */}
+                </div>
+              ) : products.length === 0 ? (
+                <div className="col-span-4 flex justify-center items-center min-h-[50vh] text-center text-xl font-bold text-gray-900 dark:text-white">
+                  No products available.
+                </div>
+              ) : (
                 products.map((product) => {
                   const isFavorite = favorites.some((fav) => fav.productId === product.id); 
                   return (
                     //@ts-ignore
-                    <Product key={product.id} product={product} isFavorite= {isFavorite?true:false } /> 
+                    <Product key={product.id} product={product} isFavorite={isFavorite} />
                   );
                 })
-              ) : (
-                <p>No products available.</p>
               )}
             </div>
           </div>
-
         </div>
       </main>
     </div>
