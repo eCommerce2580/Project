@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function DELETE(req: Request) {
   try {
@@ -28,6 +29,7 @@ export async function DELETE(req: Request) {
           userId_productId: { userId, productId },
         },
       });
+      revalidatePath('http://localhost:3000/favorites'); // יש לוודא שהנתיב נכון בהתאם לפרויקט שלך
 
       return NextResponse.json({
         message: "Product removed from favorites successfully",

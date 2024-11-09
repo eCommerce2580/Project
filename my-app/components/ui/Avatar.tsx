@@ -74,37 +74,40 @@ export default function Avatar() {
             className=" dark:bg-gray-900 dark:text-white absolute z-10 min-w-[200px] overflow-auto rounded-lg border border-slate-200 bg-white p-2 shadow-lg shadow-sm right-1 top-2"
             align="end"
           >
-            <DropdownMenu.Item className=" mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-800">
-              <Link href="/userDetails" className="flex items-center">
-                <FaCircleUser className="text-lg text-gray-600 dark:text-white hover:text-black" />
-                <p className="text-slate-800 font-medium ml-3 dark:text-white">My Profile</p>
+            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-800">
+              <Link href="/userDetails" className="flex items-center hover:text-white">
+                <FaCircleUser className="text-lg text-gray-600 dark:text-white hover:text-white" />
+                <p className="text-slate-800 font-medium ml-3 dark:text-white hover:text-white">My Profile</p>
               </Link>
             </DropdownMenu.Item>
+
+
+            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-800 hover:text-white">
+              <Link href="/userOrders" className="flex items-center hover:text-white">
+                <GrHistory className="text-lg text-gray-600 dark:text-white hover:text-white" />
+                <p className="text-slate-800 font-medium ml-3 dark:text-white hover:text-white">My Orders</p>
+              </Link>
+            </DropdownMenu.Item>
+
 
             <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer hover:bg-gray-800">
-              <Link href="/userOrders" className="flex items-center">
-                <GrHistory className="text-lg text-gray-600 dark:text-white" />
-                <p className="text-slate-800 font-medium ml-3 dark:text-white">My Orders</p>
+              <Link href="/favorites" className="flex items-center hover:text-white">
+                <CiHeart className="text-lg text-gray-600 hover:text-white" />
+                <p className="text-slate-800 font-medium ml-3 dark:text-white hover:text-white">Favorites</p>
               </Link>
             </DropdownMenu.Item>
 
-            <DropdownMenu.Item className="mb-2 flex items-center p-2 rounded-md cursor-pointer bg-slate-100">
-              <CiHeart className="text-lg text-gray-600" />
-              <Link href="/favorites" className="flex items-center">
-                <CiHeart className="text-lg text-gray-600" />
-                <p className="text-slate-800 font-medium ml-3">Favorites</p>
-              </Link>
-            </DropdownMenu.Item>
 
             <DropdownMenu.Separator className="my-1 border-t border-slate-200" />
 
             <DropdownMenu.Item
-              className="mb-2 flex items-center dark:text-white p-2 rounded-md cursor-pointer hover:bg-gray-800"
+              className="mb-2 flex items-center dark:text-white p-2 rounded-md cursor-pointer hover:bg-gray-800 hover:text-white"
               onClick={handleSignOut}
             >
-              <GoSignOut className="text-lg text-gray-600 dark:text-white" />
-              <p className="text-slate-800 font-medium ml-3 dark:text-white">Sign Out</p>
+              <GoSignOut className="text-lg text-gray-600 dark:text-white hover:text-white" />
+              <p className="text-slate-800 font-medium ml-3 dark:text-white hover:text-white">Sign Out</p>
             </DropdownMenu.Item>
+
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>

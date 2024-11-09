@@ -10,6 +10,7 @@ import Link from "next/link";
 import { SingleProductProps } from "@/types";
 import { useUserStore } from "@/providers/userStore";
 import axios from "axios";
+import { revalidatePath } from "next/cache";
 
 export default function Product({ product, isFavorite }: SingleProductProps & {isFavorite:Boolean}) {
 
@@ -25,10 +26,13 @@ export default function Product({ product, isFavorite }: SingleProductProps & {i
       await axios.delete(`/api/deleteFavorites`, { 
         params: { userId: user?.id, productId: product.id }
       });      setisPress(false);
+
     } else {
       setisPress(true);
       await axios.post('/api/addFavorites', { userId: user?.id, productId: product.id });
+
     }
+
   }
 
   return (

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import prisma from "@/prisma/client";
+import { revalidatePath } from "next/cache";
 
 export async function POST(req: Request) {
   try {
@@ -27,6 +28,8 @@ if(!existingFavorite){
         product: { connect: { id: productId } },
       },
     });
+    revalidatePath('http://localhost:3000/favorites');
+
 console.log(favorite)
     return NextResponse.json({
       message: "Product added to favorites successfully",
