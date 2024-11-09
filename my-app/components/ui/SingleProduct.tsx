@@ -51,21 +51,9 @@ function SingleProduct({ product }: SingleProductProps) {
     setTimeout(() => setIsCartVisible(false), 3000);
   };
 
-  const handleFavorite = () => {
-    setIsFavorited(!isFavorited);
-  };
-
-  const handleImageClick = () => {
-    setIsImageModalOpen(true); // Open the modal to show the large image
-  };
-
-  const closeImageModal = () => {
-    setIsImageModalOpen(false); // Close the modal
-  };
-
   return (
     <div>
-      <div className="font-sans bg-white dark:bg-gray-900">
+      <div className="font-sans bg-white dark:bg-gray-900 h-screen">
         <div className="p-4 lg:max-w-7xl max-w-4xl mx-auto">
           <div className="grid items-start grid-cols-1 lg:grid-cols-5 gap-12 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md dark:shadow-gray-700">
             <div className="lg:col-span-3 w-full lg:sticky top-0 text-center">

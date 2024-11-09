@@ -196,9 +196,9 @@ export default function Nav() {
               </Link>
             </div>
 
-            <div className="flex-1 px-4">
+            {/* <div className="flex-1 px-4">
               <CommandMenu />
-            </div>
+            </div> */}
           </div>
 
           {/* Right Side Icons */}
@@ -213,13 +213,13 @@ export default function Nav() {
             </Link>
 
 
-
+{/* 
             <button className="relative p-2 text-gray-400 transition-colors duration-200 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-400">
               <FaBell className="h-5 w-5" />
               <span className="absolute -right-0.5 -top-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-400 text-xs text-white">
                 1
               </span>
-            </button>
+            </button> */}
 
             {/* Profile / Login */}
             {session ? (
