@@ -204,12 +204,11 @@ export default function HomePage() {
                 href={`/products/${category.name}`}
                 className="group block relative rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
               >
-              <div >
+              <div  className="w-50 h-80">
   <img
     src={category.image}
     alt={category.name}
-    className="w-80 h-80 object-cover transform group-hover:scale-105 transition-transform duration-300"
-  />
+className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"  />
 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent">
@@ -252,7 +251,7 @@ export default function HomePage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
-                    className="flex-1 px-4 py-3 rounded-lg text-gray-900 placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 px-4 py-3 rounded-lg dark:text-white  text-gray-800 placeholder-gray-500 focus:ring-2 focus:ring-blue-500"
                     required
                   />
                   <button 
