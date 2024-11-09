@@ -102,8 +102,8 @@ export default function Avatar() {
               className="mb-2 flex items-center dark:text-white p-2 rounded-md cursor-pointer dark:hover:bg-gray-800 hover:bg-slate-100"
               onClick={handleSignOut}
             >
-              <GoSignOut className="text-lg text-gray-600 dark:text-white hover:text-white" />
-              <p className="text-slate-800 font-medium ml-3 dark:text-white hover:text-white">Sign Out</p>
+              <GoSignOut className="text-lg text-gray-600 dark:text-white" />
+              <p className="text-slate-800 font-medium ml-3 dark:text-white">Sign Out</p>
             </DropdownMenu.Item>
 
           </DropdownMenu.Content>
