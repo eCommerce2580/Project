@@ -12,7 +12,6 @@ const Cart = () => {
     const router = useRouter();
 
     useEffect(() => {
-        // Set loading to false once cart data is available
         if (cart && cart.length >= 0) {
             setLoading(false);
         }

@@ -138,6 +138,7 @@ model SubCategory {
 model Category {
   id            String        @id @default(auto()) @map("_id") @db.ObjectId
   name          String
+  image         String
   subCategories SubCategory[]
   products      Product[]
 }

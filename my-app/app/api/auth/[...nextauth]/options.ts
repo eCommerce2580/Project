@@ -30,7 +30,7 @@ export const authOptions: NextAuthOptions = {
         });
 
         if (!user || !user.password) {
-          throw new Error("User not found or password not set");
+          throw new Error("User not found, please sign up:)");
         }
 
         if (user.isVerified === false) {

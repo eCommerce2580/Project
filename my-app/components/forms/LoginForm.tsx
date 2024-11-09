@@ -20,7 +20,6 @@ export default function LoginForm() {
       password: target.password.value.trim(),
     };
 
-    // Check for empty fields
     if (!values.email || !values.password) {
       setErrorMessage("Please fill in all fields.");
       return;
@@ -38,22 +37,16 @@ export default function LoginForm() {
 
         setErrorMessage("");
       } else {
-        setErrorMessage("An error occurred during login. Please try again.");
+        setErrorMessage(credential?.error as any);
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("An error occurred during login. Please try again.");
+      setErrorMessage(error as any);
     }
   }
   async function loginWithGoogle() :Promise<void>{
     const result: any = signIn("google");
-    console.log("ppppppppppppppppppppppppppppppppppppppppppppppppppppp")
     localStorage.setItem("user", "disconnect");
-
-//     if (result.ok) {
-// console.log("gggggggggggggghhhhhhhhhhhhhhhhhhhhhhhhhhh")
-//     }
-
   }
 
 
@@ -91,16 +84,15 @@ export default function LoginForm() {
         if (error.response.status === 400) {
           setErrorMessage(error.response.data.message);
         } else {
-          setErrorMessage("An error occurred during login. Please try again.");
+          setErrorMessage(error as any);
         }
       } else {
         console.error("Error during login:", error);
-        setErrorMessage("An unknown error occurred. Please try again.");
+        setErrorMessage(error as any);
       }
     }
   }
 
-  // Handle forgot password
   async function handleForgotPassword(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
@@ -121,7 +113,7 @@ export default function LoginForm() {
       }
     } catch (error) {
       console.error("Error during login:", error);
-      setErrorMessage("An error occurred during login. Please try again.");
+      setErrorMessage(error as any);
     }
   }
 
@@ -309,3 +301,4 @@ function InputLogin({ label, onChange, ...props }: InputLoginProps) {
     </div>
   );
 }
+

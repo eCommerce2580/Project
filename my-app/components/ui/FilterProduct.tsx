@@ -96,7 +96,6 @@ export default function FilterProduct({
   const [sortOption, setSortOption] = useState<string>("");
   const { category, subCategory } = categoryIdAndSubId;
 
-  // קריאה ל-API להורדת הצבעים והמידות
   useEffect(() => {
     const fetchFilters = async () => {
       try {
@@ -113,14 +112,13 @@ export default function FilterProduct({
     fetchFilters();
   }, []);
 
-  // פונקציה שמביאה את המוצרים מהשרת על פי הסינונים שנבחרו
   const fetchProducts = async (filters: SelectedFilters, sortOption: string) => {
     const colorFilter =
       filters.color.length > 0 ? `&color=${filters.color.join(",")}` : "";
     const sizeFilter =
       filters.size.length > 0 ? `&size=${filters.size.join(",")}` : "";
     const sortFilter = sortOption ? `&sort=${sortOption}` : "";
-    const userFilter = user?.id ? `&userID=${user.id}` : ""; // בדיקה אם קיים userID ורק אז מוסיפים
+    const userFilter = user?.id ? `&userID=${user.id}` : ""; 
 
     try {
       const { data } = await axios.get(
@@ -128,18 +126,17 @@ export default function FilterProduct({
       );
       setProducts(data.filteredProducts);
       setFavorites(data.fav);
-      setLoading(false); // אחרי שנטענו את המוצרים, נעדכן את מצב ה- loading
+      setLoading(false); 
     } catch (error) {
       console.error("Error fetching filtered products:", error);
-      setLoading(false); // גם אם יש שגיאה, נעצור את טעינת המוצרים
+      setLoading(false); 
     }
   };
 
   useEffect(() => {
-    setLoading(true);  // נתחיל בטעינה כאשר המשתנים משתנים
+    setLoading(true); 
     fetchProducts(selectedFilters, sortOption);
-  }, [selectedFilters, categoryIdAndSubId, sortOption]); // Adding sortOption to the dependency array
-
+  }, [selectedFilters, categoryIdAndSubId, sortOption]); 
   const handleFilterChange = (filterId: string, option: string) => {
     setSelectedFilters((prev) => {
       const newFilters = { ...prev };
@@ -152,13 +149,12 @@ export default function FilterProduct({
   };
 
   const handleSortChange = (option: SortOption) => {
-    setSortOption(option.value); // מגדיר את ערך המיון הנבחר
+    setSortOption(option.value); 
     sortOptions.forEach((opt) => (opt.current = opt.value === option.value));
   };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Mobile Filter Dialog */}
       <Dialog
         open={mobileFiltersOpen}
         onClose={setMobileFiltersOpen}
@@ -228,7 +224,6 @@ export default function FilterProduct({
         </DialogPanel>
       </Dialog>
 
-      {/* Main Content */}
       <main className="mx-auto max-w-full px-4 sm:px-6 lg:px-8">
         <div className="flex items-baseline justify-between border-b border-gray-200 dark:border-gray-700 py-6">
           <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
@@ -263,9 +258,7 @@ export default function FilterProduct({
           </div>
         </div>
 
-        {/* Content Grid */}
         <div className="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-5">
-          {/* Desktop Filters */}
           <form className="hidden lg:block lg:col-span-1">
             <Disclosure as="div" className="border-b border-gray-200 dark:border-gray-700 py-6">
               <DisclosureButton className="flex w-full items-center justify-between py-3 text-sm font-medium text-gray-900 dark:text-white hover:text-gray-600 dark:hover:text-gray-300">
@@ -316,12 +309,11 @@ export default function FilterProduct({
             </Disclosure>
           </form>
 
-          {/* Product Grid */}
           <div className="lg:col-span-4">
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
               {loading ? (
     <div className="col-span-4 flex justify-center items-center min-h-[50vh]">
-                  <Spinner /> {/* אלמנט טעינה */}
+                  <Spinner /> 
                 </div>
               ) : products.length === 0 ? (
                 <div className="col-span-4 flex justify-center items-center min-h-[50vh] text-center text-xl font-bold text-gray-900 dark:text-white">
